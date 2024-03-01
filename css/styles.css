@@ -1,0 +1,88 @@
+:root {
+  --bs-font-sans-serif: "Monterrat", sans-serif;
+}
+
+#data-center .cls-2 {
+  -webkit-animation: animateDataFlow 1s linear infinite forwards;
+  animation: animateDataFlow 1s linear infinite forwards;
+  stroke-width: 5;
+}
+
+#data-center #Layer_1-3 {
+  -webkit-animation: float 5s ease-in-out infinite forwards;
+  animation: float 5s ease-in-out infinite forwards;
+}
+
+#data-center #shadow {
+  -webkit-transform-origin: 50%;
+  transform-origin: 50%;
+  -webkit-animation: shrink 5s ease-in-out infinite forwards;
+  animation: shrink 5s ease-in-out infinite forwards;
+}
+
+@-webkit-keyframes animateDataFlow {
+  from {
+    stroke-dashoffset: 0px;
+  }
+  to {
+    stroke-dashoffset: 17px;
+  }
+}
+
+@keyframes animateDataFlow {
+  from {
+    stroke-dashoffset: 0px;
+  }
+  to {
+    stroke-dashoffset: 17px;
+  }
+}
+
+@-webkit-keyframes float {
+  0%,
+  100% {
+    -webkit-transform: translateY(0%);
+    transform: translateY(0%);
+  }
+  50% {
+    -webkit-transform: translateY(-3%);
+    transform: translateY(-3%);
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    -webkit-transform: translateY(0%);
+    transform: translateY(0%);
+  }
+  50% {
+    -webkit-transform: translateY(-3%);
+    transform: translateY(-3%);
+  }
+}
+
+@-webkit-keyframes shrink {
+  0%,
+  100% {
+    -webkit-transform: scale(1);
+    transform: scale(1);
+  }
+  50% {
+    -webkit-transform: scale(0.8);
+    transform: scale(0.8);
+  }
+}
+
+@keyframes shrink {
+  0%,
+  100% {
+    -webkit-transform: scale(1);
+    transform: scale(1);
+  }
+  50% {
+    -webkit-transform: scale(0.8);
+    transform: scale(0.8);
+  }
+}
+/*# sourceMappingURL=style.css.map */
