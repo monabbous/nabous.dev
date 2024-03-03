@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Mohamed Nabous | Senior Software Developer</title>
     <meta name="description" content="Senior Fullstack Developer specialized in frontend, with 9 years' experience across 60+ diverse projects."/>
     <meta name="og:image" content="/images/nabous.webp"/>
@@ -18,9 +18,19 @@
 <body class="dark:bg-slate-900 dark:text-white bg-slate-200 text-black">
     <div class="container mx-auto py-10">
         <div class="grid md:grid-cols-[1fr_2fr]">
-            <div>
+            <div class="
+                md:mx-0
+                mx-4
+                p-8
+                rounded-2xl
+            " style="
+                align-self: start;
+                background-color: rgba(0, 0, 0, 0.2);
+                -webkit-backdrop-filter: blur(10px);
+                backdrop-filter: blur(10px);
+            ">
                 <img src="https://nabous.dev/images/nabous.webp" class="
-                        w-[clamp(250px,80%,350px)]
+                        w-full
                         rounded-2xl
                         object-cover
                         aspect-w-1
@@ -75,6 +85,28 @@
                 </div>
             </div>
             <div>
+                <button 
+                    id="something-cool"
+                class="
+                    hidden
+                    bg-[#00b2b2]
+                    text-white
+                    py-2
+                    px-4
+                    rounded-md
+                    shadow-md
+                    hover:bg-[#50eae5]
+                    transition
+                    duration-300
+                    ease-in-out
+                    mt-5
+                    md:mt-0
+                    absolute
+                    bottom-[25%]
+                    left-[50%]
+                    translate-x-[-50%]
+                    flex
+                ">Start Something Cool 🚀</button>
                 <canvas class="
                     top-0 left-0 w-screen h-full absolute
                     md:fixed z-[-1] md:h-screen

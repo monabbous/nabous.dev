@@ -19,8 +19,8 @@ const camera = new THREE.PerspectiveCamera(11, 2, 0.1, 300);
 const light = new THREE.PointLight(0xffffff, 10000);
 light.position.set(10, 100, -10);
 light.castShadow = true;
-light.shadow.mapSize.width = 1024 * 1000; // Optional
-light.shadow.mapSize.height = 1024 * 1000; // Optional
+light.shadow.mapSize.width = 1024; // Optional
+light.shadow.mapSize.height = 1024; // Optional
 light.shadow.camera.near = 0.01; // Optional
 light.shadow.camera.far = 500; // Optional
 light.shadow.needsUpdate = true; // Optional
@@ -34,7 +34,6 @@ const boxMaterial = new THREE.MeshPhysicalMaterial({
     color: 0x2a5b7c,
     metalness: -1,
     roughness: 2,
-    castShadow: true,
 });
 // Create rounded corner shape
 const cornerRadius = 0.05;
@@ -55,18 +54,21 @@ const serverRack1 = new THREE.Mesh(
     boxMaterial
 );
 serverRack1.position.y = 0;
+serverRack1.castShadow = true
 
 const serverRack2 = new THREE.Mesh(
     geometry,
     boxMaterial
 );
 serverRack2.position.y = 0.25 + spacing;
+serverRack2.castShadow = true
 
 const serverRack3 = new THREE.Mesh(
     geometry,
     boxMaterial
 );
 serverRack3.position.y = (0.25 + spacing) * 2;
+serverRack3.castShadow = true
 
 const screenMaterial = new THREE.MeshLambertMaterial({
     color: 0x00b2b2,
@@ -216,6 +218,7 @@ const cables = new THREE.Group();
 
 const cablesPoints = [
     [
+        { y: cableY, x: -18, z: -100 },
         { y: cableY, x: -18, z: -34 },
         { y: cableY, x: -18, z: -26 },
         { y: cableY, x: -12, z: -26 },
@@ -225,6 +228,7 @@ const cablesPoints = [
         { y: cableY2, x: 0, z: 0 },
     ],
     [
+        { y: cableY, x: -2, z: -100 },
         { y: cableY, x: -2, z: -30 },
         { y: cableY, x: -2, z: -18 },
         { y: cableY, x: -6, z: -18 },
@@ -234,6 +238,7 @@ const cablesPoints = [
         { y: cableY2, x: 0, z: 0 },
     ],
     [
+        { y: cableY, x: 4, z: -100 },
         { y: cableY, x: 4, z: -20 },
         { y: cableY, x: 4, z: -14 },
         { y: cableY, x: 2, z: -14 },
@@ -416,6 +421,16 @@ function render() {
 requestAnimationFrame(render);
 
 
+function updateGroundColor() {
+    const bgColor = getComputedStyle(document.body)?.backgroundColor;
+    ground.material.color.set(bgColor);
+    ground.material.emissive.set(bgColor)
+}
+setInterval(() => {
+    updateGroundColor();
+}, 3000)
+updateGroundColor();
+
 function createRoundedCubeGeometry({
     width: _width, height: _height, depth: _depth,
     radius,
@@ -510,7 +525,7 @@ function createCable({
 
     const cable = new THREE.Group();
 
-    const cableDataGeometry = new THREE.SphereGeometry(0.2, 7, 7);
+    const cableDataGeometry = new THREE.SphereGeometry(0.2, 9, 9);
     const cableDataMaterial = new THREE.MeshLambertMaterial({
         color: 0x50eae5,
         emissive: 0x50eae5,
@@ -520,7 +535,7 @@ function createCable({
     const path = new THREE.CatmullRomCurve3(points.map(v => new THREE.Vector3(v.x, v.y, v.z)));
 
     // Define the tube geometry
-    const tubeGeometry = new THREE.TubeGeometry(path, 128, 0.1, 2, false);
+    const tubeGeometry = new THREE.TubeGeometry(path, 512, 0.05, 8, false);
 
     // Create material
     const material = new THREE.LineDashedMaterial({
@@ -576,18 +591,20 @@ function resize() {
         if (isLargeScreen()) {
             scene.position.x = 7.5
             scene.position.z = 0//-7.5
-            // scene.scale.setScalar(1)
+            scene.scale.setScalar(1)
         } else {
             scene.scale.setScalar(0.5)
             scene.position.x = 0 // (15 * (sy))
-            scene.position.z = 17.5 // (15 * (sy))
+            scene.position.z = 20 // (15 * (sy))
         }
     }
 }
 window.addEventListener('resize', resize)
 resize()
 
-window.addEventListener("mousemove", (event) => {
+document.body.addEventListener("pointermove", (event) => {
+    if (event.pointerType !== "mouse") return;
+    
     Object.assign(
         scene.rotation,
         {
@@ -600,7 +617,7 @@ window.addEventListener("mousemove", (event) => {
 
 
 let devicemotion = { x: 0, y: 0, z: 0 };
-window.addEventListener('devicemotion', e => {
+const deviceMotion = e => {
     const orientation = (() => {
         if (screen.orientation) {
             return screen.orientation.type;
@@ -632,14 +649,60 @@ window.addEventListener('devicemotion', e => {
             ] || 0),
         gamma = e.rotationRate?.gamma || 0;
 
-    devicemotion.y = containedBetween(-Math.PI / 24, Math.PI / 24)(devicemotion.y + (-gamma) / 360 * Math.PI / 12 );
-    devicemotion.x = containedBetween(-Math.PI / 24, Math.PI / 24)(devicemotion.x + (-alpha) / 360 * Math.PI / 12 ) * 0.5;
+    devicemotion.y = containedBetween(-Math.PI / 12, Math.PI / 12)(devicemotion.y + (-gamma) / 360 * Math.PI / 12);
+    devicemotion.x = containedBetween(-Math.PI / 12, Math.PI / 12)(devicemotion.x + (-alpha) / 360 * Math.PI / 12) * 0.5;
 
     Object.assign(
         scene.rotation,
         devicemotion
     )
-})
+}
+
+// if safari or ios
+if (navigator.userAgent.includes('Safari') && !navigator.userAgent.includes('Chrome')) {
+    // ask for permission
+    // DeviceOrientationEvent.requestPermission()
+    //     .then(response => {
+    //         if (response === 'granted') {
+    //             window.addEventListener('deviceorientation', deviceMotion)
+    //         }
+    //     })
+    //     .catch(console.error)
+
+    const somethingCoolButton = document.querySelector('button#something-cool')
+
+    if (typeof (DeviceMotionEvent) !== "undefined" && typeof (DeviceMotionEvent.requestPermission) === "function") {
+        somethingCoolButton?.classList.remove('hidden')
+        somethingCoolButton?.addEventListener('click', function () {
+            // (optional) Do something before API request prompt.
+            DeviceMotionEvent.requestPermission()
+                .then(response => {
+                    // (optional) Do something after API prompt dismissed.
+                    if (response == "granted") {
+                        window.addEventListener('devicemotion', deviceMotion)
+                        somethingCoolButton.classList.add('hidden')
+                    }
+                })
+                .catch(console.error)
+
+            // // ask for permission
+            // DeviceOrientationEvent.requestPermission()
+            //     .then(response => {
+            //         if (response === 'granted') {
+            //             window.addEventListener('devicemotion', deviceMotion)
+            //             somethingCoolButton.classList.add('hidden')
+            //         }
+            //     })
+            //     .catch(console.error)
+            // somethingCoolButton.classList.add('hidden')
+        });
+    } else {
+        alert("DeviceMotionEvent is not defined");
+    }
+} else {
+    window.addEventListener('devicemotion', deviceMotion)
+}
+
 
 function containedBetween(min, max) {
     return (value) => Math.min(max, Math.max(min, value));
