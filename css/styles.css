@@ -86,3 +86,37 @@
   }
 }
 /*# sourceMappingURL=style.css.map */
+
+body {
+  position: relative;
+}
+
+:has(canvas) {
+  /* position: relative; */
+  /* overflow: hidden; */
+}
+
+
+:has(canvas) canvas {
+  /* pointer-events: none; */
+  /* position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  height: 100vh;
+  width: 100vw; */
+  filter: saturate(125%) contrast(0.95);
+  /* z-index: 5!important; */
+  /* transform: translate(-50%); */
+}
+
+:has(canvas) canvas[width] + svg {
+  /* display: none; */
+  opacity: 0;
+  pointer-events: none;
+}
+
+
+:has(canvas) canvas[width] + svg, canvas {
+  /* opacity: 0.5 !important; */
+}
