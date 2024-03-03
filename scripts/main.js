@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import GSAP from 'gsap';
 
 
@@ -16,7 +15,7 @@ renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(11, 2, 0.1, 500);
+const camera = new THREE.PerspectiveCamera(11, 2, 0.1, 300);
 const light = new THREE.PointLight(0xffffff, 10000);
 light.position.set(10, 100, -10);
 light.castShadow = true;
@@ -29,14 +28,6 @@ light.shadow.autoUpdate = true; // Optional
 scene.add(light);
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.75);
 scene.add(ambientLight);
-
-const additionalLight = new THREE.DirectionalLight(0xffffff, 1); // Example of additional light
-additionalLight.position.set(10, 0, -10);
-scene.add(additionalLight);
-
-const additionalLight2 = new THREE.DirectionalLight(0xffffff, 0.25); // Example of additional light
-additionalLight2.position.set(0, 0, 100);
-scene.add(additionalLight2);
 
 
 const boxMaterial = new THREE.MeshPhysicalMaterial({
@@ -179,11 +170,19 @@ server.scale.setScalar(10)
 const serverPlot = new THREE.Group()
 serverPlot.add(server)
 
+const additionalLight = new THREE.DirectionalLight(0xffffff, 1); // Example of additional light
+additionalLight.position.set(10, 0, -10);
+serverPlot.add(additionalLight);
+
+const additionalLight2 = new THREE.DirectionalLight(0xffffff, 0.25); // Example of additional light
+additionalLight2.position.set(0, 0, 100);
+serverPlot.add(additionalLight2);
+
 scene.add(serverPlot);
 
 
 
-camera.position.set(100, 100, 100);
+camera.position.set(0, 100, 150);
 
 const ground = new THREE.Mesh(
     new THREE.PlaneGeometry(20000, 20000),
@@ -344,8 +343,8 @@ cables.add(...cablesPoints.map(points => createCable({
 
 // ca
 serverPlot.add(cables)
+serverPlot.rotation.y = Math.PI / -4
 
-const controls = new OrbitControls(camera, renderer.domElement);
 
 function isLargeScreen() {
     return window.matchMedia("(min-width: 768px)").matches;
@@ -407,12 +406,9 @@ GSAP.timeline().add([
 
 function render() {
     const bgColor = getComputedStyle(document.body)?.backgroundColor;
-
     ground.material.color.set(bgColor);
     ground.material.emissive.set(bgColor);
-
     camera.lookAt(center)
-
     renderer.render(scene, camera);
     requestAnimationFrame(render);
 }
@@ -524,7 +520,7 @@ function createCable({
     const path = new THREE.CatmullRomCurve3(points.map(v => new THREE.Vector3(v.x, v.y, v.z)));
 
     // Define the tube geometry
-    const tubeGeometry = new THREE.TubeGeometry(path, 64, 0.1, 8, false);
+    const tubeGeometry = new THREE.TubeGeometry(path, 128, 0.1, 2, false);
 
     // Create material
     const material = new THREE.LineDashedMaterial({
@@ -579,12 +575,12 @@ function resize() {
         light.shadow.camera.updateProjectionMatrix();
         if (isLargeScreen()) {
             scene.position.x = 7.5
-            scene.position.z = -7.5
+            scene.position.z = 0//-7.5
             // scene.scale.setScalar(1)
         } else {
             scene.scale.setScalar(0.5)
-            scene.position.x = 25 / 2 // (15 * (sy))
-            scene.position.z = 25 / 2 // (15 * (sy))
+            scene.position.x = 0 // (15 * (sy))
+            scene.position.z = 17.5 // (15 * (sy))
         }
     }
 }
@@ -596,7 +592,7 @@ window.addEventListener("mousemove", (event) => {
         scene.rotation,
         {
             y: -(event.clientX / window.innerWidth + window.innerWidth / 2) * Math.PI / 12,
-            x: (event.clientY / window.innerHeight + window.innerHeight / 2) * Math.PI / 12,
+            x: -(event.clientY / window.innerHeight + window.innerHeight / 2) * Math.PI / 12,
             // z: -(event.clientY / window.innerHeight + window.innerHeight / 2) * Math.PI / 12,
         }
     )
@@ -637,7 +633,7 @@ window.addEventListener('devicemotion', e => {
         gamma = e.rotationRate?.gamma || 0;
 
     devicemotion.y = containedBetween(-Math.PI / 24, Math.PI / 24)(devicemotion.y + (-gamma) / 360 * Math.PI / 12 );
-    devicemotion.x = containedBetween(-Math.PI / 24, Math.PI / 24)(devicemotion.x + (-beta) / 360 * Math.PI / 12 ) * 0.5;
+    devicemotion.x = containedBetween(-Math.PI / 24, Math.PI / 24)(devicemotion.x + (-alpha) / 360 * Math.PI / 12 ) * 0.5;
 
     Object.assign(
         scene.rotation,
