@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="/css/styles.css">
 </head>
 
-<body class="dark:bg-slate-900 dark:text-white bg-slate-200 text-black">
+<body class="w-screen overflow-x-hidden dark:bg-slate-900 dark:text-white bg-slate-200 text-black">
     <div class="container mx-auto py-10">
         <div class="grid md:grid-cols-[1fr_2fr]">
             <div class="
@@ -59,7 +59,7 @@
                     mt-2
                     md:text-left
                     "
-                >Specialized in frontend, with 9 years' experience across 60+ diverse projects.</p>
+                >Seasoned developer, specialized in frontend with 10 years' experience across 60+ diverse projects.</p>
                 <div class="flex justify-center md:justify-start w-100 gap-6 text-2xl my-4 text-[#2a5b7c] dark:text-teal-300">
                     <a href="https://www.linkedin.com/in/mohamed-nabous/" target="_blank">
                         <i class="fa-brands fa-linkedin"></i>
@@ -88,12 +88,15 @@
                 <button 
                     id="something-cool"
                 class="
+		    w-[30ch]
+		    gap-1
+		    justify-center
                     hidden
-                    bg-[#00b2b2]
-                    text-white
+                    bg-[#2a5b7c]
+		    text-white
                     py-2
                     px-4
-                    rounded-md
+                    rounded-full
                     shadow-md
                     hover:bg-[#50eae5]
                     transition
@@ -102,11 +105,11 @@
                     mt-5
                     md:mt-0
                     absolute
-                    bottom-[25%]
+                    bottom-[calc(30%_+_3em)]
                     left-[50%]
                     translate-x-[-50%]
                     flex
-                ">Start Something Cool 🚀</button>
+		    ">Start Something Cool <span>🚀</span></button>
                 <canvas class="
                     top-0 left-0 w-screen h-full absolute
                     md:fixed z-[-1] md:h-screen
