@@ -23,7 +23,7 @@ export default function Home() {
             }}
           >
             <img
-              src="https://nabous.dev/images/nabous.webp"
+              src="nabous.webp"
               className="
                   h-auto
                   object-cover
