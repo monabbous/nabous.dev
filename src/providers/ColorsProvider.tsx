@@ -1,0 +1,50 @@
+"use client";
+import React from "react";
+
+const COLOR_KEYS = ["background", "primary", "accent"] as const;
+
+type ColorsObject = Partial<Record<(typeof COLOR_KEYS)[number], string>>;
+
+const ColorsProviderContext = React.createContext<{
+  colors: ColorsObject;
+} | null>(null);
+
+export function ColorsProvider({ children }: { children: React.ReactNode }) {
+  const [colors, setColors] = React.useState<ColorsObject>({});
+
+  React.useLayoutEffect(() => {
+    function getWindowBgColor() {
+      if (typeof window !== "undefined") {
+        requestAnimationFrame(() => {
+          const computedBgColor = getComputedStyle(document.documentElement);
+
+          const newColors: Record<string, string> = {};
+          COLOR_KEYS.forEach((key) => {
+            newColors[key] =
+              computedBgColor.getPropertyValue(`--colors__${key}`)?.trim() ||
+              "";
+          });
+          setColors(newColors);
+        });
+      }
+    }
+
+    const interval = setInterval(getWindowBgColor, 16.67);
+    getWindowBgColor();
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <ColorsProviderContext.Provider value={{ colors }}>
+      {children}
+    </ColorsProviderContext.Provider>
+  );
+}
+
+export const useColors = () => {
+  const context = React.useContext(ColorsProviderContext);
+  if (!context) {
+    throw new Error("useColors must be used within a ColorsProvider");
+  }
+  return context.colors;
+};

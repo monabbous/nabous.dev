@@ -1,0 +1,101 @@
+@import url(https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css);
+@import "tailwindcss";
+
+@theme {
+  /* --*: initial;
+
+    --color-*: initial; */
+
+  --color-primary: var(--colors__primary);
+  --color-accent: var(--colors__accent);
+  --color-background: var(--colors__background);
+
+  --breakpoint-ss: 390px;
+}
+
+:root {
+  --colors__background: #063c59;
+  --colors__primary: #2a5b7c;
+  --colors__accent: #00b2b2;
+
+  --glassmorphism-bg__position-x: calc(var(--mouse-x, -100vmax));
+  --glassmorphism-bg__position-y: calc(var(--mouse-y, -100vmax));
+
+  --_base-glassmorphism-bg: radial-gradient(
+      circle at bottom center,
+      hsla(from var(--colors__accent) h s l / 0.1) 0%,
+      transparent 50%
+    )
+    center center / 100vw 100vh no-repeat;
+
+  --glassmorphism-bg: var(--_base-glassmorphism-bg),
+    radial-gradient(
+        circle at var(--glassmorphism-bg__position-x)
+          var(--glassmorphism-bg__position-y),
+        hsla(from var(--colors__accent) h s l / 0.09) 0%,
+        transparent 30%
+      )
+      center center / 100vw 100vh fixed no-repeat;
+
+  --glassmorphism-border: var(--_base-glassmorphism-bg),
+    radial-gradient(
+        circle at calc(var(--glassmorphism-bg__position-x))
+          calc(var(--glassmorphism-bg__position-y)),
+        hsla(from var(--colors__accent) h s l / 0.3) 0%,
+        transparent 40%
+      )
+      center center / 100vw 100vh fixed no-repeat border-box;
+
+  --glassmorphism-text: var(--_base-glassmorphism-bg),
+    radial-gradient(
+        circle at calc(var(--glassmorphism-bg__position-x))
+          calc(var(--glassmorphism-bg__position-y)),
+        hsla(from var(--colors__accent) h s l / 1) 0%,
+        transparent 10%
+      )
+      center center / 100vw 100vh fixed no-repeat border-box;
+}
+
+.glassmorphism {
+  border: 2px solid transparent;
+  backdrop-filter: blur(40px);
+  background: var(--glassmorphism-bg);
+  background-color: hsla(from var(--colors__background) h s l / 0.4);
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    margin: auto;
+    z-index: 100;
+    border-radius: inherit;
+    border: inherit;
+    border-color: transparent;
+    padding: inherit;
+    pointer-events: none;
+    background: var(--glassmorphism-border);
+    mask: linear-gradient(white, white) padding-box no-repeat,
+      linear-gradient(white, white) no-repeat;
+    mask-composite: exclude;
+  }
+}
+
+@supports (background-clip: text) and (-webkit-background-clip: text) and
+  (-webkit-text-fill-color: transparent) {
+  .glassmorphism-text {
+    color: hsla(from white h s l / 0.7);
+    background: var(--glassmorphism-text);
+    background-clip: text;
+
+    -webkit-text-stroke-width: 0.0625em;
+    -webkit-text-stroke-color: hsla(from var(--colors__accent) h s l / 0.2);
+  }
+}
+
+.card {
+  @apply lg:p-8 md:p-4 p-2;
+}
+
+.container {
+  @apply max-sm:max-w-full;
+}
