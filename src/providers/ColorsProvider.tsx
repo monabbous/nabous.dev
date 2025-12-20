@@ -5,11 +5,11 @@ const COLOR_KEYS = ["background", "primary", "accent"] as const;
 
 type ColorsObject = Partial<Record<(typeof COLOR_KEYS)[number], string>>;
 
-const ColorsProviderContext = React.createContext<{
+const CssVarsProviderContext = React.createContext<{
   colors: ColorsObject;
 } | null>(null);
 
-export function ColorsProvider({ children }: { children: React.ReactNode }) {
+export function CssVarsProvider({ children }: { children: React.ReactNode }) {
   const [colors, setColors] = React.useState<ColorsObject>({});
 
   React.useLayoutEffect(() => {
@@ -35,16 +35,16 @@ export function ColorsProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <ColorsProviderContext.Provider value={{ colors }}>
+    <CssVarsProviderContext.Provider value={{ colors }}>
       {children}
-    </ColorsProviderContext.Provider>
+    </CssVarsProviderContext.Provider>
   );
 }
 
-export const useColors = () => {
-  const context = React.useContext(ColorsProviderContext);
+export const useCssVarsColors = () => {
+  const context = React.useContext(CssVarsProviderContext);
   if (!context) {
-    throw new Error("useColors must be used within a ColorsProvider");
+    throw new Error("useCssVarsColors must be used within a CssVarsProvider");
   }
   return context.colors;
 };

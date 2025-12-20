@@ -3,6 +3,7 @@ import { RapierRigidBody, RigidBody } from "@react-three/rapier";
 import React, { useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { ScreenMaterial } from "./ServerRacks";
+import { useCssVarsColors } from "@nabous.dev/providers/ColorsProvider";
 
 // If you want to reuse your own material:
 // import { screenMaterial } from "./ServerRacks";
@@ -149,9 +150,13 @@ function DebrisItem({
   warpOutMs: number;
   mass: number;
 }) {
+  const colors = useCssVarsColors();
   const rb = useRef<RapierRigidBody | null>(null);
   const meshRef = useRef<THREE.Mesh | null>(null);
+  const lightRef = useRef<THREE.PointLight | null>(null);
   const applied = useRef(false);
+
+  const baseIntensity = 30 + 30 * (mass / 25);
 
   useFrame(() => {
     const b = rb.current;
@@ -180,21 +185,28 @@ function DebrisItem({
 
     // Warp OUT
     if (remaining < warpOutMs) {
-      const t = clamp01(1 - remaining / warpOutMs); // 0->1 near death
-      s *= 1 - easeInBack(t);
+      const t = clamp01(1 - remaining / warpOutMs);
+      const falloff = Math.pow(1 - easeInBack(t), 1.45);
+      const overshoot = 1 + 0.6 * Math.sin(t * Math.PI * 1.3);
+      const flicker = clamp01(
+        0.85 + 0.25 * Math.sin((now + d.bornAt) * 0.02 + t * 10)
+      );
+      s *= falloff * overshoot * flicker;
       s = Math.max(0, s);
 
-      // Optional: reduce physical chaos while it disappears
-      if (s < 0.03) {
+      if (s < 0.05) {
         b.setLinvel({ x: 0, y: 0, z: 0 }, true);
         b.setAngvel({ x: 0, y: 0, z: 0 }, true);
       }
-
-      // If your wrapper exposes sensors, this is the cleanest approach:
-      // b.setSensor(true);
     }
 
     m.scale.setScalar(s);
+    if (lightRef.current) {
+      (
+        meshRef.current!.material as THREE.MeshStandardMaterial
+      ).emissiveIntensity =
+        (lightRef.current.intensity = baseIntensity * s) / 100;
+    }
   });
 
   return (
@@ -212,18 +224,32 @@ function DebrisItem({
       mass={mass}
       ccd
     >
-      <mesh ref={meshRef} castShadow receiveShadow>
-        {d.kind === "box" ? (
-          <boxGeometry args={d.size} />
-        ) : d.kind === "sphere" ? (
-          <sphereGeometry args={[d.radius, 16, 16]} />
-        ) : (
-          <capsuleGeometry args={[d.radius, d.height, 6, 12]} />
-        )}
+      <group castShadow receiveShadow>
+        <mesh ref={meshRef}>
+          {d.kind === "box" ? (
+            <boxGeometry args={d.size} />
+          ) : d.kind === "sphere" ? (
+            <sphereGeometry args={[d.radius, 16, 16]} />
+          ) : (
+            <capsuleGeometry args={[d.radius, d.height, 6, 12]} />
+          )}
 
-        {/* Swap this for your material if you want */}
-        <ScreenMaterial />
-      </mesh>
+          {/* Swap this for your material if you want */}
+          <ScreenMaterial />
+        </mesh>
+
+        <pointLight
+          ref={lightRef}
+          color={colors.accent}
+          intensity={baseIntensity}
+          distance={100}
+          decay={1.5}
+          position={[0, 0, 0]}
+          castShadow
+          shadow-mapSize-width={256}
+          shadow-mapSize-height={256}
+        />
+      </group>
     </RigidBody>
   );
 }

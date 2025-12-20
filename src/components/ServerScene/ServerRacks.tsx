@@ -1,4 +1,4 @@
-import { useColors } from "@nabous.dev/providers/ColorsProvider";
+import { useCssVarsColors } from "@nabous.dev/providers/ColorsProvider";
 import { RoundedBox } from "@react-three/drei";
 import React from "react";
 
@@ -10,14 +10,14 @@ import React from "react";
 //   />
 // );
 
-export function ScreenMaterial() {
-  const colors = useColors();
+export function ScreenMaterial({ powerOn = true }: { powerOn?: boolean }) {
+  const colors = useCssVarsColors();
 
   return (
     <meshLambertMaterial
       color={colors.accent}
       emissive={0x00b2b2}
-      emissiveIntensity={0.5}
+      emissiveIntensity={powerOn ? 0.6 : 0.1}
     />
   );
 }
@@ -31,7 +31,7 @@ export function ServerRack({
   stackNumber: number;
   children?: React.ReactNode;
 }) {
-  const colors = useColors();
+  const colors = useCssVarsColors();
 
   return (
     <group scale={10} position={[0, stackNumber * 3.5, 0]} receiveShadow>
@@ -44,25 +44,25 @@ export function ServerRack({
   );
 }
 
-export function ServerRacks() {
+export function ServerRacks({ powerOn = true }: { powerOn?: boolean }) {
   return (
     <>
       <group name={"server-racks"} position={[10, 0, -10]} receiveShadow>
         <ServerRack stackNumber={0}>
-          <ButtensOnly />
+          <ButtensOnly powerOn={powerOn} />
         </ServerRack>
         <ServerRack stackNumber={1}>
-          <LineScreen />
+          <LineScreen powerOn={powerOn} />
         </ServerRack>
         <ServerRack stackNumber={2}>
-          <ScreenWithButtons />
+          <ScreenWithButtons powerOn={powerOn} />
         </ServerRack>
       </group>
     </>
   );
 }
 
-function ScreenWithButtons() {
+function ScreenWithButtons({ powerOn }: { powerOn: boolean }) {
   return (
     <>
       {/* Screen */}
@@ -72,7 +72,7 @@ function ScreenWithButtons() {
         args={[0.5, 0.125, 0.1]}
         position={[-0.15, 0, 0.5 - 0.001]}
       >
-        <ScreenMaterial />
+        <ScreenMaterial powerOn={powerOn} />
       </RoundedBox>
 
       {/* Buttons */}
@@ -83,7 +83,7 @@ function ScreenWithButtons() {
         scale={0.5}
         position={[0.25, 0.125 - buttonsSpacing, 0.5 - 0.001]}
       >
-        <ScreenMaterial />
+        <ScreenMaterial powerOn={powerOn} />
       </RoundedBox>
 
       <RoundedBox
@@ -97,7 +97,7 @@ function ScreenWithButtons() {
           0.5 - 0.001,
         ]}
       >
-        <ScreenMaterial />
+        <ScreenMaterial powerOn={powerOn} />
       </RoundedBox>
       <RoundedBox
         castShadow
@@ -106,7 +106,7 @@ function ScreenWithButtons() {
         scale={0.5}
         position={[0.25 + buttonsSpacing, 0.125 - buttonsSpacing, 0.5 - 0.001]}
       >
-        <ScreenMaterial />
+        <ScreenMaterial powerOn={powerOn} />
       </RoundedBox>
 
       <RoundedBox
@@ -116,13 +116,13 @@ function ScreenWithButtons() {
         scale={0.5}
         position={[0.25, 0.125 - buttonsSpacing * 2, 0.5 - 0.001]}
       >
-        <ScreenMaterial />
+        <ScreenMaterial powerOn={powerOn} />
       </RoundedBox>
     </>
   );
 }
 
-function LineScreen() {
+function LineScreen({ powerOn }: { powerOn: boolean }) {
   return (
     <>
       {/* Screen */}
@@ -133,13 +133,13 @@ function LineScreen() {
         position={[-0.15, 0, 0.5 - 0.001]}
         scale={[1, 0.1, 0.1]}
       >
-        <ScreenMaterial />
+        <ScreenMaterial powerOn={powerOn} />
       </RoundedBox>
     </>
   );
 }
 
-function ButtensOnly() {
+function ButtensOnly({ powerOn }: { powerOn: boolean }) {
   return (
     <>
       {/* Buttons */}
@@ -150,7 +150,7 @@ function ButtensOnly() {
         scale={0.5}
         position={[-0.38, 0, 0.5 - 0.001]}
       >
-        <ScreenMaterial />
+        <ScreenMaterial powerOn={powerOn} />
       </RoundedBox>
       <RoundedBox
         castShadow
@@ -159,7 +159,7 @@ function ButtensOnly() {
         scale={0.5}
         position={[-0.38 + buttonsSpacing, 0, 0.5 - 0.001]}
       >
-        <ScreenMaterial />
+        <ScreenMaterial powerOn={powerOn} />
       </RoundedBox>
       <RoundedBox
         castShadow
@@ -168,7 +168,7 @@ function ButtensOnly() {
         scale={0.5}
         position={[-0.38 + buttonsSpacing * 2, 0, 0.5 - 0.001]}
       >
-        <ScreenMaterial />
+        <ScreenMaterial powerOn={powerOn} />
       </RoundedBox>
     </>
   );

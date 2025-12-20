@@ -1,4 +1,6 @@
 @import url(https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css);
+@import url("https://fonts.googleapis.com/css2?family=Cascadia+Mono:ital,wght@0,200..700;1,200..700&display=swap");
+
 @import "tailwindcss";
 
 @theme {
@@ -11,7 +13,11 @@
   --color-background: var(--colors__background);
 
   --breakpoint-ss: 390px;
+
+  --font-display: "Cascadia Mono", monospace;
 }
+
+@import "./glassmorphism.css";
 
 :root {
   --colors__background: #063c59;
@@ -27,66 +33,15 @@
       transparent 50%
     )
     center center / 100vw 100vh no-repeat;
-
-  --glassmorphism-bg: var(--_base-glassmorphism-bg),
-    radial-gradient(
-        circle at var(--glassmorphism-bg__position-x)
-          var(--glassmorphism-bg__position-y),
-        hsla(from var(--colors__accent) h s l / 0.09) 0%,
-        transparent 30%
-      )
-      center center / 100vw 100vh fixed no-repeat;
-
-  --glassmorphism-border: var(--_base-glassmorphism-bg),
-    radial-gradient(
-        circle at calc(var(--glassmorphism-bg__position-x))
-          calc(var(--glassmorphism-bg__position-y)),
-        hsla(from var(--colors__accent) h s l / 0.3) 0%,
-        transparent 40%
-      )
-      center center / 100vw 100vh fixed no-repeat border-box;
-
-  --glassmorphism-text: var(--_base-glassmorphism-bg),
-    radial-gradient(
-        circle at calc(var(--glassmorphism-bg__position-x))
-          calc(var(--glassmorphism-bg__position-y)),
-        hsla(from var(--colors__accent) h s l / 1) 0%,
-        transparent 10%
-      )
-      center center / 100vw 100vh fixed no-repeat border-box;
-}
-
-.glassmorphism {
-  border: 2px solid transparent;
-  backdrop-filter: blur(40px);
-  background: var(--glassmorphism-bg);
-  background-color: hsla(from var(--colors__background) h s l / 0.4);
-
-  &::before {
-    content: "";
-    position: absolute;
-    inset: -1px;
-    margin: auto;
-    z-index: 100;
-    border-radius: inherit;
-    border: inherit;
-    border-color: transparent;
-    padding: inherit;
-    pointer-events: none;
-    background: var(--glassmorphism-border);
-    mask: linear-gradient(white, white) padding-box no-repeat,
-      linear-gradient(white, white) no-repeat;
-    mask-composite: exclude;
-  }
 }
 
 @supports (background-clip: text) and (-webkit-background-clip: text) and
   (-webkit-text-fill-color: transparent) {
   .glassmorphism-text {
+    @apply glassmorph glassmorph-glow-opacity-100 glassmorph-bgcolor-[transparent] glassmorph-bg-clip-text;
+    /* background-clip: text; */
     color: hsla(from white h s l / 0.7);
-    background: var(--glassmorphism-text);
-    background-clip: text;
-
+    backdrop-filter: none !important;
     -webkit-text-stroke-width: 0.0625em;
     -webkit-text-stroke-color: hsla(from var(--colors__accent) h s l / 0.2);
   }
@@ -99,3 +54,33 @@
 .container {
   @apply max-sm:max-w-full;
 }
+
+body {
+  font-family: var(--font-display);
+  
+}
+
+/* * {
+  cursor: none !important;
+} */
+
+/* body::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 40px;
+  height: 40px;
+  z-index: 999999999999999;
+  background: radial-gradient(
+    circle at center,
+    hsla(from var(--colors__accent) h s 80 / 1) 20%,
+    transparent 50%
+  );
+  pointer-events: none;
+
+  transform: translate(
+    calc(var(--mouse-x, -100vmax) - 50%),
+    calc(var(--mouse-y, -100vmax) - 50%)
+  );
+} */

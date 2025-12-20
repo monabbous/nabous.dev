@@ -10,13 +10,44 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `
+@property --glassmorphism-bg__position-x {
+  syntax: "<length-percentage>";
+  inherits: true;
+  initial-value: calc(var(--mouse-x, -100vmax));
+}
+
+@property --glassmorphism-bg__position-y {
+  syntax: "<length-percentage>";
+  inherits: true;
+  initial-value: calc(var(--mouse-y, -100vmax));
+}
+
+@property --glassmorphism-bg__opacity {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0.5;
+}
+
+@property --glassmorphism-bg__extent {
+  syntax: "<length-percentage>";
+  inherits: true;
+  initial-value: 30%;
+}           
+            `,
+          }}
+        ></style>
+      </head>
       <body className={`antialiased !bg-[var(--colors__background)]`}>
         <Providers>{children}</Providers>
         <script>{`
   const root = document.documentElement;
 
   // --- smoothing (0 = none, 0.15-0.3 feels nice) ---
-  const SMOOTH = 0.2;
+  const SMOOTH = 0.9;
   let x = window.innerWidth / 2;
   let y = window.innerHeight / 2;
 
@@ -29,9 +60,11 @@ export default function RootLayout({
 
   // Pointer fallback (desktop + touch)
   window.addEventListener("pointermove", (e) => {
-    if (e.pointerType === "mouse") {
-      setVars(e.clientX, e.clientY);
-    }
+    requestAnimationFrame(() => {
+      if (e.pointerType === "mouse") {
+        setVars(e.clientX, e.clientY);
+      }
+    });
   }, { passive: true });
 
   function clamp01(v) { return Math.max(0, Math.min(1, v)); }

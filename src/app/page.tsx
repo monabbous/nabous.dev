@@ -1,17 +1,225 @@
 "use client";
 
 import { ServerScene } from "@nabous.dev/components/ServerScene";
+import { SVGGlassMorph } from "@nabous.dev/components/SVGGlassMorph";
+import { SVGGlassMorphText } from "@nabous.dev/components/SVGGlassMorphText";
+import {
+  type HTMLAttributes,
+  type MutableRefObject,
+  type PointerEvent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import useLocalStorage from "use-local-storage";
 
 export default function Home() {
+  const CANVAS_ID = "server-scene-canvas";
+  // const [play, setPlay] = useLocalStorage<boolean>("play-state", false, {
+  //   serializer: (val) => (val ? "true" : "false"),
+  //   parser: (str) => str === "true",
+  // });
+  const [play, setPlay] = useState<boolean>(false);
+
+  const [paused, setPaused] = useState(false);
+
+  const [hasKeyboard, setHasKeyboard] = useState(false);
+  const [hasGamepad, setHasGamepad] = useState(false);
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
+  const [needsLandscape, setNeedsLandscape] = useState(false);
+  const [showTutorial, setShowTutorial] = useState(false);
+  const touchMoveRef = useRef({ x: 0, z: 0 });
+  const touchLookRef = useRef({ x: 0, y: 0 });
+  const touchFireRef = useRef(false);
+  const [score, setScore] = useState(0);
+  const [timeAliveMs, setTimeAliveMs] = useState(0);
+
+  const requestFullscreen = useCallback(() => {
+    const el = document.documentElement;
+    if (document.fullscreenElement) return;
+    if (el.requestFullscreen) {
+      el.requestFullscreen().catch(() => {});
+    }
+  }, []);
+
+  const exitFullscreen = useCallback(() => {
+    if (document.fullscreenElement && document.exitFullscreen) {
+      document.exitFullscreen().catch(() => {});
+    }
+  }, []);
+
+  const requestPointerLock = useCallback(() => {
+    const canvas = document.getElementById(
+      CANVAS_ID
+    ) as HTMLCanvasElement | null;
+    canvas?.requestPointerLock?.();
+  }, [CANVAS_ID]);
+
+  const exitPointerLock = useCallback(() => {
+    if (document.pointerLockElement) {
+      document.exitPointerLock?.();
+    }
+  }, []);
+
+  const handleEnterGame = useCallback(() => {
+    setPaused(false);
+    setPlay(true);
+    setShowTutorial(true);
+    setScore(0);
+    setTimeAliveMs(0);
+    requestFullscreen();
+    requestPointerLock();
+  }, [requestFullscreen, requestPointerLock, setPlay]);
+
+  const pauseGame = useCallback(() => {
+    setPaused(true);
+    exitPointerLock();
+  }, [exitPointerLock]);
+
+  const resumeGame = useCallback(() => {
+    if (!play) return;
+    setPaused(false);
+    requestPointerLock();
+  }, [play, requestPointerLock]);
+
+  const quitToHome = useCallback(() => {
+    setPaused(false);
+    setPlay(false);
+    setShowTutorial(true);
+    setScore(0);
+    setTimeAliveMs(0);
+    exitFullscreen();
+    exitPointerLock();
+  }, [exitFullscreen, exitPointerLock, setPlay]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const mq = window.matchMedia("(pointer: coarse)");
+    const updateTouch = () => {
+      setIsTouchDevice(
+        mq.matches ||
+          (typeof navigator !== "undefined" && navigator.maxTouchPoints > 0)
+      );
+    };
+
+    const markKeyboard = (event: KeyboardEvent) => {
+      if (event.isTrusted) setHasKeyboard(true);
+    };
+    const onGamepadConnected = () => setHasGamepad(true);
+    const onGamepadDisconnected = () => setHasGamepad(false);
+
+    updateTouch();
+
+    window.addEventListener("keydown", markKeyboard, { passive: true });
+    window.addEventListener("gamepadconnected", onGamepadConnected);
+    window.addEventListener("gamepaddisconnected", onGamepadDisconnected);
+    mq.addEventListener?.("change", updateTouch);
+
+    return () => {
+      window.removeEventListener("keydown", markKeyboard);
+      window.removeEventListener("gamepadconnected", onGamepadConnected);
+      window.removeEventListener("gamepaddisconnected", onGamepadDisconnected);
+      mq.removeEventListener?.("change", updateTouch);
+    };
+  }, []);
+
+  useEffect(() => {
+    const updateLandscape = () => {
+      if (typeof window === "undefined") return;
+      setNeedsLandscape(
+        isTouchDevice && window.innerWidth < window.innerHeight
+      );
+    };
+
+    updateLandscape();
+    window.addEventListener("resize", updateLandscape, { passive: true });
+    window.addEventListener("orientationchange", updateLandscape);
+
+    return () => {
+      window.removeEventListener("resize", updateLandscape);
+      window.removeEventListener("orientationchange", updateLandscape);
+    };
+  }, [isTouchDevice]);
+
+  useEffect(() => {
+    if (!play) {
+      setPaused(false);
+      exitPointerLock();
+    }
+  }, [exitPointerLock, play]);
+
+  useEffect(() => {
+    const handleLockChange = () => {
+      if (!play) return;
+      const locked = document.pointerLockElement;
+      setPaused(!locked);
+    };
+
+    document.addEventListener("pointerlockchange", handleLockChange);
+    return () => {
+      document.removeEventListener("pointerlockchange", handleLockChange);
+    };
+  }, [play]);
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (!play) return;
+      if (event.key === "p" || event.key === "P") {
+        event.preventDefault();
+        if (paused) {
+          resumeGame();
+        } else {
+          pauseGame();
+        }
+      }
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [pauseGame, paused, play, resumeGame]);
+
+  const showTouchControls =
+    play &&
+    !paused &&
+    !needsLandscape &&
+    isTouchDevice &&
+    !hasKeyboard &&
+    !hasGamepad;
+
+  useEffect(() => {
+    if (!play || paused) return;
+    let raf = 0;
+    let last = performance.now();
+    const tick = () => {
+      const now = performance.now();
+      setTimeAliveMs((prev) => prev + (now - last));
+      last = now;
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [pauseGame, paused, play]);
+
   return (
     <>
       <div className="fixed -z-1 top-0 left-0">
-        <ServerScene />
+        <ServerScene
+          play={play}
+          paused={paused}
+          touchMoveRef={touchMoveRef}
+          touchLookRef={touchLookRef}
+          touchFireRef={touchFireRef}
+          onScore={(delta) => setScore((s) => s + delta)}
+        />
       </div>
       <div className="container mx-auto ">
-        <div className="grid justify-center md:grid-cols-[1fr_1fr] lg:grid-cols-[1fr_2fr] px-2 md:px-4 min-h-screen">
+        <div className="grid justify-center md:grid-cols-[1fr_1fr] lg:grid-cols-[1fr_2fr] max-md:grid-rows-[1fr_auto] px-2 md:px-4 min-h-screen">
           <div
-            className="my-auto card gap-x-2 sm:gap-x-4 glassmorphism w-full grid grid-cols-[minmax(100px,1fr)_2fr] md:grid-cols-1 mt-[calc(100vh_-_350px)] md:my-auto"
+            className={
+              "my-auto card gap-x-2 sm:gap-x-4 glassmorph glassmorph-border w-full grid grid-cols-[minmax(100px,1fr)_2fr] md:grid-cols-1 md:my-auto relative max-md:mb-4 "
+            }
             style={{
               alignSelf: "start",
               gridAutoColumns: "min-content",
@@ -20,15 +228,22 @@ export default function Home() {
               // backgroundColor: "rgba(0, 0, 0, 0.2)",
               // WebkitBackdropFilter: "blur(10px)",
               // backdropFilter: "blur(10px)",
+              insetInlineStart: play ? "-100%" : "0",
+              filter: play ? "opacity(0)" : "opacity(1)",
+              transitionProperty: "inset-inline-start, filter",
+              transitionDuration: "500ms",
+              transitionTimingFunction: "ease-in-out",
             }}
           >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="nabous.webp"
+              alt="Portrait of Mohamed Nabous"
               className="
                   h-auto
                   object-cover
                   aspect-w-1
-			            shadow-lg
+		            shadow-lg
                   sm:row-[1/5]
                   row-[1/4]
                   md:row-[unset]
@@ -45,10 +260,14 @@ export default function Home() {
               md:text-left
               glassmorphism-text
               col-span-1
+              hidden
           "
             >
               Mohamed Nabous
             </h1>
+            <SVGGlassMorphText className="w-full  mt-5">
+              Mohamed Nabous
+            </SVGGlassMorphText>
             <h3
               className="
               sm:text-xl
@@ -63,6 +282,7 @@ export default function Home() {
             >
               Senior Fullstack Developer{" "}
             </h3>
+
             <p
               className="
               text-center
@@ -76,41 +296,178 @@ export default function Home() {
               Seasoned developer, specialized in frontend with 10 years&apos;
               experience across 60+ diverse projects.
             </p>
-            <div className="flex justify-center md:justify-start w-100 gap-6 text-2xl my-4 flex-wrap glassmorphism-text w-full col-span-2 md:col-span-1">
+            <div className="flex justify-center md:justify-start gap-6 text-2xl my-4 flex-wrap w-full col-span-2 md:col-span-1">
               <a
                 href="https://www.linkedin.com/in/mohamed-nabous/"
                 target="_blank"
               >
-                <i className="fa-brands fa-linkedin" />
+                {/* <i className="fa-brands fa-linkedin" /> */}
+                {/* "\f08c" */}
+                <SVGGlassMorphText
+                  width={"26"}
+                  height={"26"}
+                  textProps={{
+                    fontFamily: "'Font Awesome 6 Brands'",
+                    fontWeight: "400",
+                    fontSize: "25",
+                    strokeWidth: "10%",
+                  }}
+                >
+                  &#xf08c;
+                </SVGGlassMorphText>
               </a>
               <a href="https://github.com/monabbous" target="_blank">
-                <i className="fa-brands fa-github" />
+                {/* <i className="fa-brands fa-github" /> */}
+                <SVGGlassMorphText
+                  width={"26"}
+                  height={"26"}
+                  textProps={{
+                    fontFamily: "'Font Awesome 6 Brands'",
+                    fontWeight: "400",
+                    fontSize: "25",
+                    strokeWidth: "10%",
+                  }}
+                >
+                  &#xf09b;
+                </SVGGlassMorphText>
               </a>
               <a href="https://dev.to/nabous" target="_blank">
-                <i className="fa-brands fa-dev" />
+                {/* <i className="fa-brands fa-dev" /> */}
+                <SVGGlassMorphText
+                  width={"26"}
+                  height={"26"}
+                  textProps={{
+                    fontFamily: "'Font Awesome 6 Brands'",
+                    fontWeight: "400",
+                    fontSize: "25",
+                    strokeWidth: "10%",
+                  }}
+                >
+                  &#xf6cc;
+                </SVGGlassMorphText>
               </a>
               <a href="https://twitter.com/spideymanthe1st" target="_blank">
-                <i className="fa-brands fa-x-twitter" />
+                {/* <i className="fa-brands fa-x-twitter" /> */}
+                <SVGGlassMorphText
+                  width={"26"}
+                  height={"26"}
+                  textProps={{
+                    fontFamily: "'Font Awesome 6 Brands'",
+                    fontWeight: "400",
+                    fontSize: "25",
+                    strokeWidth: "10%",
+                  }}
+                >
+                  &#xe61b;
+                </SVGGlassMorphText>
               </a>
               <a
                 href="https://www.facebook.com/spideymanThe1st"
                 target="_blank"
               >
-                <i className="fa-brands fa-facebook" />
+                {/* <i className="fa-brands fa-facebook" /> */}
+                <SVGGlassMorphText
+                  width={"26"}
+                  height={"26"}
+                  textProps={{
+                    fontFamily: "'Font Awesome 6 Brands'",
+                    fontWeight: "400",
+                    fontSize: "25",
+                    strokeWidth: "10%",
+                  }}
+                >
+                  &#xf09a;
+                </SVGGlassMorphText>
               </a>
               <a
                 href="https://www.instagram.com/spideymanThe1st"
                 target="_blank"
               >
-                <i className="fa-brands fa-instagram" />
+                {/* <i className="fa-brands fa-instagram" /> */}
+                <SVGGlassMorphText
+                  width={"26"}
+                  height={"26"}
+                  textProps={{
+                    fontFamily: "'Font Awesome 6 Brands'",
+                    fontWeight: "400",
+                    fontSize: "25",
+                    strokeWidth: "10%",
+                  }}
+                >
+                  &#xf16d;
+                </SVGGlassMorphText>
               </a>
               <a href="https://wa.me/+218928832185" target="_blank">
-                <i className="fa-brands fa-whatsapp" />
+                {/* <i className="fa-brands fa-whatsapp" /> */}
+                <SVGGlassMorphText
+                  width={"26"}
+                  height={"26"}
+                  textProps={{
+                    fontFamily: "'Font Awesome 6 Brands'",
+                    fontWeight: "400",
+                    fontSize: "25",
+                    strokeWidth: "10%",
+                  }}
+                >
+                  &#xf232;
+                </SVGGlassMorphText>
               </a>
             </div>
           </div>
+          <button
+            className={
+              "m-auto flex items-center cursor-pointer max-md:row-[1/2] transition-opacity duration-300 p-6 rounded-lg gap-x-4" +
+              (!play ? " opacity-100" : " opacity-0")
+            }
+            onClick={handleEnterGame}
+          >
+            {/* Play */}
+            <SVGGlassMorphText className="h-40">Play</SVGGlassMorphText>
+            <SVGGlassMorph>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 640 640"
+                className="h-20"
+              >
+                <path d="M187.2 100.9C174.8 94.1 159.8 94.4 147.6 101.6C135.4 108.8 128 121.9 128 136L128 504C128 518.1 135.5 531.2 147.6 538.4C159.7 545.6 174.8 545.9 187.2 539.1L523.2 355.1C536 348.1 544 334.6 544 320C544 305.4 536 291.9 523.2 284.9L187.2 100.9z" />
+              </svg>
+            </SVGGlassMorph>
+          </button>
         </div>
       </div>
+      {play && !paused && !needsLandscape && (
+        <button
+          type="button"
+          className="fixed top-4 right-4 z-20 px-4 py-2 glassmorph glassmorph-border hover:glassmorph-glow-opacity-30 text-white  text-sm backdrop-blur-md shadow-lg active:scale-95 transition-transform"
+          onClick={pauseGame}
+        >
+          Pause
+        </button>
+      )}
+      {/* {play && !paused && !needsLandscape && (
+        <ShooterHud score={score} timeMs={timeAliveMs} />
+      )} */}
+      {/* {play && !paused && !needsLandscape && showTutorial && (
+        <TutorialCard onClose={() => setShowTutorial(false)} isTouch={isTouchDevice} />
+      )} */}
+      {play && needsLandscape && (
+        <div className="fixed inset-0 z-30 flex items-center justify-center bg-black/70 text-white text-center px-6">
+          <div className="space-y-3 max-w-md">
+            <h2 className="text-2xl font-bold">Rotate to landscape</h2>
+            <p className="text-sm text-white/80">
+              For the best experience, rotate your device to landscape. Touch
+              controls will reappear once landscape is detected.
+            </p>
+            <button
+              type="button"
+              className="mt-2 px-4 py-2 rounded-lg bg-white/15 border border-white/25 text-white text-sm backdrop-blur-md shadow-lg"
+              onClick={quitToHome}
+            >
+              Back to home
+            </button>
+          </div>
+        </div>
+      )}
       {/* <div className="container mx-auto py-10 ">
         <div className="grid justify-center md:grid-cols-[1fr_1fr] lg:grid-cols-[1fr_2fr] px-2 md:px-4 min-h-screen">
           <div className="card glassmorphism w-full my-auto p-6">
@@ -121,6 +478,344 @@ export default function Home() {
           </div>
         </div>
       </div> */}
+      <TouchControls
+        visible={showTouchControls}
+        onRequestPlay={handleEnterGame}
+        touchMoveRef={touchMoveRef}
+        touchLookRef={touchLookRef}
+          touchFireRef={touchFireRef}
+      />
+      <PauseScreen
+        visible={play && paused && !needsLandscape}
+        onResume={resumeGame}
+        onQuit={quitToHome}
+      />
     </>
+  );
+}
+
+function PauseScreen({
+  visible,
+  onResume,
+  onQuit,
+}: {
+  visible: boolean;
+  onResume: () => void;
+  onQuit: () => void;
+}) {
+  if (!visible) return null;
+
+  return (
+    <div className="fixed inset-0 z-30 flex items-center justify-center bg-black/70 backdrop-blur-lg px-4">
+      <div className="glassmorph glassmorph-border text-white w-[min(90vw,520px)] p-6 space-y-5">
+        <div className="flex items-center justify-between gap-3">
+          <h2 className="text-2xl font-bold">Paused</h2>
+          <button
+            type="button"
+            className="px-3 py-2 glassmorph glassmorph-border hover:glassmorph-glow-opacity-30 text-xs font-semibold cursor-pointer"
+            onClick={onQuit}
+          >
+            Back to home
+          </button>
+        </div>
+        <p className="text-sm text-white/80">
+          Mouse is free. Press Resume to recapture the cursor. Press P anytime
+          to toggle pause.
+        </p>
+        <div className="grid grid-cols-2 gap-3 text-sm">
+          <div className="glassmorph glassmorph-border p-3 space-y-1">
+            <div className="text-xs uppercase tracking-wide text-white/60">
+              Movement
+            </div>
+            <div>WASD / Left Stick</div>
+            <div>Shift to sprint</div>
+            <div>Space to jump</div>
+          </div>
+          <div className="glassmorph glassmorph-border p-3 space-y-1">
+            <div className="text-xs uppercase tracking-wide text-white/60">
+              Actions
+            </div>
+            <div>E / B to interact</div>
+            <div>P to pause/resume</div>
+            <div>Esc to release mouse</div>
+          </div>
+        </div>
+        <div className="flex gap-3 justify-end">
+          <button
+            type="button"
+            className="px-4 py-2 glassmorph glassmorph-border hover:glassmorph-glow-opacity-30 text-sm font-semibold cursor-pointer"
+            onClick={onQuit}
+          >
+            Quit
+          </button>
+          <button
+            type="button"
+            className="px-4 py-2 glassmorph glassmorph-border hover:glassmorph-glow-opacity-30  font-semibold shadow cursor-pointer"
+            onClick={onResume}
+          >
+            Resume
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ShooterHud({ score, timeMs }: { score: number; timeMs: number }) {
+  const seconds = Math.floor(timeMs / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const secPad = String(seconds % 60).padStart(2, "0");
+  return (
+    <div className="fixed top-4 left-4 z-20 flex flex-col gap-2 min-w-[220px] text-white pointer-events-none">
+      <div className="glassmorph glassmorph-border backdrop-blur-md px-4 py-3 shadow-lg">
+        <div className="text-xs uppercase tracking-wide text-white/60 mb-1">Status</div>
+        <div className="flex items-center justify-between">
+          <span>Score</span>
+          <span className="font-semibold">{score}</span>
+        </div>
+        <div className="flex items-center justify-between">
+          <span>Time</span>
+          <span className="font-semibold">
+            {minutes}:{secPad}
+          </span>
+        </div>
+      </div>
+      <div className="fixed inset-0 pointer-events-none flex items-center justify-center text-white/70">
+        <div className="w-5 h-5 border border-white/50 rounded-sm" />
+      </div>
+    </div>
+  );
+}
+
+function TutorialCard({
+  onClose,
+  isTouch,
+}: {
+  onClose: () => void;
+  isTouch: boolean;
+}) {
+  return (
+    <div className="fixed bottom-6 left-4 z-20 w-[min(360px,90vw)] text-white pointer-events-auto">
+      <div className="glassmorph glassmorph-border backdrop-blur-xl shadow-xl p-4 space-y-3">
+        <div className="flex items-center justify-between gap-3">
+          <div className="text-sm font-semibold">How to play</div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="text-xs px-2 py-1 rounded-md bg-white/15 border border-white/25 hover:glassmorph-glow-opacity-30"
+          >
+            Got it
+          </button>
+        </div>
+        <ul className="space-y-2 text-xs leading-relaxed">
+          {isTouch ? (
+            <>
+              <li>Left joystick: Move. Right joystick: Look/aim.</li>
+              <li>Tap Jump / Interact buttons to hop or use nearby objects.</li>
+              <li>Collect glowing shards, hack neon terminals, and toggle server racks.</li>
+            </>
+          ) : (
+            <>
+              <li>Move with WASD, jump with Space, sprint with Shift.</li>
+              <li>Look with the mouse (pointer lock). Interact with E near shards/terminals/racks.</li>
+              <li>Objectives: grab shards, hack terminals, and manage rack power.</li>
+            </>
+          )}
+          <li>Press P or the Pause button to pause. Escape releases the mouse.</li>
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+function TouchControls({
+  visible,
+  onRequestPlay,
+  touchMoveRef,
+  touchLookRef,
+  touchFireRef,
+}: {
+  visible: boolean;
+  onRequestPlay: () => void;
+  touchMoveRef: MutableRefObject<{ x: number; z: number }>;
+  touchLookRef: MutableRefObject<{ x: number; y: number }>;
+  touchFireRef: MutableRefObject<boolean>;
+}) {
+  if (!visible) return null;
+
+  return (
+    <div className="fixed inset-0 pointer-events-none z-20 select-none">
+      <div className="absolute bottom-6 left-4 pointer-events-auto">
+        <AnalogStick
+          label="Move"
+          onStart={onRequestPlay}
+          onChange={(x, y) => {
+            // x => strafe, y => forward/back (positive up)
+            touchMoveRef.current = { x, z: -y };
+          }}
+          onEnd={() => {
+            touchMoveRef.current = { x: 0, z: 0 };
+          }}
+        />
+      </div>
+      <div className="absolute bottom-6 right-4 pointer-events-auto flex flex-col gap-3 items-end">
+        <AnalogStick
+          label="Look"
+          onStart={onRequestPlay}
+          onChange={(x, y) => {
+            touchLookRef.current = { x, y };
+          }}
+          onEnd={() => {
+            touchLookRef.current = { x: 0, y: 0 };
+          }}
+        />
+        <div className="flex gap-2">
+          <TouchButton label="Jump" aria="Jump" wide {...bindKey(onRequestPlay, " ")} />
+          <TouchButton label="Interact" aria="Interact" wide {...bindKey(onRequestPlay, "e")} />
+          <TouchButton
+            label="Fire"
+            aria="Fire"
+            wide
+            onPointerDown={(e) => {
+              e.preventDefault();
+              onRequestPlay();
+              touchFireRef.current = true;
+            }}
+            onPointerUp={(e) => {
+              e.preventDefault();
+              touchFireRef.current = false;
+            }}
+            onPointerLeave={() => {
+              touchFireRef.current = false;
+            }}
+            onPointerCancel={() => {
+              touchFireRef.current = false;
+            }}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function TouchButton({
+  label,
+  aria,
+  wide = false,
+  ...rest
+}: {
+  label: string;
+  aria: string;
+  wide?: boolean;
+} & HTMLAttributes<HTMLButtonElement>) {
+  return (
+    <button
+      type="button"
+      aria-label={aria}
+      className={`px-4 py-3 glassmorph glassmorph-border text-white text-xs uppercase tracking-wide backdrop-blur-md shadow-lg active:scale-95 transition-transform pointer-events-auto ${wide ? "min-w-[84px]" : "min-w-[64px]"}`}
+      {...rest}
+    >
+      {label}
+    </button>
+  );
+}
+
+function bindKey(onRequestPlay: () => void, key: string) {
+  const sendKey = (type: "keydown" | "keyup", pressed: string) => {
+    const code = pressed === " " ? "Space" : pressed;
+    window.dispatchEvent(new KeyboardEvent(type, { key: pressed, code }));
+  };
+
+  return {
+    onPointerDown: (event: PointerEvent) => {
+      event.preventDefault();
+      onRequestPlay();
+      sendKey("keydown", key);
+    },
+    onPointerUp: (event: PointerEvent) => {
+      event.preventDefault();
+      sendKey("keyup", key);
+    },
+    onPointerLeave: () => sendKey("keyup", key),
+    onPointerCancel: () => sendKey("keyup", key),
+  };
+}
+
+function AnalogStick({
+  label,
+  onChange,
+  onEnd,
+  onStart,
+}: {
+  label: string;
+  onStart: () => void;
+  onChange: (x: number, y: number) => void;
+  onEnd: () => void;
+}) {
+  const pointerIdRef = useRef<number | null>(null);
+  const originRef = useRef({ x: 0, y: 0 });
+  const [thumb, setThumb] = useState({ x: 0, y: 0 });
+  const radiusPx = 60;
+
+  const reset = () => {
+    pointerIdRef.current = null;
+    setThumb({ x: 0, y: 0 });
+    onEnd();
+  };
+
+  const handlePointerDown = (e: PointerEvent<HTMLDivElement>) => {
+    if (pointerIdRef.current !== null) return;
+    e.preventDefault();
+    pointerIdRef.current = e.pointerId;
+    originRef.current = { x: e.clientX, y: e.clientY };
+    setThumb({ x: 0, y: 0 });
+    onStart();
+  };
+
+  const handlePointerMove = (e: PointerEvent<HTMLDivElement>) => {
+    if (pointerIdRef.current !== e.pointerId) return;
+    e.preventDefault();
+    const dx = e.clientX - originRef.current.x;
+    const dy = e.clientY - originRef.current.y;
+    const dist = Math.hypot(dx, dy);
+    const clampedDist = Math.min(dist, radiusPx);
+    const nx = dist > 0 ? (dx / dist) * (clampedDist / radiusPx) : 0;
+    const ny = dist > 0 ? (dy / dist) * (clampedDist / radiusPx) : 0;
+    setThumb({ x: nx * radiusPx, y: ny * radiusPx });
+    onChange(nx, ny);
+  };
+
+  const handlePointerUp = (e: PointerEvent<HTMLDivElement>) => {
+    if (pointerIdRef.current !== e.pointerId) return;
+    e.preventDefault();
+    reset();
+  };
+
+  const handlePointerLeave = (_e: PointerEvent<HTMLDivElement>) => {
+    if (pointerIdRef.current === null) return;
+    reset();
+  };
+
+  return (
+    <div
+      className="relative w-[140px] h-[140px] rounded-full bg-white/5 border border-white/15 backdrop-blur-xl text-white"
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerUp}
+      onPointerCancel={handlePointerUp}
+      onPointerLeave={handlePointerLeave}
+    >
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none text-xs uppercase tracking-wide text-white/60">
+        {label}
+      </div>
+      <div className="absolute inset-2 rounded-full border border-white/15" />
+      <div className="absolute inset-8 rounded-full border border-white/15" />
+      <div
+        className="absolute top-1/2 left-1/2 w-12 h-12 rounded-full bg-white/30 border border-white/40 shadow-lg pointer-events-none"
+        style={{
+          transform: `translate(calc(-50% + ${thumb.x}px), calc(-50% + ${thumb.y}px))`,
+        }}
+      />
+    </div>
   );
 }

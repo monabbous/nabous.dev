@@ -1,12 +1,11 @@
-import { ColorsProvider } from "./ColorsProvider";
-import { ThemeProvider } from "./ThemeProvider";
+import { CssVarsProvider } from "./ColorsProvider";
 
 export const Providers = ({ children }: { children: React.ReactNode }) => {
   return (
     <>
-      <ThemeProvider>
-        <ColorsProvider>{children}</ColorsProvider>
-      </ThemeProvider>
+      {/* <ThemeProvider> */}
+      <CssVarsProvider>{children}</CssVarsProvider>
+      {/* </ThemeProvider> */}
     </>
   );
 };
