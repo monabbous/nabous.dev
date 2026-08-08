@@ -1,7 +1,6 @@
 "use client";
 
 import { ServerScene } from "@nabous.dev/components/ServerScene";
-import { SVGGlassMorph } from "@nabous.dev/components/SVGGlassMorph";
 import { SVGGlassMorphText } from "@nabous.dev/components/SVGGlassMorphText";
 import {
   type HTMLAttributes,
@@ -12,7 +11,6 @@ import {
   useRef,
   useState,
 } from "react";
-import useLocalStorage from "use-local-storage";
 
 export default function Home() {
   const CANVAS_ID = "server-scene-canvas";
@@ -28,12 +26,12 @@ export default function Home() {
   const [hasGamepad, setHasGamepad] = useState(false);
   const [isTouchDevice, setIsTouchDevice] = useState(false);
   const [needsLandscape, setNeedsLandscape] = useState(false);
-  const [showTutorial, setShowTutorial] = useState(false);
+  const [_showTutorial, setShowTutorial] = useState(false);
   const touchMoveRef = useRef({ x: 0, z: 0 });
   const touchLookRef = useRef({ x: 0, y: 0 });
   const touchFireRef = useRef(false);
-  const [score, setScore] = useState(0);
-  const [timeAliveMs, setTimeAliveMs] = useState(0);
+  const [_score, setScore] = useState(0);
+  const [_timeAliveMs, setTimeAliveMs] = useState(0);
 
   const requestFullscreen = useCallback(() => {
     const el = document.documentElement;
@@ -414,14 +412,13 @@ export default function Home() {
               </a>
             </div>
           </div>
-          <button
+          {/* <button
             className={
               "m-auto flex items-center cursor-pointer max-md:row-[1/2] transition-opacity duration-300 p-6 rounded-lg gap-x-4" +
               (!play ? " opacity-100" : " opacity-0")
             }
             onClick={handleEnterGame}
           >
-            {/* Play */}
             <SVGGlassMorphText className="h-40">Play</SVGGlassMorphText>
             <SVGGlassMorph>
               <svg
@@ -432,7 +429,7 @@ export default function Home() {
                 <path d="M187.2 100.9C174.8 94.1 159.8 94.4 147.6 101.6C135.4 108.8 128 121.9 128 136L128 504C128 518.1 135.5 531.2 147.6 538.4C159.7 545.6 174.8 545.9 187.2 539.1L523.2 355.1C536 348.1 544 334.6 544 320C544 305.4 536 291.9 523.2 284.9L187.2 100.9z" />
               </svg>
             </SVGGlassMorph>
-          </button>
+          </button> */}
         </div>
       </div>
       {play && !paused && !needsLandscape && (
@@ -561,7 +558,7 @@ function PauseScreen({
   );
 }
 
-function ShooterHud({ score, timeMs }: { score: number; timeMs: number }) {
+function _ShooterHud({ score, timeMs }: { score: number; timeMs: number }) {
   const seconds = Math.floor(timeMs / 1000);
   const minutes = Math.floor(seconds / 60);
   const secPad = String(seconds % 60).padStart(2, "0");
@@ -587,7 +584,7 @@ function ShooterHud({ score, timeMs }: { score: number; timeMs: number }) {
   );
 }
 
-function TutorialCard({
+function _TutorialCard({
   onClose,
   isTouch,
 }: {
