@@ -21,6 +21,6 @@ jobs:
             cd /opt/nabous.dev
             git pull --ff-only
             docker build -t nabous-dev-builder -f Dockerfile.builder .
-            docker run --rm -v /opt/nabous.dev/out:/app/out nabous-dev-builder
+            docker run --rm -v /opt/nabous.dev/out:/app/out -v /opt/nabous.dev/.next/cache:/app/.next/cache nabous-dev-builder
             rm -rf /var/www/html/*
             cp -r /opt/nabous.dev/out/static/* /var/www/html/
