@@ -1,0 +1,23 @@
+name: Deploy
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - '**/**'
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DROPLET_IP }}
+          username: root
+          key: ${{ secrets.DROPLET_SSH_KEY }}
+          script: |
+            cd /opt/nabous.dev
+            git pull --ff-only
+            nvm use lts/iron
+            pnpm install
+            pnpm build
