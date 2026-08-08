@@ -22,6 +22,5 @@ jobs:
             git pull --ff-only
             docker build -t nabous-dev-builder -f Dockerfile.builder .
             docker run --rm -v /opt/nabous.dev/out:/app/out nabous-dev-builder
-            rm -rf /opt/nabous.dev/.live
-            mkdir -p /opt/nabous.dev/.live || true
-            mv /opt/nabous.dev/out/static/* /opt/nabous.dev/.live/
+            rm -rf /var/www/html/*
+            cp /opt/nabous.dev/out/static/* /var/www/html/
