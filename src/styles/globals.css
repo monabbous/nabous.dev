@@ -2,6 +2,8 @@
 @import url("https://fonts.googleapis.com/css2?family=Cascadia+Mono:ital,wght@0,200..700;1,200..700&display=swap");
 
 @import "tailwindcss";
+/* @plugin "@tailwindcss/container-queries"; */
+@import "./glassmorphism.css";
 
 @theme {
   /* --*: initial;
@@ -17,7 +19,30 @@
   --font-display: "Cascadia Mono", monospace;
 }
 
-@import "./glassmorphism.css";
+
+@property --glassmorphism-bg__position-x {
+  syntax: "<length-percentage>";
+  inherits: true;
+  initial-value: calc(var(--mouse-x, -100vmax));
+}
+
+@property --glassmorphism-bg__position-y {
+  syntax: "<length-percentage>";
+  inherits: true;
+  initial-value: calc(var(--mouse-y, -100vmax));
+}
+
+@property --glassmorphism-bg__opacity {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0.5;
+}
+
+@property --glassmorphism-bg__extent {
+  syntax: "<length-percentage>";
+  inherits: true;
+  initial-value: 30%;
+}
 
 :root {
   --colors__background: #063c59;
@@ -32,7 +57,7 @@
       hsla(from var(--colors__accent) h s l / 0.1) 0%,
       transparent 50%
     )
-    center center / 100vw 100vh no-repeat;
+    center center / 100vw 100vh fixed no-repeat;
 }
 
 @supports (background-clip: text) and (-webkit-background-clip: text) and
@@ -47,17 +72,17 @@
   }
 }
 
-.card {
+@utility card {
   @apply lg:p-8 md:p-4 p-2;
 }
 
-.container {
+@utility container {
   @apply max-sm:max-w-full;
 }
 
 body {
   font-family: var(--font-display);
-  
+  background: var(--colors__background)
 }
 
 /* * {
@@ -84,3 +109,46 @@ body {
     calc(var(--mouse-y, -100vmax) - 50%)
   );
 } */
+
+.safari-mask-fix::before {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+}
+
+.h-screen {
+  height: 100dvh;
+}
+
+.min-h-screen {
+  min-height: 100dvh;
+}
+
+.business-card {
+  /* container-type: size; */
+
+  /* grid-cols-[minmax(100px,1fr)_2fr] */
+}
+
+@media screen and (height <= 550px) and (width >= 550px) {
+  .business-card {
+    height: 280px;
+    width: 368px;
+    grid-template-columns: minmax(100px, 1fr) 2fr;
+  }
+
+  .business-card > img {
+    grid-column: span 1 !important;
+    grid-row: span 2;
+  }
+
+  .business-card > p {
+    grid-column: span 2 !important;
+  }
+
+  .business-card .links {
+    grid-column: span 2 !important;
+  }
+}

@@ -23,7 +23,12 @@ export function SVGGlassMorphText({
       xmlns="http://www.w3.org/2000/svg"
       viewBox={`0 0 ${width} ${height}`}
       width={width}
+      height={height}
       {...props}
+      style={{
+        maxHeight: props.style?.maxHeight ?? `${height}px`,
+        ...props.style,
+      }}
     >
       <defs>
         {/* The text becomes a mask */}
@@ -61,46 +66,26 @@ export function SVGGlassMorphText({
           </text>
         </mask>
       </defs>
-      <foreignObject
-        x="0"
-        y="0"
-        width={width}
-        height={height}
-        mask={`url(#${id}-stroke)`}
-      >
+      <foreignObject x="0" y="0" width={width} height={height}>
         <div
+          style={{
+            maskImage: `url(#${id}-stroke)`,
+          }}
           className="w-full h-full 
-              glassmorph glassmorph-glow-opacity-100 glassmorph-glow-coverage-10
+              safari-mask-fix glassmorph glassmorph-glow-opacity-100 glassmorph-glow-coverage-10
               glassmorph-bgcolor-[rgba(255,255,255,0.2)]
           "
-          // style={
-          //   {
-          //     "--glassmorphism-bg__opacity": "1",
-          //     "--glassmorphism-bg__extent": "10%",
-          //     "--_base-glassmorphism-bg-color": "hsla(from white h s l / 0.0)",
-          //   } as React.CSSProperties
-          // }
         ></div>
       </foreignObject>
-      <foreignObject
-        x="0"
-        y="0"
-        width={width}
-        height={height}
-        mask={`url(#${id}-fill)`}
-      >
+      <foreignObject x="0" y="0" width={width} height={height}>
         <div
+          style={{
+            maskImage: `url(#${id}-fill)`,
+          }}
           className="w-full h-full 
-            glassmorph glassmorph-glow-opacity-70 
-            glassmorph-bgcolor-[rgba(255,255,255,0.7)]
+          safari-mask-fix glassmorph glassmorph-glow-opacity-70 
+          glassmorph-bgcolor-[rgba(255,255,255,0.7)]
           "
-          // style={
-          //   {
-          //     "--glassmorphism-bg__opacity": "0.7",
-          //     "--glassmorphism-bg__extent": "10%",
-          //     "--_base-glassmorphism-bg-color": "hsla(from white h s l / 0.7)",
-          //   } as React.CSSProperties
-          // }
         ></div>
       </foreignObject>
     </svg>

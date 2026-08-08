@@ -21,7 +21,7 @@
         transparent var(--glassmorph-glow-coverage)
       )
       center center / 100vw 100vh fixed no-repeat,
-    linear-gradient(var(--glassmorph-background-color));
+    linear-gradient(var(--glassmorph-background-color), var(--glassmorph-background-color));
 
   background-clip: var(--background-clip, border-box);
 }
@@ -109,3 +109,6 @@
   inherits: false;
   initial-value: 30%;
 }
+
+
+

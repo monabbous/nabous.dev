@@ -16,7 +16,6 @@ export function SVGGlassMorph({
         <defs>
           {/* The text becomes a mask */}
           <mask id={id + "-fill"} maskUnits="userSpaceOnUse">
-            <rect width="100" height="100" fill="black" />
             <svg
               x="0"
               y="0"
@@ -29,7 +28,6 @@ export function SVGGlassMorph({
             </svg>
           </mask>
           <mask id={id + "-stroke"} maskUnits="userSpaceOnUse">
-            <rect width="100" height="100" fill="black" />
             <svg
               x="0"
               y="0"
@@ -43,9 +41,12 @@ export function SVGGlassMorph({
             </svg>
           </mask>
         </defs>
-        <foreignObject width="100%" height="100%" mask={`url(#${id}-stroke)`}>
+        <foreignObject width="100%" height="100%">
           <div className="opacity-0">{children}</div>
           <div
+            style={{
+              maskImage: `url(#${id}-stroke)`,
+            }}
             className="
               w-full h-full absolute top-0 left-0 
               glassmorph glassmorph-glow-opacity-100 glassmorph-glow-coverage-10
@@ -53,9 +54,12 @@ export function SVGGlassMorph({
               "
           ></div>
         </foreignObject>
-        <foreignObject width="100%" height="100%" mask={`url(#${id}-fill)`}>
+        <foreignObject width="100%" height="100%">
           <div className="opacity-0">{children}</div>
           <div
+            style={{
+              maskImage: `url(#${id}-fill)`,
+            }}
             className="w-full h-full absolute top-0 left-0 
               glassmorph glassmorph-glow-opacity-70 
               glassmorph-bgcolor-[rgba(255,255,255,0.7)]
