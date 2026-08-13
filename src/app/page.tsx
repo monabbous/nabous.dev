@@ -12,6 +12,91 @@ import {
   useState,
 } from "react";
 
+const copy = {
+  en: {
+    language: "العربية",
+    about: "About",
+    projects: "Nabous Websites",
+    name: "Mohamed Nabous",
+    portraitAlt: "Portrait of Mohamed Nabous",
+    role: "Technical Project Manager & Full-Stack Engineering Lead",
+    bio: "10+ years building production web products, from e-commerce and ordering to ERP systems for food manufacturing and supply chains.",
+    websitesEyebrow: "Independent venture · Nabous.dev Websites",
+    websitesTitle: "A polished website for your business.",
+    websitesBody:
+      "Bilingual, mobile-first websites for Libyan businesses — from 150 LYD.",
+    websitesCta: "Explore websites.nabous.dev",
+    menuEyebrow: "For restaurants",
+    menuTitle: "Digital menu + WhatsApp order checkout.",
+    menuBody:
+      "Show every dish with its photo, price and description; customers build an order and send it to WhatsApp, ready to confirm.",
+    menuCta: "Explore the digital menu demo",
+    menuAlt: "Preview of the digital menu and WhatsApp ordering demo",
+    proofTitle: "Selected employment & contract work",
+    pixelTitle: "Pixel Store",
+    pixelBody: "E-commerce platform built with Sadeem Tech.",
+    kudoTitle: "Kudo Ordering",
+    kudoBody: "Freelance food-ordering experience with cart-based checkout.",
+    avantTitle: "OneAvant ERP",
+    avantBody:
+      "Technical Project Manager and Full-Stack Engineering Lead for food-catering and supply-chain features.",
+    externalLabel: "Opens in a new tab",
+    pause: "Pause",
+    rotateTitle: "Rotate to landscape",
+    rotateBody:
+      "For the best experience, rotate your device to landscape. Touch controls will reappear once landscape is detected.",
+    backHome: "Back to home",
+    paused: "Paused",
+    mouseFree: "Mouse is free. Press Resume to recapture the cursor. Press P anytime to toggle pause.",
+    movement: "Movement",
+    actions: "Actions",
+    quit: "Quit",
+    resume: "Resume",
+  },
+  ar: {
+    language: "English",
+    about: "نبذة",
+    projects: "Nabous Websites",
+    name: "محمد نبوس",
+    portraitAlt: "صورة محمد نبوس",
+    role: "مدير مشاريع تقني وقائد هندسة برمجيات شاملة",
+    bio: "أكثر من 10 سنوات في بناء منتجات ويب فعلية؛ من التجارة الإلكترونية والطلبات إلى أنظمة ERP للتصنيع الغذائي وسلاسل الإمداد.",
+    websitesEyebrow: "مشروعي الخاص · Nabous.dev Websites",
+    websitesTitle: "موقع مرتب لنشاطك التجاري.",
+    websitesBody:
+      "مواقع عربية وإنجليزية، مصممة للموبايل للأعمال الليبية — تبدأ من 150 د.ل.",
+    websitesCta: "اكتشف websites.nabous.dev",
+    menuEyebrow: "للمطاعم",
+    menuTitle: "منيو إلكتروني + سلة طلب على واتساب.",
+    menuBody:
+      "اعرض كل صنف بصورته وسعره ووصفه؛ يجمع الزبون طلبه ويرسله إلى واتساب جاهزاً للتأكيد.",
+    menuCta: "شاهد مثال المنيو الإلكتروني",
+    menuAlt: "عرض لمثال المنيو الإلكتروني والطلب على واتساب",
+    proofTitle: "نماذج من أعمال التوظيف والتعاقد",
+    pixelTitle: "Pixel Store",
+    pixelBody: "منصة تجارة إلكترونية طُورت مع Sadeem Tech.",
+    kudoTitle: "Kudo Ordering",
+    kudoBody: "تجربة طلبات طعام مستقلة، بسلة وإتمام طلب مباشر.",
+    avantTitle: "OneAvant ERP",
+    avantBody:
+      "مدير مشاريع تقني وقائد هندسة برمجيات لميزات التموين الغذائي وسلسلة الإمداد.",
+    externalLabel: "يفتح في نافذة جديدة",
+    pause: "إيقاف مؤقت",
+    rotateTitle: "دوّر الشاشة للوضع الأفقي",
+    rotateBody:
+      "لأفضل تجربة، دوّر جهازك للوضع الأفقي. ستظهر أدوات اللمس مجدداً بعد اكتشاف الوضع الأفقي.",
+    backHome: "العودة للرئيسية",
+    paused: "متوقف مؤقتاً",
+    mouseFree: "المؤشر متاح. اضغط متابعة لإعادته إلى المشهد، واضغط P للإيقاف أو المتابعة.",
+    movement: "الحركة",
+    actions: "الإجراءات",
+    quit: "خروج",
+    resume: "متابعة",
+  },
+} as const;
+
+type Locale = keyof typeof copy;
+
 export default function Home() {
   const CANVAS_ID = "server-scene-canvas";
   // const [play, setPlay] = useLocalStorage<boolean>("play-state", false, {
@@ -19,6 +104,7 @@ export default function Home() {
   //   parser: (str) => str === "true",
   // });
   const [play, setPlay] = useState<boolean>(false);
+  const [locale, setLocale] = useState<Locale>("en");
 
   const [paused, setPaused] = useState(false);
 
@@ -32,6 +118,12 @@ export default function Home() {
   const touchFireRef = useRef(false);
   const [_score, setScore] = useState(0);
   const [_timeAliveMs, setTimeAliveMs] = useState(0);
+  const t = copy[locale];
+
+  useEffect(() => {
+    document.documentElement.lang = locale;
+    document.documentElement.dir = locale === "ar" ? "rtl" : "ltr";
+  }, [locale]);
 
   const requestFullscreen = useCallback(() => {
     const el = document.documentElement;
@@ -212,14 +304,31 @@ export default function Home() {
           onScore={(delta) => setScore((s) => s + delta)}
         />
       </div>
-      <div className="container mx-auto ">
-        <div className="grid justify-center md:grid-cols-[1fr_1fr] lg:grid-cols-[1fr_2fr] max-md:grid-rows-[1fr_auto] px-2 md:px-4 min-h-screen">
+      <header className="fixed top-4 inset-x-0 z-20 px-4 pointer-events-none">
+        <nav className="container mx-auto flex w-fit max-w-full items-center gap-1 rounded-sm p-1 glassmorph glassmorph-border pointer-events-auto">
+          <a className="rounded-sm px-3 py-2 text-xs font-semibold text-white/85 hover:bg-white/10" href="#about">
+            {t.about}
+          </a>
+          <a className="rounded-sm px-3 py-2 text-xs font-semibold text-white/85 hover:bg-white/10" href="#projects">
+            {t.projects}
+          </a>
+          <button
+            type="button"
+            onClick={() => setLocale((current) => (current === "en" ? "ar" : "en"))}
+            className="rounded-sm px-3 py-2 text-xs font-semibold text-white glassmorph glassmorph-border hover:glassmorph-glow-opacity-30 cursor-pointer transition-glassmorph"
+            aria-label={t.language}
+          >
+            {t.language}
+          </button>
+        </nav>
+      </header>
+      <main className="container mx-auto px-2 md:px-4">
+        <section id="about" className="h-screen min-h-[540px] scroll-mt-4 grid items-center py-20 md:pb-20 pb-10">
           <div
             className={
-              "my-auto card gap-x-2 sm:gap-x-4 glassmorph glassmorph-border w-full grid grid-cols-[minmax(100px,1fr)_2fr] md:grid-cols-1 md:my-auto relative max-md:mb-4 "
+              "card gap-x-2 sm:gap-x-4 glassmorph glassmorph-border w-full max-w-[420px] grid grid-cols-[minmax(100px,1fr)_2fr] md:grid-cols-1 relative md:self-center self-end"
             }
             style={{
-              alignSelf: "start",
               gridAutoColumns: "min-content",
               gridAutoRows: "min-content",
               // gridTemplateColumns: "minmax(250px, 1fsr) 1fr",
@@ -236,7 +345,7 @@ export default function Home() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="nabous.webp"
-              alt="Portrait of Mohamed Nabous"
+              alt={t.portraitAlt}
               className="
                   h-auto
                   object-cover
@@ -248,24 +357,14 @@ export default function Home() {
                   col-span-1
               "
             />
-            <h1
-              className="
-              sm:text-3xl
-              text-2xl
-              font-bold
-              text-center
-              mt-5
-              md:text-left
-              glassmorphism-text
-              col-span-1
-              hidden
-          "
-            >
-              Mohamed Nabous
+            <h1 className="sr-only">
+              {t.name}
             </h1>
-            <SVGGlassMorphText className="w-full  mt-5">
-              Mohamed Nabous
-            </SVGGlassMorphText>
+            <div className="mt-5 col-span-1">
+              <SVGGlassMorphText className="w-full" textProps={{ direction: "ltr" }}>
+                Mohamed Nabous
+              </SVGGlassMorphText>
+            </div>
             <h3
               className="
               sm:text-xl
@@ -278,7 +377,7 @@ export default function Home() {
               col-span-1
               "
             >
-              Senior Fullstack Developer{" "}
+              {t.role}
             </h3>
 
             <p
@@ -291,13 +390,14 @@ export default function Home() {
               col-span-2
               "
             >
-              Seasoned developer, specialized in frontend with 10 years&apos;
-              experience across 60+ diverse projects.
+              {t.bio}
             </p>
             <div className="flex justify-center md:justify-start gap-6 text-2xl my-4 flex-wrap w-full col-span-2 md:col-span-1">
               <a
                 href="https://www.linkedin.com/in/mohamed-nabous/"
                 target="_blank"
+                rel="noreferrer"
+                aria-label="LinkedIn"
               >
                 {/* <i className="fa-brands fa-linkedin" /> */}
                 {/* "\f08c" */}
@@ -314,7 +414,7 @@ export default function Home() {
                   &#xf08c;
                 </SVGGlassMorphText>
               </a>
-              <a href="https://github.com/monabbous" target="_blank">
+              <a href="https://github.com/monabbous" target="_blank" rel="noreferrer" aria-label="GitHub">
                 {/* <i className="fa-brands fa-github" /> */}
                 <SVGGlassMorphText
                   width={"26"}
@@ -329,7 +429,7 @@ export default function Home() {
                   &#xf09b;
                 </SVGGlassMorphText>
               </a>
-              <a href="https://dev.to/nabous" target="_blank">
+              <a href="https://dev.to/nabous" target="_blank" rel="noreferrer" aria-label="DEV Community">
                 {/* <i className="fa-brands fa-dev" /> */}
                 <SVGGlassMorphText
                   width={"26"}
@@ -344,7 +444,7 @@ export default function Home() {
                   &#xf6cc;
                 </SVGGlassMorphText>
               </a>
-              <a href="https://twitter.com/spideymanthe1st" target="_blank">
+              <a href="https://twitter.com/spideymanthe1st" target="_blank" rel="noreferrer" aria-label="X">
                 {/* <i className="fa-brands fa-x-twitter" /> */}
                 <SVGGlassMorphText
                   width={"26"}
@@ -360,8 +460,10 @@ export default function Home() {
                 </SVGGlassMorphText>
               </a>
               <a
-                href="https://www.facebook.com/spideymanThe1st"
+                href="https://facebook.com/nabous.dev"
                 target="_blank"
+                rel="noreferrer"
+                aria-label="Facebook"
               >
                 {/* <i className="fa-brands fa-facebook" /> */}
                 <SVGGlassMorphText
@@ -378,8 +480,10 @@ export default function Home() {
                 </SVGGlassMorphText>
               </a>
               <a
-                href="https://www.instagram.com/spideymanThe1st"
+                href="https://instagram.com/nabous.dev"
                 target="_blank"
+                rel="noreferrer"
+                aria-label="Instagram"
               >
                 {/* <i className="fa-brands fa-instagram" /> */}
                 <SVGGlassMorphText
@@ -395,7 +499,7 @@ export default function Home() {
                   &#xf16d;
                 </SVGGlassMorphText>
               </a>
-              <a href="https://wa.me/+218928832185" target="_blank">
+              <a href="https://wa.me/+218928832185" target="_blank" rel="noreferrer" aria-label="WhatsApp">
                 {/* <i className="fa-brands fa-whatsapp" /> */}
                 <SVGGlassMorphText
                   width={"26"}
@@ -412,33 +516,83 @@ export default function Home() {
               </a>
             </div>
           </div>
-          {/* <button
-            className={
-              "m-auto flex items-center cursor-pointer max-md:row-[1/2] transition-opacity duration-300 p-6 rounded-lg gap-x-4" +
-              (!play ? " opacity-100" : " opacity-0")
-            }
-            onClick={handleEnterGame}
-          >
-            <SVGGlassMorphText className="h-40">Play</SVGGlassMorphText>
-            <SVGGlassMorph>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 640 640"
-                className="h-20"
+        </section>
+        <div id="space" className="min-h-[50vh]"></div>
+        <section id="projects" className="min-h-screen scroll-mt-4 grid items-center py-24">
+          <div className="w-full max-w-4xl space-y-5">
+            <div className="space-y-2">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/60">Nabous.dev</p>
+              <h2 className="text-3xl font-bold text-white sm:text-4xl">{t.projects}</h2>
+            </div>
+            <div className="grid overflow-hidden rounded-sm glassmorph glassmorph-border md:grid-cols-[1.05fr_0.95fr]">
+              <a
+                href={`https://modo.websites.nabous.dev/${locale}/`}
+                target="_blank"
+                rel="noreferrer"
+                className="group relative aspect-[960/602] bg-slate-950 md:self-center"
+                aria-label={`${t.menuCta} — ${t.externalLabel}`}
               >
-                <path d="M187.2 100.9C174.8 94.1 159.8 94.4 147.6 101.6C135.4 108.8 128 121.9 128 136L128 504C128 518.1 135.5 531.2 147.6 538.4C159.7 545.6 174.8 545.9 187.2 539.1L523.2 355.1C536 348.1 544 334.6 544 320C544 305.4 536 291.9 523.2 284.9L187.2 100.9z" />
-              </svg>
-            </SVGGlassMorph>
-          </button> */}
-        </div>
-      </div>
+                <video
+                  className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  poster="/modo-demo.jpg"
+                  aria-label={t.menuAlt}
+                >
+                  <source src="/modo-demo.mp4" type="video/mp4" />
+                </video>
+                <span className="absolute inset-0 bg-gradient-to-t from-slate-950/65 via-transparent to-transparent" />
+                <span className="absolute bottom-5 inset-x-5 inline-flex w-fit items-center gap-3 border border-white/50 bg-slate-950/75 px-4 py-3 text-sm font-bold text-white shadow-lg backdrop-blur-sm transition-colors group-hover:border-cyan-100 group-hover:bg-cyan-500/25">
+                  {t.menuCta} <span aria-hidden="true" className="text-lg leading-none">↗</span>
+                </span>
+              </a>
+              <div className="p-6 sm:p-8 text-left rtl:text-right">
+                <div className="text-[0.65rem] uppercase tracking-[0.18em] text-cyan-100/70">{t.menuEyebrow}</div>
+                <h3 className="mt-2 text-2xl font-semibold text-white">{t.menuTitle}</h3>
+                <p className="mt-3 text-sm leading-7 text-white/75">{t.menuBody}</p>
+                <a
+                  href="https://websites.nabous.dev"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-7 block border-t border-white/15 pt-5 group"
+                  aria-label={`${t.websitesCta} — ${t.externalLabel}`}
+                >
+                  <div className="text-[0.65rem] uppercase tracking-[0.18em] text-white/60">{t.websitesEyebrow}</div>
+                  <div className="mt-1 text-lg font-semibold text-white">{t.websitesTitle}</div>
+                  <div className="mt-2 text-sm text-white/75">{t.websitesBody}</div>
+                  <div className="mt-4 text-sm font-semibold text-white group-hover:text-cyan-100">{t.websitesCta} <span aria-hidden="true">↗</span></div>
+                </a>
+              </div>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-3">
+              <h3 className="sm:col-span-3 text-xs font-semibold uppercase tracking-[0.18em] text-white/60">
+                {t.proofTitle}
+              </h3>
+              <a href="https://pixel-store.ly/" target="_blank" rel="noreferrer" className="rounded-sm p-4 glassmorph glassmorph-border hover:glassmorph-glow-opacity-30 transition-glassmorph text-left rtl:text-right" aria-label={`${t.pixelTitle} — ${t.externalLabel}`}>
+                <h3 className="font-semibold text-white">{t.pixelTitle}</h3>
+                <p className="mt-2 text-xs leading-5 text-white/70">{t.pixelBody}</p>
+              </a>
+              <a href="https://ordering.kudo.ly/" target="_blank" rel="noreferrer" className="rounded-sm p-4 glassmorph glassmorph-border hover:glassmorph-glow-opacity-30 transition-glassmorph text-left rtl:text-right" aria-label={`${t.kudoTitle} — ${t.externalLabel}`}>
+                <h3 className="font-semibold text-white">{t.kudoTitle}</h3>
+                <p className="mt-2 text-xs leading-5 text-white/70">{t.kudoBody}</p>
+              </a>
+              <a href="http://oneavant.com/" target="_blank" rel="noreferrer" className="rounded-sm p-4 glassmorph glassmorph-border hover:glassmorph-glow-opacity-30 transition-glassmorph text-left rtl:text-right" aria-label={`${t.avantTitle} — ${t.externalLabel}`}>
+                <h3 className="font-semibold text-white">{t.avantTitle}</h3>
+                <p className="mt-2 text-xs leading-5 text-white/70">{t.avantBody}</p>
+              </a>
+            </div>
+          </div>
+        </section>
+      </main>
       {play && !paused && !needsLandscape && (
         <button
           type="button"
           className="fixed top-4 right-4 z-20 px-4 py-2 glassmorph glassmorph-border hover:glassmorph-glow-opacity-30 text-white  text-sm backdrop-blur-md shadow-lg active:scale-95 transition-transform"
           onClick={pauseGame}
         >
-          Pause
+          {t.pause}
         </button>
       )}
       {/* {play && !paused && !needsLandscape && (
@@ -450,17 +604,16 @@ export default function Home() {
       {play && needsLandscape && (
         <div className="fixed inset-0 z-30 flex items-center justify-center bg-black/70 text-white text-center px-6">
           <div className="space-y-3 max-w-md">
-            <h2 className="text-2xl font-bold">Rotate to landscape</h2>
+            <h2 className="text-2xl font-bold">{t.rotateTitle}</h2>
             <p className="text-sm text-white/80">
-              For the best experience, rotate your device to landscape. Touch
-              controls will reappear once landscape is detected.
+              {t.rotateBody}
             </p>
             <button
               type="button"
               className="mt-2 px-4 py-2 rounded-lg bg-white/15 border border-white/25 text-white text-sm backdrop-blur-md shadow-lg"
               onClick={quitToHome}
             >
-              Back to home
+              {t.backHome}
             </button>
           </div>
         </div>
@@ -486,6 +639,7 @@ export default function Home() {
         visible={play && paused && !needsLandscape}
         onResume={resumeGame}
         onQuit={quitToHome}
+        labels={t}
       />
     </>
   );
@@ -495,10 +649,12 @@ function PauseScreen({
   visible,
   onResume,
   onQuit,
+  labels,
 }: {
   visible: boolean;
   onResume: () => void;
   onQuit: () => void;
+  labels: (typeof copy)[Locale];
 }) {
   if (!visible) return null;
 
@@ -506,23 +662,22 @@ function PauseScreen({
     <div className="fixed inset-0 z-30 flex items-center justify-center bg-black/70 backdrop-blur-lg px-4">
       <div className="glassmorph glassmorph-border text-white w-[min(90vw,520px)] p-6 space-y-5">
         <div className="flex items-center justify-between gap-3">
-          <h2 className="text-2xl font-bold">Paused</h2>
+          <h2 className="text-2xl font-bold">{labels.paused}</h2>
           <button
             type="button"
             className="px-3 py-2 glassmorph glassmorph-border hover:glassmorph-glow-opacity-30 text-xs font-semibold cursor-pointer"
             onClick={onQuit}
           >
-            Back to home
+            {labels.backHome}
           </button>
         </div>
         <p className="text-sm text-white/80">
-          Mouse is free. Press Resume to recapture the cursor. Press P anytime
-          to toggle pause.
+          {labels.mouseFree}
         </p>
         <div className="grid grid-cols-2 gap-3 text-sm">
           <div className="glassmorph glassmorph-border p-3 space-y-1">
             <div className="text-xs uppercase tracking-wide text-white/60">
-              Movement
+              {labels.movement}
             </div>
             <div>WASD / Left Stick</div>
             <div>Shift to sprint</div>
@@ -530,7 +685,7 @@ function PauseScreen({
           </div>
           <div className="glassmorph glassmorph-border p-3 space-y-1">
             <div className="text-xs uppercase tracking-wide text-white/60">
-              Actions
+              {labels.actions}
             </div>
             <div>E / B to interact</div>
             <div>P to pause/resume</div>
@@ -543,14 +698,14 @@ function PauseScreen({
             className="px-4 py-2 glassmorph glassmorph-border hover:glassmorph-glow-opacity-30 text-sm font-semibold cursor-pointer"
             onClick={onQuit}
           >
-            Quit
+            {labels.quit}
           </button>
           <button
             type="button"
             className="px-4 py-2 glassmorph glassmorph-border hover:glassmorph-glow-opacity-30  font-semibold shadow cursor-pointer"
             onClick={onResume}
           >
-            Resume
+            {labels.resume}
           </button>
         </div>
       </div>

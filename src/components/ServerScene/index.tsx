@@ -60,10 +60,10 @@ export function ServerScene({
   const colors = useCssVarsColors();
   const [rackPowerOn, setRackPowerOn] = useState(true);
   const [collectedShards, setCollectedShards] = useState<boolean[]>(() =>
-    SHARD_POSITIONS.map(() => false)
+    SHARD_POSITIONS.map(() => false),
   );
   const [hackedTerminals, setHackedTerminals] = useState<boolean[]>(() =>
-    TERMINAL_POSITIONS.map(() => false)
+    TERMINAL_POSITIONS.map(() => false),
   );
   const [targets, setTargets] = useState<
     { pos: THREE.Vector3; alive: boolean }[]
@@ -73,7 +73,7 @@ export function ServerScene({
       // new THREE.Vector3(-4, 1.0, 10),
       // new THREE.Vector3(6, 1.1, 14),
       // new THREE.Vector3(14, 1.0, 6),
-    ].map((p) => ({ pos: p, alive: true }))
+    ].map((p) => ({ pos: p, alive: true })),
   );
   const playerRef = useRef<RapierRigidBody | null>(null);
   const lookRef = useRef({ yaw: 0, pitch: 0 });
@@ -192,7 +192,7 @@ export function ServerScene({
             receiveShadow
             castShadow
           >
-            <planeGeometry args={[400, 400]} />
+            <planeGeometry args={[1000, 1000]} />
             <meshLambertMaterial
               opacity={1}
               transparent
@@ -219,7 +219,7 @@ export function ServerScene({
           {SHARD_POSITIONS.map((pos, i) =>
             collectedShards[i] ? null : (
               <Shard key={`shard-${i}`} position={pos} />
-            )
+            ),
           )}
 
           {TERMINAL_POSITIONS.map((pos, i) => (
@@ -233,7 +233,7 @@ export function ServerScene({
           {targets.map((t, i) =>
             t.alive ? (
               <TargetDummy key={`target-${i}`} position={t.pos} />
-            ) : null
+            ) : null,
           )}
 
           <PlayerController
@@ -309,7 +309,7 @@ export function ServerScene({
               if (hitIndex !== null) {
                 setTargets((prev) => {
                   const next = prev.map((t, i) =>
-                    i === hitIndex ? { ...t, alive: false } : t
+                    i === hitIndex ? { ...t, alive: false } : t,
                   );
                   return next;
                 });
@@ -513,12 +513,21 @@ const MainSceneEffects = ({
       (scene.getObjectByName("spotLight") as SpotLight) ?? null;
   }, [scene]);
 
+  const spaceElement = useMemo(() => {
+    if (typeof document === "undefined") return null;
+    return document.getElementById("space");
+  }, []);
+
   useFrame((_, dt) => {
     const lerpPos = active ? 0.12 : 0.08;
     const lerpFocus = active ? 0.18 : 0.12;
     let desiredFov = active ? 55 : 9;
 
     let moveSpeed = 0;
+
+    const spaceElementRect = spaceElement?.getBoundingClientRect();
+    const spaceElementHeight = spaceElementRect?.height ?? 0;
+    const spaceElementTop = spaceElementRect?.top ?? 0;
 
     if (active && playerRef.current) {
       const p = playerRef.current.translation();
@@ -539,7 +548,7 @@ const MainSceneEffects = ({
       bobAmpRef.current = THREE.MathUtils.lerp(
         bobAmpRef.current,
         targetBob,
-        0.2
+        0.2,
       );
       if (bobAmpRef.current > 1e-4) {
         const phaseSpeed = moveSpeed > 0.01 ? moveSpeed / strideLength : 0;
@@ -565,18 +574,38 @@ const MainSceneEffects = ({
       desiredFocusRef.current.copy(base).add(lookAheadRef.current);
       desiredFocusRef.current.addScaledVector(camShakeRef.current, 0.3);
     } else {
-      const t = scrollFractionRef.current;
+      const t = THREE.MathUtils.smoothstep(scrollFractionRef.current, 0, 1);
       const isMobile = isMobileRef.current;
+      // const isRtl =
+      //   // typeof document !== "undefined" && document.documentElement.dir === "rtl";
+      //   false;
       const idlePos = desiredPosRef.current.set(
-        150,
-        (isMobile ? 80 : 100) - t * 100,
-        150
+        (isMobile ? 142 : 150) - t * (isMobile ? 260 : 290),
+        (isMobile ? 84 : 100) - t * (isMobile ? 26 : 35),
+        (isMobile ? 142 : 150) - t * (isMobile ? 37 : 45),
       );
       const idleFocus = desiredFocusRef.current.set(
-        (isMobile ? 23 : 0) - t * -10,
-        isMobile ? 5 : 0,
-        (isMobile ? 7 : -5) - t * -10
+        (isMobile ? 23 : 0) + t * (isMobile ? -8 : 15),
+        (isMobile ? 5 : 0) + t * 10,
+        (isMobile ? 7 : -5) + t * 8,
       );
+
+      idlePos.y +=
+        Math.max(
+          0,
+          -(spaceElementTop - spaceElementHeight) / spaceElementHeight,
+        ) * (isMobile ? -20 : -30);
+      idlePos.x +=
+        Math.max(
+          0,
+          -(spaceElementTop - spaceElementHeight) / spaceElementHeight,
+        ) * (isMobile ? -10 : -50);
+      idlePos.z +=
+        Math.max(
+          0,
+          -(spaceElementTop - spaceElementHeight) / spaceElementHeight,
+        ) * (isMobile ? -10 : -10);
+
       camTarget.current.lerp(idlePos, 0.06);
       camFocus.current.lerp(idleFocus, 0.06);
 
@@ -605,7 +634,7 @@ const MainSceneEffects = ({
       spotLight.intensity = THREE.MathUtils.lerp(
         spotLight.intensity,
         targetIntensity,
-        0.12
+        0.12,
       );
 
       spotLight.target.position.copy(serverRacks.position);
@@ -616,14 +645,14 @@ const MainSceneEffects = ({
   useFrame(() => {
     const sunGroup = scene.getObjectByName("sun-group");
     const sunLight = scene.getObjectByName(
-      "sun-light"
+      "sun-light",
     ) as THREE.DirectionalLight;
     const sunObject = sunGroup?.getObjectByName("sun-object") as THREE.Mesh;
     if (sunGroup && sunLight && sunObject) {
       // if (!active && sunGroup.visible) {
-        sunGroup.visible = false;
+      sunGroup.visible = false;
       // } else if (active && !sunGroup.visible) {
-        // sunGroup.visible = true;
+      // sunGroup.visible = true;
       // }
 
       const time = performance.now() * 0.001;
@@ -749,7 +778,7 @@ function PlayerController({
       pitchRef.current = THREE.MathUtils.clamp(
         pitchRef.current + pitchDelta,
         -1.2,
-        1.2
+        1.2,
       );
     };
 
@@ -790,7 +819,7 @@ function PlayerController({
 
       if (
         ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", " "].includes(
-          event.key
+          event.key,
         )
       ) {
         event.preventDefault();
@@ -885,7 +914,7 @@ function PlayerController({
     pitchRef.current = THREE.MathUtils.clamp(
       pitchRef.current + padPitch * 1.4 * dt - (touchLook?.y ?? 0) * 1.4 * dt,
       -1.2,
-      1.2
+      1.2,
     );
     lookInputRef.current.yaw = 0;
 
@@ -905,7 +934,7 @@ function PlayerController({
 
     body.setLinvel(
       { x: moveRef.current.x, y: v.y, z: moveRef.current.z },
-      true
+      true,
     );
     body.setRotation(
       {
@@ -914,7 +943,7 @@ function PlayerController({
         z: quatRef.current.z,
         w: quatRef.current.w,
       },
-      true
+      true,
     );
 
     const grounded = Math.abs(v.y) < 0.05;
@@ -936,7 +965,7 @@ function PlayerController({
       if (now - lastFireMs.current >= fireDelay) {
         lastFireMs.current = now;
         const dir = new THREE.Vector3(0, 0, -1).applyEuler(
-          new THREE.Euler(pitchRef.current, yawRef.current, 0, "YXZ")
+          new THREE.Euler(pitchRef.current, yawRef.current, 0, "YXZ"),
         );
         const origin = posRef.current.clone().add(new THREE.Vector3(0, 0.6, 0));
         onFire(origin, dir);
@@ -1033,7 +1062,7 @@ export function FloatingServerRacks({ powerOn = true }: { powerOn?: boolean }) {
     f.set(
       target.current.x - p.x,
       target.current.y - p.y,
-      target.current.z - p.z
+      target.current.z - p.z,
     ).multiplyScalar(posK);
 
     f.x -= posD * v.x;
@@ -1079,7 +1108,7 @@ export function FloatingServerRacks({ powerOn = true }: { powerOn?: boolean }) {
         axis.current.set(
           delta.current.x / s,
           delta.current.y / s,
-          delta.current.z / s
+          delta.current.z / s,
         );
 
         const angVel = b.angvel();
@@ -1134,7 +1163,7 @@ export function FloatingServerRacks({ powerOn = true }: { powerOn?: boolean }) {
               y: axis.current.y * angularKick * m,
               z: axis.current.z * angularKick * m,
             },
-            true
+            true,
           );
         }
 

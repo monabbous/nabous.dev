@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 
 export function SVGGlassMorphText({
   children,
+  textProps,
   ...props
 }: {
   children: string;
@@ -38,7 +39,7 @@ export function SVGGlassMorphText({
             fontSize="40"
             // fontFamily="var(--font-display)"
             fill="white"
-            {...props.textProps}
+            {...textProps}
           >
             {children}
           </text>
@@ -55,7 +56,7 @@ export function SVGGlassMorphText({
             // fontFamily="var(--font-display)"
             stroke="white"
             strokeWidth="4"
-            {...props.textProps}
+            {...textProps}
           >
             {children}
           </text>
