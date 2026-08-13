@@ -17,6 +17,7 @@ const copy = {
     language: "العربية",
     about: "About",
     projects: "Nabous Websites",
+    career: "Career",
     name: "Mohamed Nabous",
     portraitAlt: "Portrait of Mohamed Nabous",
     role: "Technical Project Manager & Full-Stack Engineering Lead",
@@ -37,9 +38,32 @@ const copy = {
     pixelBody: "E-commerce platform built with Sadeem Tech.",
     kudoTitle: "Kudo Ordering",
     kudoBody: "Freelance food-ordering experience with cart-based checkout.",
-    avantTitle: "OneAvant ERP",
-    avantBody:
+    avantProjectTitle: "OneAvant ERP",
+    avantProjectBody:
       "Technical Project Manager and Full-Stack Engineering Lead for food-catering and supply-chain features.",
+    careerEyebrow: "Career milestones",
+    careerTitle: "From shipping interfaces to leading the systems behind operations.",
+    careerLead:
+      "A frontend-heavy full-stack engineer who works from product requirements through architecture, delivery and production reliability.",
+    sadeemPeriod: "2019 — 2022",
+    sadeemTitle: "Sadeem Tech · E-commerce systems",
+    sadeemBody:
+      "Built commerce dashboards, delivery flows and product tooling; contributed to Pixel Store and a white-label Next.js storefront.",
+    avantPeriod: "2022 — present",
+    avantTitle: "Avant Global Solutions · ERP",
+    avantBody:
+      "Technical Project Manager and Engineering Lead for a multi-tenant ERP serving 400+ active users across food production, catering and supply chain.",
+    impactPeriod: "Now",
+    impactTitle: "Leadership & technical direction",
+    impactBody:
+      "Redesigned food-manufacturing planning and execution, cut ERP time-to-interactive from 12 seconds to under one, and established a practical delivery rhythm for a lean product team.",
+    skillsTitle: "Core practice",
+    skills: [
+      "TypeScript · React · Next.js",
+      "Node.js · Laravel · SQL",
+      "ERP · supply chain · food production",
+      "Architecture · delivery · incident response",
+    ],
     externalLabel: "Opens in a new tab",
     pause: "Pause",
     rotateTitle: "Rotate to landscape",
@@ -57,6 +81,7 @@ const copy = {
     language: "English",
     about: "نبذة",
     projects: "Nabous Websites",
+    career: "المسيرة",
     name: "محمد نبوس",
     portraitAlt: "صورة محمد نبوس",
     role: "مدير مشاريع تقني وقائد هندسة برمجيات شاملة",
@@ -77,9 +102,32 @@ const copy = {
     pixelBody: "منصة تجارة إلكترونية طُورت مع Sadeem Tech.",
     kudoTitle: "Kudo Ordering",
     kudoBody: "تجربة طلبات طعام مستقلة، بسلة وإتمام طلب مباشر.",
-    avantTitle: "OneAvant ERP",
-    avantBody:
+    avantProjectTitle: "OneAvant ERP",
+    avantProjectBody:
       "مدير مشاريع تقني وقائد هندسة برمجيات لميزات التموين الغذائي وسلسلة الإمداد.",
+    careerEyebrow: "محطات مهنية",
+    careerTitle: "من بناء الواجهات إلى قيادة الأنظمة التي تدير العمليات.",
+    careerLead:
+      "مهندس برمجيات شامل بخلفية قوية في الواجهات؛ أعمل من فهم احتياجات المنتج إلى المعمارية والتسليم واستقرار الإنتاج.",
+    sadeemPeriod: "2019 — 2022",
+    sadeemTitle: "Sadeem Tech · أنظمة التجارة الإلكترونية",
+    sadeemBody:
+      "بنيت لوحات التجارة الإلكترونية ومنطق التوصيل وأدوات المنتجات؛ وساهمت في Pixel Store وواجهة متجر Next.js قابلة لإعادة الاستخدام.",
+    avantPeriod: "2022 — حتى الآن",
+    avantTitle: "Avant Global Solutions · ERP",
+    avantBody:
+      "مدير مشاريع تقني وقائد هندسة لنظام ERP متعدد المستأجرين يخدم أكثر من 400 مستخدم نشط في الإنتاج الغذائي والتموين وسلسلة الإمداد.",
+    impactPeriod: "الآن",
+    impactTitle: "القيادة والتوجيه التقني",
+    impactBody:
+      "أعدت تصميم تخطيط وتنفيذ الإنتاج الغذائي، وخفّضت وقت جاهزية ERP من 12 ثانية إلى أقل من ثانية، وأسست إيقاع تسليم عملياً لفريق منتج صغير.",
+    skillsTitle: "مجالات العمل الأساسية",
+    skills: [
+      "TypeScript · React · Next.js",
+      "Node.js · Laravel · SQL",
+      "ERP · سلاسل الإمداد · الإنتاج الغذائي",
+      "المعمارية · التسليم · إدارة الحوادث",
+    ],
     externalLabel: "يفتح في نافذة جديدة",
     pause: "إيقاف مؤقت",
     rotateTitle: "دوّر الشاشة للوضع الأفقي",
@@ -312,6 +360,9 @@ export default function Home() {
           <a className="rounded-sm px-3 py-2 text-xs font-semibold text-white/85 hover:bg-white/10" href="#projects">
             {t.projects}
           </a>
+          <a className="rounded-sm px-3 py-2 text-xs font-semibold text-white/85 hover:bg-white/10" href="#career">
+            {t.career}
+          </a>
           <button
             type="button"
             onClick={() => setLocale((current) => (current === "en" ? "ar" : "en"))}
@@ -529,7 +580,7 @@ export default function Home() {
                 href={`https://modo.websites.nabous.dev/${locale}/`}
                 target="_blank"
                 rel="noreferrer"
-                className="group relative aspect-[960/602] bg-slate-950 md:self-center"
+                className="group relative min-h-64 bg-slate-950 md:min-h-0"
                 aria-label={`${t.menuCta} — ${t.externalLabel}`}
               >
                 <video
@@ -578,10 +629,43 @@ export default function Home() {
                 <h3 className="font-semibold text-white">{t.kudoTitle}</h3>
                 <p className="mt-2 text-xs leading-5 text-white/70">{t.kudoBody}</p>
               </a>
-              <a href="http://oneavant.com/" target="_blank" rel="noreferrer" className="rounded-sm p-4 glassmorph glassmorph-border hover:glassmorph-glow-opacity-30 transition-glassmorph text-left rtl:text-right" aria-label={`${t.avantTitle} — ${t.externalLabel}`}>
-                <h3 className="font-semibold text-white">{t.avantTitle}</h3>
-                <p className="mt-2 text-xs leading-5 text-white/70">{t.avantBody}</p>
+              <a href="http://oneavant.com/" target="_blank" rel="noreferrer" className="rounded-sm p-4 glassmorph glassmorph-border hover:glassmorph-glow-opacity-30 transition-glassmorph text-left rtl:text-right" aria-label={`${t.avantProjectTitle} — ${t.externalLabel}`}>
+                <h3 className="font-semibold text-white">{t.avantProjectTitle}</h3>
+                <p className="mt-2 text-xs leading-5 text-white/70">{t.avantProjectBody}</p>
               </a>
+            </div>
+          </div>
+        </section>
+        <section id="career" className="min-h-screen scroll-mt-4 grid items-center py-24">
+          <div className="w-full max-w-4xl space-y-8">
+            <div className="max-w-2xl space-y-3">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/60">{t.careerEyebrow}</p>
+              <h2 className="text-3xl font-bold leading-tight text-white sm:text-4xl">{t.careerTitle}</h2>
+              <p className="text-sm leading-7 text-white/75">{t.careerLead}</p>
+            </div>
+            <ol className="grid gap-px overflow-hidden rounded-sm glassmorph glassmorph-border md:grid-cols-3">
+              {[
+                [t.sadeemPeriod, t.sadeemTitle, t.sadeemBody],
+                [t.avantPeriod, t.avantTitle, t.avantBody],
+                [t.impactPeriod, t.impactTitle, t.impactBody],
+              ].map(([period, title, body]) => (
+                <li key={title} className="relative bg-slate-950/15 p-5 sm:p-6">
+                  <span className="mb-7 block h-2 w-2 bg-cyan-200 shadow-[0_0_18px_rgba(103,232,249,0.9)]" />
+                  <p className="text-xs font-semibold tracking-[0.16em] text-cyan-100/70">{period}</p>
+                  <h3 className="mt-2 text-lg font-semibold text-white">{title}</h3>
+                  <p className="mt-3 text-sm leading-6 text-white/70">{body}</p>
+                </li>
+              ))}
+            </ol>
+            <div className="border-t border-white/15 pt-5">
+              <h3 className="text-xs font-semibold uppercase tracking-[0.18em] text-white/60">{t.skillsTitle}</h3>
+              <ul className="mt-3 flex flex-wrap gap-2">
+                {t.skills.map((skill) => (
+                  <li key={skill} className="border border-white/20 bg-slate-950/20 px-3 py-2 text-xs text-white/80">
+                    {skill}
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
         </section>
