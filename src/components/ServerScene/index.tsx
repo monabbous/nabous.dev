@@ -191,9 +191,11 @@ export function ServerScene({
             position={[-10, -0.5 * 8, 0]}
             receiveShadow
             castShadow
+            name="server-scene-ground-mesh"
           >
             <planeGeometry args={[1000, 1000]} />
             <meshLambertMaterial
+              name="server-scene-ground-material"
               opacity={1}
               transparent
               side={FrontSide}
@@ -518,6 +520,16 @@ const MainSceneEffects = ({
     return document.getElementById("space");
   }, []);
 
+  // const groundMesh = useMemo(() => {
+  //   if (typeof document === "undefined") return null;
+  //   return scene.getObjectByName("server-scene-ground") as THREE.Mesh | null;
+  // }, [scene]);
+
+  // const groundMaterial = useMemo(() => {
+  //   if (!groundMesh) return null;
+  //   return groundMesh.material as THREE.MeshLambertMaterial | null;
+  // }, [groundMesh]);
+
   useFrame((_, dt) => {
     const lerpPos = active ? 0.12 : 0.08;
     const lerpFocus = active ? 0.18 : 0.12;
@@ -605,6 +617,27 @@ const MainSceneEffects = ({
           0,
           -(spaceElementTop - spaceElementHeight) / spaceElementHeight,
         ) * (isMobile ? -10 : -10);
+
+
+      const groundMesh = _.scene.getObjectByName("server-scene-ground-mesh") as THREE.Mesh | null;
+      const groundMaterial = groundMesh?.material as THREE.MeshLambertMaterial | null;
+
+      // set the ground alpha based on the camera height, should go near 0 when camera is low and stop at zero, 
+      // should start fading from y = 10
+      // the fade should be eased, so that it fades faster at the end
+
+      const CUTOFF_Y = 20;
+
+      if (groundMaterial) {
+        // const groundAlpha = THREE.MathUtils.clamp((idlePos.y - 10) / 20, 0, 1);
+        // const groundAlpha = THREE.MathUtils.clamp((idlePos.y - CUTOFF_Y) / 20, 0, 1);
+        // groundMaterial.opacity = groundAlpha;
+
+        const groundAlpha = THREE.MathUtils.clamp((idlePos.y - CUTOFF_Y) / 20, 0, 1);
+        const easedAlpha = THREE.MathUtils.smoothstep(groundAlpha, 0, 1);
+        groundMaterial.opacity = easedAlpha;
+
+      }
 
       camTarget.current.lerp(idlePos, 0.06);
       camFocus.current.lerp(idleFocus, 0.06);
