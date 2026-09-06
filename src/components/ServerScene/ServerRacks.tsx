@@ -37,7 +37,7 @@ export function ServerRack({
     <group scale={10} position={[0, stackNumber * 3.5, 0]} receiveShadow>
       {/* Rack */}
       <RoundedBox castShadow receiveShadow args={[1, 0.25, 1]} radius={0.02}>
-        <meshPhongMaterial  color={colors.primary} side={0} />
+        <meshPhongMaterial dithering color={colors.primary} side={0} />
       </RoundedBox>
       {children}
     </group>

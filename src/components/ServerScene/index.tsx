@@ -106,7 +106,13 @@ export function ServerScene({
       <Canvas
         id="server-scene-canvas"
         dpr={[1, 1.8]}
-        gl={{ antialias: true, powerPreference: "high-performance" }}
+        gl={{
+          antialias: true,
+          powerPreference: "high-performance",
+          outputColorSpace: THREE.SRGBColorSpace,
+          toneMapping: THREE.AgXToneMapping, // Best for dynamic range
+          toneMappingExposure: 1.1, // Adjust overall brightness/contrast
+        }}
         resize={{
           scroll: true,
         }}
@@ -202,6 +208,7 @@ export function ServerScene({
               emissiveIntensity={0}
               color={isGameActive ? bgCyber : colors.background}
               emissive={isGameActive ? neonMagenta : colors.background}
+              dithering
             />
           </mesh>
           {/* </RigidBody> */}
@@ -618,11 +625,13 @@ const MainSceneEffects = ({
           -(spaceElementTop - spaceElementHeight) / spaceElementHeight,
         ) * (isMobile ? -10 : -10);
 
+      const groundMesh = _.scene.getObjectByName(
+        "server-scene-ground-mesh",
+      ) as THREE.Mesh | null;
+      const groundMaterial =
+        groundMesh?.material as THREE.MeshLambertMaterial | null;
 
-      const groundMesh = _.scene.getObjectByName("server-scene-ground-mesh") as THREE.Mesh | null;
-      const groundMaterial = groundMesh?.material as THREE.MeshLambertMaterial | null;
-
-      // set the ground alpha based on the camera height, should go near 0 when camera is low and stop at zero, 
+      // set the ground alpha based on the camera height, should go near 0 when camera is low and stop at zero,
       // should start fading from y = 10
       // the fade should be eased, so that it fades faster at the end
 
@@ -633,10 +642,13 @@ const MainSceneEffects = ({
         // const groundAlpha = THREE.MathUtils.clamp((idlePos.y - CUTOFF_Y) / 20, 0, 1);
         // groundMaterial.opacity = groundAlpha;
 
-        const groundAlpha = THREE.MathUtils.clamp((idlePos.y - CUTOFF_Y) / 20, 0, 1);
+        const groundAlpha = THREE.MathUtils.clamp(
+          (idlePos.y - CUTOFF_Y) / 20,
+          0,
+          1,
+        );
         const easedAlpha = THREE.MathUtils.smoothstep(groundAlpha, 0, 1);
         groundMaterial.opacity = easedAlpha;
-
       }
 
       camTarget.current.lerp(idlePos, 0.06);
