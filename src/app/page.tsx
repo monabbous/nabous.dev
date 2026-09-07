@@ -1,6 +1,7 @@
 "use client";
 
 import { ServerScene } from "@nabous.dev/components/ServerScene";
+import { SVGGlassMorph } from "@nabous.dev/components/SVGGlassMorph";
 import { SVGGlassMorphText } from "@nabous.dev/components/SVGGlassMorphText";
 import {
   type HTMLAttributes,
@@ -42,7 +43,8 @@ const copy = {
     avantProjectBody:
       "Technical Project Manager and Full-Stack Engineering Lead for food-catering and supply-chain features.",
     careerEyebrow: "Career milestones",
-    careerTitle: "From shipping interfaces to leading the systems behind operations.",
+    careerTitle:
+      "From shipping interfaces to leading the systems behind operations.",
     careerLead:
       "A frontend-heavy full-stack engineer who works from product requirements through architecture, delivery and production reliability.",
     sadeemPeriod: "2019 — 2022",
@@ -71,7 +73,8 @@ const copy = {
       "For the best experience, rotate your device to landscape. Touch controls will reappear once landscape is detected.",
     backHome: "Back to home",
     paused: "Paused",
-    mouseFree: "Mouse is free. Press Resume to recapture the cursor. Press P anytime to toggle pause.",
+    mouseFree:
+      "Mouse is free. Press Resume to recapture the cursor. Press P anytime to toggle pause.",
     movement: "Movement",
     actions: "Actions",
     quit: "Quit",
@@ -135,7 +138,8 @@ const copy = {
       "لأفضل تجربة، دوّر جهازك للوضع الأفقي. ستظهر أدوات اللمس مجدداً بعد اكتشاف الوضع الأفقي.",
     backHome: "العودة للرئيسية",
     paused: "متوقف مؤقتاً",
-    mouseFree: "المؤشر متاح. اضغط متابعة لإعادته إلى المشهد، واضغط P للإيقاف أو المتابعة.",
+    mouseFree:
+      "المؤشر متاح. اضغط متابعة لإعادته إلى المشهد، واضغط P للإيقاف أو المتابعة.",
     movement: "الحركة",
     actions: "الإجراءات",
     quit: "خروج",
@@ -189,7 +193,7 @@ export default function Home() {
 
   const requestPointerLock = useCallback(() => {
     const canvas = document.getElementById(
-      CANVAS_ID
+      CANVAS_ID,
     ) as HTMLCanvasElement | null;
     canvas?.requestPointerLock?.();
   }, [CANVAS_ID]);
@@ -238,7 +242,7 @@ export default function Home() {
     const updateTouch = () => {
       setIsTouchDevice(
         mq.matches ||
-          (typeof navigator !== "undefined" && navigator.maxTouchPoints > 0)
+          (typeof navigator !== "undefined" && navigator.maxTouchPoints > 0),
       );
     };
 
@@ -267,7 +271,7 @@ export default function Home() {
     const updateLandscape = () => {
       if (typeof window === "undefined") return;
       setNeedsLandscape(
-        isTouchDevice && window.innerWidth < window.innerHeight
+        isTouchDevice && window.innerWidth < window.innerHeight,
       );
     };
 
@@ -352,32 +356,56 @@ export default function Home() {
           onScore={(delta) => setScore((s) => s + delta)}
         />
       </div>
-      <header className="fixed top-4 inset-x-0 z-20 px-4 pointer-events-none">
-        <nav className="container mx-auto flex w-fit max-w-full items-center gap-1 rounded-sm p-1 glassmorph glassmorph-border pointer-events-auto">
-          <a className="rounded-sm px-3 py-2 text-xs font-semibold text-white/85 hover:bg-white/10" href="#about">
-            {t.about}
+      <header
+        style={{
+          // translate: play ? "0 -100%" : undefined,
+          // filter: play ? "opacity(0)" : "opacity(1)",
+          // transitionProperty: "translate, filter",
+          // willChange: "filter, translate",
+          // transitionDuration: "500ms",
+          // transitionTimingFunction: "ease-in-out",
+        }}
+        className="fixed top-4 inset-x-0 z-20 px-4 pointer-events-none"
+      >
+        <nav className="container mx-auto flex w-fit max-w-full items-center gap-1 rounded-glass p-1 glassmorph glassmorph-border pointer-events-auto ">
+          <a
+            className="rounded-glass glassmorph-border glassmorph-glow-opacity-01 glassmorph-border-width-[2px] px-3 py-2 text-xs font-semibold text-white/85 hover:bg-white/10"
+            href="#about"
+          >
+            <span className="glassmorphism-text">{t.about}</span>
           </a>
-          <a className="rounded-sm px-3 py-2 text-xs font-semibold text-white/85 hover:bg-white/10" href="#projects">
-            {t.projects}
+          <a
+            className="rounded-glass glassmorph-border glassmorph-glow-opacity-01 glassmorph-border-width-[2px] px-3 py-2 text-xs font-semibold text-white/85 hover:bg-white/10"
+            href="#projects"
+          >
+            <span className="glassmorphism-text">{t.projects}</span>
           </a>
-          <a className="rounded-sm px-3 py-2 text-xs font-semibold text-white/85 hover:bg-white/10" href="#career">
-            {t.career}
+          <a
+            className="rounded-glass glassmorph-border glassmorph-glow-opacity-01 glassmorph-border-width-[2px] px-3 py-2 text-xs font-semibold text-white/85 hover:bg-white/10"
+            href="#career"
+          >
+            <span className="glassmorphism-text">{t.career}</span>
           </a>
           <button
             type="button"
-            onClick={() => setLocale((current) => (current === "en" ? "ar" : "en"))}
-            className="rounded-sm px-3 py-2 text-xs font-semibold text-white glassmorph glassmorph-border hover:glassmorph-glow-opacity-30 cursor-pointer transition-glassmorph"
+            onClick={() =>
+              setLocale((current) => (current === "en" ? "ar" : "en"))
+            }
+            className="rounded-glass px-3 py-2 text-xs font-semibold text-white glassmorph glassmorph-border hover:glassmorph-glow-opacity-30 cursor-pointer transition-glassmorph"
             aria-label={t.language}
           >
-            {t.language}
+            <span className="glassmorphism-text">{t.language}</span>
           </button>
         </nav>
       </header>
       <main className="container mx-auto px-2 md:px-4">
-        <section id="about" className="h-screen min-h-[540px] scroll-mt-4 grid items-center py-20 md:pb-20 pb-10">
+        <section
+          id="about"
+          className="h-screen min-h-[540px] scroll-mt-4 grid items-center py-20 md:pb-20 pb-10 md:grid-cols-[auto_1fr]"
+        >
           <div
             className={
-              "card gap-x-2 sm:gap-x-4 glassmorph glassmorph-border w-full max-w-[420px] grid grid-cols-[minmax(100px,1fr)_2fr] md:grid-cols-1 relative md:self-center self-end"
+              "card gap-x-2 sm:gap-x-4 glassmorph glassmorph-border w-full max-w-[420px] grid grid-cols-[minmax(100px,1fr)_2fr] md:grid-cols-1 relative md:self-center self-end justify-self-center"
             }
             style={{
               gridAutoColumns: "min-content",
@@ -389,6 +417,7 @@ export default function Home() {
               insetInlineStart: play ? "-100%" : "0",
               filter: play ? "opacity(0)" : "opacity(1)",
               transitionProperty: "inset-inline-start, filter",
+              willChange: "filter, inset-inline-start",
               transitionDuration: "500ms",
               transitionTimingFunction: "ease-in-out",
             }}
@@ -408,11 +437,12 @@ export default function Home() {
                   col-span-1
               "
             />
-            <h1 className="sr-only">
-              {t.name}
-            </h1>
+            <h1 className="sr-only">{t.name}</h1>
             <div className="mt-5 col-span-1">
-              <SVGGlassMorphText className="w-full" textProps={{ direction: "ltr" }}>
+              <SVGGlassMorphText
+                className="w-full"
+                textProps={{ direction: "ltr" }}
+              >
                 Mohamed Nabous
               </SVGGlassMorphText>
             </div>
@@ -465,7 +495,12 @@ export default function Home() {
                   &#xf08c;
                 </SVGGlassMorphText>
               </a>
-              <a href="https://github.com/monabbous" target="_blank" rel="noreferrer" aria-label="GitHub">
+              <a
+                href="https://github.com/monabbous"
+                target="_blank"
+                rel="noreferrer"
+                aria-label="GitHub"
+              >
                 {/* <i className="fa-brands fa-github" /> */}
                 <SVGGlassMorphText
                   width={"26"}
@@ -480,7 +515,12 @@ export default function Home() {
                   &#xf09b;
                 </SVGGlassMorphText>
               </a>
-              <a href="https://dev.to/nabous" target="_blank" rel="noreferrer" aria-label="DEV Community">
+              <a
+                href="https://dev.to/nabous"
+                target="_blank"
+                rel="noreferrer"
+                aria-label="DEV Community"
+              >
                 {/* <i className="fa-brands fa-dev" /> */}
                 <SVGGlassMorphText
                   width={"26"}
@@ -495,7 +535,12 @@ export default function Home() {
                   &#xf6cc;
                 </SVGGlassMorphText>
               </a>
-              <a href="https://twitter.com/spideymanthe1st" target="_blank" rel="noreferrer" aria-label="X">
+              <a
+                href="https://twitter.com/spideymanthe1st"
+                target="_blank"
+                rel="noreferrer"
+                aria-label="X"
+              >
                 {/* <i className="fa-brands fa-x-twitter" /> */}
                 <SVGGlassMorphText
                   width={"26"}
@@ -550,7 +595,12 @@ export default function Home() {
                   &#xf16d;
                 </SVGGlassMorphText>
               </a>
-              <a href="https://wa.me/+218928832185" target="_blank" rel="noreferrer" aria-label="WhatsApp">
+              <a
+                href="https://wa.me/+218928832185"
+                target="_blank"
+                rel="noreferrer"
+                aria-label="WhatsApp"
+              >
                 {/* <i className="fa-brands fa-whatsapp" /> */}
                 <SVGGlassMorphText
                   width={"26"}
@@ -567,15 +617,40 @@ export default function Home() {
               </a>
             </div>
           </div>
+          <button
+            className={
+              "m-auto flex items-center cursor-pointer max-md:row-[1/2] transition-opacity duration-300 p-6 rounded-lg gap-x-4 hidden" +
+              (!play ? " opacity-100" : " opacity-0")
+            }
+            onClick={handleEnterGame}
+          >
+            <SVGGlassMorphText className="h-40">Play</SVGGlassMorphText>
+            <SVGGlassMorph>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 640 640"
+                className="h-20"
+              >
+                <path d="M187.2 100.9C174.8 94.1 159.8 94.4 147.6 101.6C135.4 108.8 128 121.9 128 136L128 504C128 518.1 135.5 531.2 147.6 538.4C159.7 545.6 174.8 545.9 187.2 539.1L523.2 355.1C536 348.1 544 334.6 544 320C544 305.4 536 291.9 523.2 284.9L187.2 100.9z" />
+              </svg>
+            </SVGGlassMorph>
+          </button>
         </section>
         <div id="space" className="min-h-[50vh]"></div>
-        <section id="projects" className="min-h-screen scroll-mt-4 grid items-center py-24">
+        <section
+          id="projects"
+          className="min-h-screen scroll-mt-4 grid items-center py-24"
+        >
           <div className="w-full max-w-4xl space-y-5">
             <div className="space-y-2">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/60">Nabous.dev</p>
-              <h2 className="text-3xl font-bold text-white sm:text-4xl">{t.projects}</h2>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/60 glassmorphism-text">
+                Nabous.dev
+              </p>
+              <h2 className="text-3xl font-bold text-white sm:text-4xl glassmorphism-text">
+                {t.projects}
+              </h2>
             </div>
-            <div className="grid overflow-hidden rounded-sm glassmorph glassmorph-border md:grid-cols-[1.05fr_0.95fr]">
+            <div className="grid overflow-hidden rounded-glass glassmorph glassmorph-border md:grid-cols-[1.05fr_0.95fr]">
               <a
                 href={`https://modo.websites.nabous.dev/${locale}/`}
                 target="_blank"
@@ -595,14 +670,23 @@ export default function Home() {
                   <source src="/modo-demo.mp4" type="video/mp4" />
                 </video>
                 <span className="absolute inset-0 bg-gradient-to-t from-slate-950/65 via-transparent to-transparent" />
-                <span className="absolute bottom-5 inset-x-5 inline-flex w-fit items-center gap-3 border border-white/50 bg-slate-950/75 px-4 py-3 text-sm font-bold text-white shadow-lg backdrop-blur-sm transition-colors group-hover:border-cyan-100 group-hover:bg-cyan-500/25">
-                  {t.menuCta} <span aria-hidden="true" className="text-lg leading-none">↗</span>
+                <span className="absolute bottom-5 inset-x-5 inline-flex w-fit items-center gap-3 glassmorph glassmorph-border px-4 py-3 text-sm font-bold text-white shadow-lg backdrop-blur-sm transition-colors group-hover:bg-cyan-500/25">
+                  <span className="glassmorphism-text">{t.menuCta}{" "}</span>
+                  <span aria-hidden="true" className="text-lg glassmorphism-text leading-none">
+                    ↗
+                  </span>
                 </span>
               </a>
               <div className="p-6 sm:p-8 text-left rtl:text-right">
-                <div className="text-[0.65rem] uppercase tracking-[0.18em] text-cyan-100/70">{t.menuEyebrow}</div>
-                <h3 className="mt-2 text-2xl font-semibold text-white">{t.menuTitle}</h3>
-                <p className="mt-3 text-sm leading-7 text-white/75">{t.menuBody}</p>
+                <div className="text-[0.65rem] uppercase tracking-[0.18em] text-cyan-100/70 glassmorphism-text">
+                  {t.menuEyebrow}
+                </div>
+                <h3 className="mt-2 text-2xl font-semibold text-white glassmorphism-text">
+                  {t.menuTitle}
+                </h3>
+                <p className="mt-3 text-sm leading-7 text-white/75 glassmorphism-text">
+                  {t.menuBody}
+                </p>
                 <a
                   href="https://websites.nabous.dev"
                   target="_blank"
@@ -610,40 +694,87 @@ export default function Home() {
                   className="mt-7 block border-t border-white/15 pt-5 group"
                   aria-label={`${t.websitesCta} — ${t.externalLabel}`}
                 >
-                  <div className="text-[0.65rem] uppercase tracking-[0.18em] text-white/60">{t.websitesEyebrow}</div>
-                  <div className="mt-1 text-lg font-semibold text-white">{t.websitesTitle}</div>
-                  <div className="mt-2 text-sm text-white/75">{t.websitesBody}</div>
-                  <div className="mt-4 text-sm font-semibold text-white group-hover:text-cyan-100">{t.websitesCta} <span aria-hidden="true">↗</span></div>
+                  <div className="text-[0.65rem] uppercase tracking-[0.18em] text-white/60 glassmorphism-text">
+                    {t.websitesEyebrow}
+                  </div>
+                  <div className="mt-1 text-lg font-semibold text-white glassmorphism-text">
+                    {t.websitesTitle}
+                  </div>
+                  <div className="mt-2 text-sm text-white/75 glassmorphism-text">
+                    {t.websitesBody}
+                  </div>
+                  <div className="mt-4 text-sm font-semibold text-white group-hover:text-cyan-100 glassmorphism-text">
+                    {t.websitesCta} <span aria-hidden="true">↗</span>
+                  </div>
                 </a>
               </div>
             </div>
             <div className="grid gap-3 sm:grid-cols-3">
-              <h3 className="sm:col-span-3 text-xs font-semibold uppercase tracking-[0.18em] text-white/60">
+              <h3 className="sm:col-span-3 text-xs font-semibold uppercase tracking-[0.18em] text-white/60 glassmorphism-text">
                 {t.proofTitle}
               </h3>
-              <a href="https://pixel-store.ly/" target="_blank" rel="noreferrer" className="rounded-sm p-4 glassmorph glassmorph-border hover:glassmorph-glow-opacity-30 transition-glassmorph text-left rtl:text-right" aria-label={`${t.pixelTitle} — ${t.externalLabel}`}>
-                <h3 className="font-semibold text-white">{t.pixelTitle}</h3>
-                <p className="mt-2 text-xs leading-5 text-white/70">{t.pixelBody}</p>
+              <a
+                href="https://pixel-store.ly/"
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-glass p-4 glassmorph glassmorph-border hover:glassmorph-glow-opacity-30 transition-glassmorph text-left rtl:text-right"
+                aria-label={`${t.pixelTitle} — ${t.externalLabel}`}
+              >
+                <h3 className="font-semibold text-white glassmorphism-text">
+                  {t.pixelTitle}
+                </h3>
+                <p className="mt-2 text-xs leading-5 text-white/70 glassmorphism-text">
+                  {t.pixelBody}
+                </p>
               </a>
-              <a href="https://ordering.kudo.ly/" target="_blank" rel="noreferrer" className="rounded-sm p-4 glassmorph glassmorph-border hover:glassmorph-glow-opacity-30 transition-glassmorph text-left rtl:text-right" aria-label={`${t.kudoTitle} — ${t.externalLabel}`}>
-                <h3 className="font-semibold text-white">{t.kudoTitle}</h3>
-                <p className="mt-2 text-xs leading-5 text-white/70">{t.kudoBody}</p>
+              <a
+                href="https://ordering.kudo.ly/"
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-glass p-4 glassmorph glassmorph-border hover:glassmorph-glow-opacity-30 transition-glassmorph text-left rtl:text-right"
+                aria-label={`${t.kudoTitle} — ${t.externalLabel}`}
+              >
+                <h3 className="font-semibold text-white glassmorphism-text">
+                  {t.kudoTitle}
+                </h3>
+                <p className="mt-2 text-xs leading-5 text-white/70 glassmorphism-text">
+                  {t.kudoBody}
+                </p>
               </a>
-              <a href="http://oneavant.com/" target="_blank" rel="noreferrer" className="rounded-sm p-4 glassmorph glassmorph-border hover:glassmorph-glow-opacity-30 transition-glassmorph text-left rtl:text-right" aria-label={`${t.avantProjectTitle} — ${t.externalLabel}`}>
-                <h3 className="font-semibold text-white">{t.avantProjectTitle}</h3>
-                <p className="mt-2 text-xs leading-5 text-white/70">{t.avantProjectBody}</p>
+              <a
+                href="http://oneavant.com/"
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-glass p-4 glassmorph glassmorph-border hover:glassmorph-glow-opacity-30 transition-glassmorph text-left rtl:text-right"
+                aria-label={`${t.avantProjectTitle} — ${t.externalLabel}`}
+              >
+                <h3 className="font-semibold text-white glassmorphism-text">
+                  {t.avantProjectTitle}
+                </h3>
+                <p className="mt-2 text-xs leading-5 text-white/70 glassmorphism-text">
+                  {t.avantProjectBody}
+                </p>
               </a>
             </div>
           </div>
         </section>
-        <section id="career" className="min-h-screen scroll-mt-4 grid items-center py-24">
+        <section
+          id="career"
+          className="min-h-screen scroll-mt-4 grid items-center py-24"
+        >
           <div className="w-full max-w-4xl space-y-8">
             <div className="max-w-2xl space-y-3">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/60">{t.careerEyebrow}</p>
-              <h2 className="text-3xl font-bold leading-tight text-white sm:text-4xl">{t.careerTitle}</h2>
-              <p className="text-sm leading-7 text-white/75">{t.careerLead}</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/60 glassmorphism-text">
+                {t.careerEyebrow}
+              </p>
+              <h2 className="text-3xl font-bold leading-tight text-white sm:text-4xl glassmorphism-text">
+                {t.careerTitle}
+              </h2>
+              <p className="text-sm leading-7 text-white/75 glassmorphism-text">
+                {t.careerLead}
+              </p>
             </div>
-            <ol className="grid gap-px overflow-hidden rounded-sm glassmorph glassmorph-border md:grid-cols-3">
+            <ol className="grid gap-px overflow-hidden rounded-glass glassmorph glassmorph-border md:grid-cols-3">
               {[
                 [t.sadeemPeriod, t.sadeemTitle, t.sadeemBody],
                 [t.avantPeriod, t.avantTitle, t.avantBody],
@@ -651,18 +782,29 @@ export default function Home() {
               ].map(([period, title, body]) => (
                 <li key={title} className="relative bg-slate-950/15 p-5 sm:p-6">
                   <span className="mb-7 block h-2 w-2 bg-cyan-200 shadow-[0_0_18px_rgba(103,232,249,0.9)]" />
-                  <p className="text-xs font-semibold tracking-[0.16em] text-cyan-100/70">{period}</p>
-                  <h3 className="mt-2 text-lg font-semibold text-white">{title}</h3>
-                  <p className="mt-3 text-sm leading-6 text-white/70">{body}</p>
+                  <p className="text-xs font-semibold tracking-[0.16em] text-cyan-100/70 glassmorphism-text">
+                    {period}
+                  </p>
+                  <h3 className="mt-2 text-lg font-semibold text-white glassmorphism-text">
+                    {title}
+                  </h3>
+                  <p className="mt-3 text-sm leading-6 text-white/70 glassmorphism-text">
+                    {body}
+                  </p>
                 </li>
               ))}
             </ol>
             <div className="border-t border-white/15 pt-5">
-              <h3 className="text-xs font-semibold uppercase tracking-[0.18em] text-white/60">{t.skillsTitle}</h3>
+              <h3 className="text-xs font-semibold uppercase tracking-[0.18em] text-white/60 glassmorphism-text">
+                {t.skillsTitle}
+              </h3>
               <ul className="mt-3 flex flex-wrap gap-2">
                 {t.skills.map((skill) => (
-                  <li key={skill} className="border border-white/20 bg-slate-950/20 px-3 py-2 text-xs text-white/80">
-                    {skill}
+                  <li
+                    key={skill}
+                    className="glassmorph glassmorph-border px-3 py-2 text-xs text-white/80"
+                  >
+                    <span className="glassmorphism-text">{skill}</span>
                   </li>
                 ))}
               </ul>
@@ -689,9 +831,7 @@ export default function Home() {
         <div className="fixed inset-0 z-30 flex items-center justify-center bg-black/70 text-white text-center px-6">
           <div className="space-y-3 max-w-md">
             <h2 className="text-2xl font-bold">{t.rotateTitle}</h2>
-            <p className="text-sm text-white/80">
-              {t.rotateBody}
-            </p>
+            <p className="text-sm text-white/80">{t.rotateBody}</p>
             <button
               type="button"
               className="mt-2 px-4 py-2 rounded-lg bg-white/15 border border-white/25 text-white text-sm backdrop-blur-md shadow-lg"
@@ -717,7 +857,7 @@ export default function Home() {
         onRequestPlay={handleEnterGame}
         touchMoveRef={touchMoveRef}
         touchLookRef={touchLookRef}
-          touchFireRef={touchFireRef}
+        touchFireRef={touchFireRef}
       />
       <PauseScreen
         visible={play && paused && !needsLandscape}
@@ -755,9 +895,7 @@ function PauseScreen({
             {labels.backHome}
           </button>
         </div>
-        <p className="text-sm text-white/80">
-          {labels.mouseFree}
-        </p>
+        <p className="text-sm text-white/80">{labels.mouseFree}</p>
         <div className="grid grid-cols-2 gap-3 text-sm">
           <div className="glassmorph glassmorph-border p-3 space-y-1">
             <div className="text-xs uppercase tracking-wide text-white/60">
@@ -804,7 +942,9 @@ function _ShooterHud({ score, timeMs }: { score: number; timeMs: number }) {
   return (
     <div className="fixed top-4 left-4 z-20 flex flex-col gap-2 min-w-[220px] text-white pointer-events-none">
       <div className="glassmorph glassmorph-border backdrop-blur-md px-4 py-3 shadow-lg">
-        <div className="text-xs uppercase tracking-wide text-white/60 mb-1">Status</div>
+        <div className="text-xs uppercase tracking-wide text-white/60 mb-1">
+          Status
+        </div>
         <div className="flex items-center justify-between">
           <span>Score</span>
           <span className="font-semibold">{score}</span>
@@ -817,7 +957,7 @@ function _ShooterHud({ score, timeMs }: { score: number; timeMs: number }) {
         </div>
       </div>
       <div className="fixed inset-0 pointer-events-none flex items-center justify-center text-white/70">
-        <div className="w-5 h-5 border border-white/50 rounded-sm" />
+        <div className="w-5 h-5 border border-white/50 rounded-glass" />
       </div>
     </div>
   );
@@ -848,16 +988,26 @@ function _TutorialCard({
             <>
               <li>Left joystick: Move. Right joystick: Look/aim.</li>
               <li>Tap Jump / Interact buttons to hop or use nearby objects.</li>
-              <li>Collect glowing shards, hack neon terminals, and toggle server racks.</li>
+              <li>
+                Collect glowing shards, hack neon terminals, and toggle server
+                racks.
+              </li>
             </>
           ) : (
             <>
               <li>Move with WASD, jump with Space, sprint with Shift.</li>
-              <li>Look with the mouse (pointer lock). Interact with E near shards/terminals/racks.</li>
-              <li>Objectives: grab shards, hack terminals, and manage rack power.</li>
+              <li>
+                Look with the mouse (pointer lock). Interact with E near
+                shards/terminals/racks.
+              </li>
+              <li>
+                Objectives: grab shards, hack terminals, and manage rack power.
+              </li>
             </>
           )}
-          <li>Press P or the Pause button to pause. Escape releases the mouse.</li>
+          <li>
+            Press P or the Pause button to pause. Escape releases the mouse.
+          </li>
         </ul>
       </div>
     </div>
@@ -906,8 +1056,18 @@ function TouchControls({
           }}
         />
         <div className="flex gap-2">
-          <TouchButton label="Jump" aria="Jump" wide {...bindKey(onRequestPlay, " ")} />
-          <TouchButton label="Interact" aria="Interact" wide {...bindKey(onRequestPlay, "e")} />
+          <TouchButton
+            label="Jump"
+            aria="Jump"
+            wide
+            {...bindKey(onRequestPlay, " ")}
+          />
+          <TouchButton
+            label="Interact"
+            aria="Interact"
+            wide
+            {...bindKey(onRequestPlay, "e")}
+          />
           <TouchButton
             label="Fire"
             aria="Fire"
