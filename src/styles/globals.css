@@ -38,12 +38,13 @@
 @supports (background-clip: text) and (-webkit-background-clip: text) and
   (-webkit-text-fill-color: transparent) {
   .glassmorphism-text {
+    --glassmorph-glow-coverage: 80%;
     @apply glassmorph glassmorph-glow-opacity-100 glassmorph-bgcolor-[transparent] glassmorph-bg-clip-text;
     /* background-clip: text; */
     color: hsla(from white h s l / 0.7);
     backdrop-filter: none !important;
-    -webkit-text-stroke-width: 0.0625em;
-    -webkit-text-stroke-color: hsla(from var(--colors__accent) h s l / 0.2);
+    -webkit-text-stroke-width: 2px;
+    -webkit-text-stroke-color: hsla(from var(--colors__accent) h s l / 0.0);
   }
 }
 
