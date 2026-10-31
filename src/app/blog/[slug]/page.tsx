@@ -6,6 +6,7 @@ import ReactMarkdown, { defaultUrlTransform } from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { assetUrl, BlogNav, PostDate } from "@nabous.dev/components/Blog";
 import { getPost, readProjects } from "@nabous.dev/lib/content";
+import { remarkHeadingIds } from "@nabous.dev/lib/markdown-headings";
 import "../style.css";
 
 export const dynamic = "force-dynamic";
@@ -31,7 +32,7 @@ export default async function Article({ params }: { params: Promise<{ slug: stri
   const post = await load(slug);
   return <main className="blog-shell"><BlogNav /><article className="glassmorph rounded-glass blog-article">
     <header>{post.cover && <img className="blog-cover" src={assetUrl(slug, post.cover)} alt="" width="960" height="540" />}<h1 className="glassmorphism-text">{post.title}</h1>{post.description && <p className="blog-dek glassmorphism-text">{post.description}</p>}<PostDate value={post.updatedAt} /><Link className="blog-playground-link glassmorphism-text" href={`/lab/${slug}/`}>Open the playground →</Link></header>
-    <div className="blog-prose"><ReactMarkdown remarkPlugins={[remarkGfm]} urlTransform={source => {
+    <div className="blog-prose"><ReactMarkdown remarkPlugins={[remarkGfm, remarkHeadingIds]} urlTransform={source => {
       const safe = defaultUrlTransform(source);
       return safe ? assetUrl(slug, safe) : "";
     }} components={{
@@ -43,12 +44,12 @@ export default async function Article({ params }: { params: Promise<{ slug: stri
       th: ({ children }) => <th className="glassmorphism-text">{children}</th>,
       td: ({ children }) => <td className="glassmorphism-text">{children}</td>,
       a: ({ children, href }) => <a className="glassmorphism-text" href={href}>{children}</a>,
-      h1: ({ children }) => <h2 className="glassmorphism-text">{children}</h2>,
-      h2: ({ children }) => <h2 className="glassmorphism-text">{children}</h2>,
-      h3: ({ children }) => <h3 className="glassmorphism-text">{children}</h3>,
-      h4: ({ children }) => <h4 className="glassmorphism-text">{children}</h4>,
-      h5: ({ children }) => <h5 className="glassmorphism-text">{children}</h5>,
-      h6: ({ children }) => <h6 className="glassmorphism-text">{children}</h6>,
+      h1: ({ children, id }) => <h2 id={id} className="glassmorphism-text">{children}</h2>,
+      h2: ({ children, id }) => <h2 id={id} className="glassmorphism-text">{children}</h2>,
+      h3: ({ children, id }) => <h3 id={id} className="glassmorphism-text">{children}</h3>,
+      h4: ({ children, id }) => <h4 id={id} className="glassmorphism-text">{children}</h4>,
+      h5: ({ children, id }) => <h5 id={id} className="glassmorphism-text">{children}</h5>,
+      h6: ({ children, id }) => <h6 id={id} className="glassmorphism-text">{children}</h6>,
     }}>{post.markdown}</ReactMarkdown></div>
   </article><p><Link href="/blog/">← All articles</Link></p></main>;
 }
