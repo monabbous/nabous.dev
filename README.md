@@ -1,4 +1,8 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# nabous.dev
+
+Personal website built with Next.js, with request-time project blogs and playgrounds. See [Configure request-time project content](docs/runtime-content.md) for the server-only environment variables, project folder convention, freshness policy, and deployment safeguards.
+
+The standalone Docker image contains the website application only. Project content is fetched on requests, never during builds or deployment.
 
 ## Getting Started
 

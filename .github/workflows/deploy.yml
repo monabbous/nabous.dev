@@ -15,14 +15,42 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    concurrency:
+      group: nabous-dev-production
+      cancel-in-progress: false
     steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        if: inputs.mode != 'inspect'
+        with:
+          node-version: '24'
+      - name: Validate runtime application
+        if: inputs.mode != 'inspect'
+        run: |
+          corepack enable
+          corepack prepare pnpm@9.15.4 --activate
+          pnpm install --frozen-lockfile
+          pnpm test
+          pnpm build
+      - name: Encode runtime configuration
+        if: inputs.mode != 'inspect'
+        env:
+          NABOUS_PROJECTS: ${{ vars.NABOUS_PROJECTS }}
+        run: |
+          node -e 'const fs=require("node:fs");const value=process.env.NABOUS_PROJECTS;if(!Array.isArray(JSON.parse(value)))throw Error("Set NABOUS_PROJECTS repository variable first");fs.appendFileSync(process.env.GITHUB_ENV,"PROJECTS_BASE64="+Buffer.from(value).toString("base64")+"\n")'
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1
+        env:
+          DEPLOY_SHA: ${{ github.sha }}
+          PROJECTS_BASE64: ${{ env.PROJECTS_BASE64 }}
+          CONTENT_CACHE_SECONDS: ${{ vars.NABOUS_CONTENT_CACHE_SECONDS || '0' }}
         with:
           host: ${{ secrets.DROPLET_IP }}
           username: root
           passphrase: ${{ secrets.DROPLET_SSH_PASSPHRASE }}
           key: ${{ secrets.DROPLET_SSH_KEY }}
+          envs: DEPLOY_SHA,PROJECTS_BASE64,CONTENT_CACHE_SECONDS
+          command_timeout: 30m
           script: |
             set -eu
             if [ '${{ inputs.mode }}' = inspect ]; then
@@ -34,5 +62,10 @@ jobs:
               docker ps --filter name=nabous --format '{{.Names}} {{.Image}} {{.Ports}}'
               exit 0
             fi
-            echo 'Runtime deployment is being prepared; existing static files are not modified.'
-            exit 1
+            if [ ! -d /opt/nabous.dev-runtime/.git ]; then
+              git clone https://github.com/monabbous/nabous.dev.git /opt/nabous.dev-runtime
+            fi
+            cd /opt/nabous.dev-runtime
+            git fetch origin "$DEPLOY_SHA"
+            git switch --detach "$DEPLOY_SHA"
+            bash scripts/deploy-runtime.sh
