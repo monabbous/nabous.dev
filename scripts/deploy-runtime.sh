@@ -66,6 +66,14 @@ curl --fail --silent http://127.0.0.1:3120/health >/dev/null
 python3 scripts/configure-nginx.py "$SITE"
 nginx -t
 systemctl reload nginx
-curl --fail --silent --resolve nabous.dev:443:127.0.0.1 https://nabous.dev/health >/dev/null
+# A graceful Nginx reload returns before all new workers are accepting traffic.
+# Retry against HTTPS so an old static worker cannot trigger a false rollback.
+if ! curl --fail --silent --show-error --retry 10 --retry-all-errors --retry-delay 1 --retry-max-time 30 \
+  --resolve nabous.dev:443:127.0.0.1 https://nabous.dev/health >/dev/null; then
+  curl --silent --show-error --output /dev/null --write-out 'HTTPS health status: %{http_code}\n' \
+    --resolve nabous.dev:443:127.0.0.1 https://nabous.dev/health || true
+  docker logs --tail 30 "$NAME"
+  exit 1
+fi
 printf '%s\n' "$DEPLOY_SHA" > "$BACKUP/deployed-sha"
 echo "Runtime deployed. Previous container: ${OLD:-none}. Backup: $BACKUP"
