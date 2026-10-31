@@ -54,6 +54,11 @@ jobs:
           script: |
             set -eu
             if [ '${{ inputs.mode }}' = inspect ]; then
+              df -h / /var/lib/docker
+              df -i / /var/lib/docker
+              docker system df
+              docker image ls --filter reference='nabous-dev-runtime:*' --format '{{.ID}} {{.Tag}} {{.Size}}'
+              docker ps -a --filter name=nabous-dev-runtime --format '{{.Names}} {{.Image}} {{.Status}}'
               docker version --format '{{.Server.Version}}'
               nginx -t
               ls -l /etc/nginx/sites-enabled
