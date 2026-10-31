@@ -1,4 +1,5 @@
-import { fetchContent, readProjects } from "@nabous.dev/lib/content";
+import { fetchContent, getPost, readProjects } from "@nabous.dev/lib/content";
+import { renderLabDocument } from "@nabous.dev/lib/lab-document";
 
 export const dynamic = "force-dynamic";
 const types: Record<string, string> = { html: "text/html; charset=utf-8", css: "text/css; charset=utf-8", js: "text/javascript; charset=utf-8", mjs: "text/javascript; charset=utf-8", json: "application/json", svg: "image/svg+xml", webp: "image/webp", png: "image/png", jpg: "image/jpeg", gif: "image/gif", mp4: "video/mp4", woff2: "font/woff2", wasm: "application/wasm" };
@@ -17,7 +18,12 @@ export async function GET(request: Request, { params }: { params: Promise<{ slug
     const response = await fetchContent(project, ["lab", ...parts]);
     if (!response.ok) return new Response("Content unavailable", { status: response.status === 404 ? 404 : 502 });
     const extension = parts.at(-1)?.split(".").at(-1)?.toLowerCase() ?? "";
-    return new Response(response.body, { headers: {
+    let body: BodyInit | null = response.body;
+    if (extension === "html") {
+      const post = await getPost(project).catch(() => null);
+      body = renderLabDocument(await response.text(), project, post);
+    }
+    return new Response(body, { headers: {
       "Content-Type": types[extension] ?? "application/octet-stream",
       "Cache-Control": "no-store", "X-Content-Type-Options": "nosniff",
       "Referrer-Policy": "strict-origin-when-cross-origin",

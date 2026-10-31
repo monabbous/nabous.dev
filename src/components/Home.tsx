@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 
 import { ServerScene } from "@nabous.dev/components/ServerScene";
 import { SVGGlassMorph } from "@nabous.dev/components/SVGGlassMorph";
@@ -407,6 +408,9 @@ export default function Home({ recentBlog }: { recentBlog: React.ReactNode }) {
           >
             <span className="glassmorphism-text">{t.career}</span>
           </a>
+          <Link className={`${navigationLinkClass} col-span-2 sm:col-auto`} href="/lab/" onClick={() => setNavigationOpen(false)}>
+            <span className="glassmorphism-text">{locale === "ar" ? "المختبر" : "Lab"}</span>
+          </Link>
           </div>
           <button
             type="button"

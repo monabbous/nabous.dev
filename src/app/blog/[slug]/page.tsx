@@ -7,6 +7,7 @@ import remarkGfm from "remark-gfm";
 import { assetUrl, BlogNav, PostDate } from "@nabous.dev/components/Blog";
 import { getPost, readProjects } from "@nabous.dev/lib/content";
 import { remarkHeadingIds } from "@nabous.dev/lib/markdown-headings";
+import { articleMetadata, articleStructuredData } from "@nabous.dev/lib/content-metadata";
 import "../style.css";
 
 export const dynamic = "force-dynamic";
@@ -20,17 +21,13 @@ const load = cache(async (slug: string) => {
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const post = await load(slug);
-  return { title: `${post.title} | Mohamed Nabous`, description: post.description,
-    alternates: { canonical: `https://nabous.dev/blog/${slug}/` },
-    openGraph: { type: "article", title: post.title, description: post.description,
-      ...(post.updatedAt ? { modifiedTime: post.updatedAt } : {}),
-      ...(post.cover ? { images: [new URL(assetUrl(slug, post.cover), "https://nabous.dev").href] } : {}),
-    } };
+  return articleMetadata(post);
 }
 export default async function Article({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const post = await load(slug);
   return <main className="blog-shell"><BlogNav /><article className="glassmorph rounded-glass blog-article">
+    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleStructuredData(post)).replace(/</g, "\\u003c") }} />
     <header>{post.cover && <img className="blog-cover" src={assetUrl(slug, post.cover)} alt="" width="960" height="540" />}<h1 className="glassmorphism-text">{post.title}</h1>{post.description && <p className="blog-dek glassmorphism-text">{post.description}</p>}<PostDate value={post.updatedAt} /><Link className="blog-playground-link glassmorphism-text" href={`/lab/${slug}/`}>Open the playground →</Link></header>
     <div className="blog-prose"><ReactMarkdown remarkPlugins={[remarkGfm, remarkHeadingIds]} urlTransform={source => {
       const safe = defaultUrlTransform(source);

@@ -15,6 +15,18 @@ NABOUS_CONTENT_CACHE_SECONDS=0
 
 Changing these variables requires a process/container restart, not a rebuild. Changing project content requires neither a rebuild nor a restart.
 
+## Use a local checkout in development
+
+Run the development server with a filesystem source instead of a GitHub source:
+
+```sh
+NABOUS_PROJECTS='[{"slug":"slidebox","path":"/absolute/path/to/slidebox"}]' pnpm dev
+```
+
+The path must point to the repository root containing `public/`, not to the public folder itself. The development server reads files on every request without contacting GitHub, and uses local Git history for the last commit affecting `public/blog.md`. Uncommitted content changes appear immediately; the displayed commit date still describes the last commit. A non-Git folder has no commit date.
+
+Local sources are accepted only when `NODE_ENV=development`. They are rejected in production, cannot be combined with `repository`/`ref` in the same entry, and cannot follow a requested symlink outside the project's public directory. Use GitHub-backed entries for deployment. See `.env.example`; copy the appropriate setting into your local environment without committing personal `.env` files.
+
 ## Add content to a project
 
 Commit these files in the configured repository:
@@ -36,6 +48,9 @@ Use frontmatter for article metadata:
 title: My project story
 description: How I built the project.
 cover_image: assets/cover.webp
+social_image: assets/social.jpg
+social_image_width: 1920
+social_image_height: 1080
 ---
 
 Write the article in Markdown.
@@ -43,7 +58,9 @@ Write the article in Markdown.
 
 `/blog/<slug>/` renders Markdown with the site's typography, glass styling, and navigation. Raw HTML is not enabled. Relative article media URLs resolve through `/project-assets/<slug>/`. The homepage shows the three most recently updated available articles; `/blog/` shows the full index.
 
-`/lab/<slug>/` serves `public/lab/index.html`. Relative asset requests resolve under `public/lab/`. Keep playground links relative; root-relative `/style.css` points to the website root, not the project. Regenerate and commit project assets when you change their sources.
+`/lab/` lists configured project playgrounds. `/lab/<slug>/` serves `public/lab/index.html` inside the website's server-rendered shell. The website owns the header/footer, Font Awesome, fonts, `public/lab-shell.css`, pointer lighting, favicon, canonical URL, and social metadata. The project supplies its content, controls, and functional CSS; it should remain usable with a neutral standalone stylesheet. Relative asset requests resolve under `public/lab/`. Keep playground assets relative; root-relative `/style.css` points to the website root, not the project. Regenerate and commit project assets when you change their sources.
+
+Article and lab social previews use `social_image` when provided, with `cover_image` as fallback. Use a static JPEG or PNG for predictable social-card support, while retaining an animated cover on the actual page. Metadata stays in the initial HTML head for regular browsers and crawlers. `/sitemap.xml`, `/robots.txt`, and `/llms.txt` provide public discovery without requiring JavaScript. Search engines and LLM services still decide whether and when to index the pages.
 
 Only configure repositories you trust. Playground HTML and JavaScript execute on the website's origin. This registry is an administrator-controlled code trust boundary, not a public upload feature.
 

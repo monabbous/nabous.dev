@@ -16,7 +16,7 @@ test("runtime proxies preserve paths, MIME types, directory indexes, and failure
     assert.equal(urls.length, 0);
     const index = await lab(new Request("https://nabous.dev/lab/slidebox/"), { params: Promise.resolve({ slug: "slidebox" }) });
     assert.match(index.headers.get("content-type")!, /text\/html/);
-    assert.ok(urls.at(-1)?.endsWith("/public/lab/index.html"));
+    assert.ok(urls.some(url => url.endsWith("/public/lab/index.html")));
     const css = await lab(new Request("https://nabous.dev/lab/slidebox/style.css"), { params: Promise.resolve({ slug: "slidebox", path: ["style.css"] }) });
     assert.match(css.headers.get("content-type")!, /text\/css/);
     assert.equal(css.headers.get("cache-control"), "no-store");

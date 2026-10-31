@@ -5,6 +5,8 @@ const nextConfig: NextConfig = {
   transpilePackages: ['three'],
   output: 'standalone',
   skipTrailingSlashRedirect: true,
+  // Keep metadata in the initial <head>, including for plain-HTML LLM fetchers.
+  htmlLimitedBots: /.*/,
 };
 
 export default nextConfig;
