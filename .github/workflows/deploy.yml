@@ -29,6 +29,7 @@ jobs:
               docker version --format '{{.Server.Version}}'
               nginx -t
               ls -l /etc/nginx/sites-enabled
+              cat /etc/nginx/sites-enabled/nabous.dev.conf
               nginx -T 2>/dev/null | grep -E '^# configuration file|^[[:space:]]*(server_name|root |listen |location |try_files )'
               docker ps --filter name=nabous --format '{{.Names}} {{.Image}} {{.Ports}}'
               exit 0
