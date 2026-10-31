@@ -62,3 +62,11 @@ You can provide the server-only `NABOUS_GITHUB_TOKEN` to increase GitHub API lim
 After starting the server with your runtime environment, open `/health`, `/blog/`, `/blog/<slug>/`, and `/lab/<slug>/`. Check the lab's relative CSS and module requests in your browser's network panel. A missing project returns a 404; an upstream lab failure returns a 502. Article pages surface upstream errors rather than presenting them as a missing article. Indexes omit unavailable upstream articles so one repository does not hide the others.
 
 The deployment script preserves `/var/www/html`, backs up the exact Nginx site file, changes only the inspected static fallback, checks Nginx syntax, and restores previous routing/runtime on failure. Other Nginx locations and included snippets remain unchanged. Backups and stopped previous containers remain on the server for deliberate rollback; the script does not prune other applications.
+
+## Verify analytics
+
+The existing Nginx-injected Google tag initializes property `G-918ZJ86C13` and sends the first document page view. `src/components/PageViewTracker.tsx` sends an explicit `page_view` when Next.js commits a different path or query string, including navigation between the blog index and articles. It skips its first render and same-route renders to avoid duplicating the initial event. Hash-only section navigation is not another page view.
+
+The tracker reuses the existing `gtag` function. It does not install a second tag, override consent settings, or bypass browser blockers. If you enable automatic history-based page views in GA enhanced measurement later, check for duplicates before combining them with this explicit route tracker.
+
+In browser developer tools, filter network requests for `g/collect`. Check `tid=G-918ZJ86C13`, the `page_view` event, and the destination page location. An HTTP 204 confirms that Google's collection endpoint accepted the request, not that the event is already visible in a particular report. If Realtime remains empty, verify the selected GA property, active report/data filters, and your browser's tracking protection. Access to the GA dashboard is not required to verify the outgoing request and is not provided by this application.
