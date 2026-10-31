@@ -11,7 +11,7 @@ on:
         description: 'Inspect prerequisites or deploy the runtime'
         type: choice
         default: deploy
-        options: [inspect, deploy]
+        options: [inspect, deploy, clear-build-cache]
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -21,11 +21,11 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
-        if: inputs.mode != 'inspect'
+        if: inputs.mode != 'inspect' && inputs.mode != 'clear-build-cache'
         with:
           node-version: '24'
       - name: Validate runtime application
-        if: inputs.mode != 'inspect'
+        if: inputs.mode != 'inspect' && inputs.mode != 'clear-build-cache'
         run: |
           corepack enable
           corepack prepare pnpm@9.15.4 --activate
@@ -33,7 +33,7 @@ jobs:
           pnpm test
           pnpm build
       - name: Encode runtime configuration
-        if: inputs.mode != 'inspect'
+        if: inputs.mode != 'inspect' && inputs.mode != 'clear-build-cache'
         env:
           NABOUS_PROJECTS: ${{ vars.NABOUS_PROJECTS }}
         run: |
@@ -53,6 +53,12 @@ jobs:
           command_timeout: 30m
           script: |
             set -eu
+            if [ '${{ inputs.mode }}' = clear-build-cache ]; then
+              docker builder prune --all --force
+              df -h / /var/lib/docker
+              docker system df
+              exit 0
+            fi
             if [ '${{ inputs.mode }}' = inspect ]; then
               df -h / /var/lib/docker
               df -i / /var/lib/docker
