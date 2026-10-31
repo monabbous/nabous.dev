@@ -148,6 +148,7 @@ const copy = {
 } as const;
 
 type Locale = keyof typeof copy;
+const navigationLinkClass = "rounded-glass glassmorph-border glassmorph-glow-opacity-01 glassmorph-border-width-[2px] px-3 py-2 text-xs font-semibold text-white/85 hover:bg-white/10 min-h-11 flex items-center justify-center whitespace-nowrap";
 
 export default function Home({ recentBlog }: { recentBlog: React.ReactNode }) {
   const CANVAS_ID = "server-scene-canvas";
@@ -157,6 +158,8 @@ export default function Home({ recentBlog }: { recentBlog: React.ReactNode }) {
   // });
   const [play, setPlay] = useState<boolean>(false);
   const [locale, setLocale] = useState<Locale>("en");
+  const [navigationOpen, setNavigationOpen] = useState(false);
+  const navigationToggleRef = useRef<HTMLButtonElement>(null);
 
   const [paused, setPaused] = useState(false);
 
@@ -367,34 +370,50 @@ export default function Home({ recentBlog }: { recentBlog: React.ReactNode }) {
         }}
         className="fixed top-4 inset-x-0 z-20 px-4 pointer-events-none"
       >
-        <nav className="container mx-auto flex w-fit max-w-full items-center gap-1 rounded-glass p-1 glassmorph glassmorph-border pointer-events-auto ">
+        <nav aria-label={locale === "ar" ? "التنقل الرئيسي" : "Main navigation"} className="mx-auto flex w-full max-w-sm flex-wrap items-center justify-between gap-1 rounded-glass p-1 glassmorph glassmorph-border pointer-events-auto sm:w-fit sm:max-w-full sm:flex-nowrap">
+          <button
+            type="button"
+            ref={navigationToggleRef}
+            className={`${navigationLinkClass} sm:hidden`}
+            aria-expanded={navigationOpen}
+            aria-controls="homepage-navigation"
+            onClick={() => setNavigationOpen(open => !open)}
+          >
+            <i className={`fa-solid ${navigationOpen ? "fa-xmark" : "fa-bars"} me-2`} aria-hidden="true" />
+            <span className="glassmorphism-text">{locale === "ar" ? "القائمة" : "Menu"}</span>
+          </button>
+          <div id="homepage-navigation" className={`${navigationOpen ? "grid" : "hidden"} order-last w-full grid-cols-2 gap-1 sm:order-none sm:flex sm:w-auto`} onKeyDown={event => { if (event.key === "Escape") { setNavigationOpen(false); navigationToggleRef.current?.focus(); } }}>
           <a
-            className="rounded-glass glassmorph-border glassmorph-glow-opacity-01 glassmorph-border-width-[2px] px-3 py-2 text-xs font-semibold text-white/85 hover:bg-white/10"
+            className={navigationLinkClass}
             href="#about"
+            onClick={() => setNavigationOpen(false)}
           >
             <span className="glassmorphism-text">{t.about}</span>
           </a>
           <a
-            className="rounded-glass glassmorph-border glassmorph-glow-opacity-01 glassmorph-border-width-[2px] px-3 py-2 text-xs font-semibold text-white/85 hover:bg-white/10"
+            className={navigationLinkClass}
             href="#projects"
+            onClick={() => setNavigationOpen(false)}
           >
             <span className="glassmorphism-text">{t.projects}</span>
           </a>
-          <a className="rounded-glass px-3 py-2 text-xs font-semibold text-white/85 hover:bg-white/10" href="#blog">
+          <a className={navigationLinkClass} href="#blog" onClick={() => setNavigationOpen(false)}>
             <span className="glassmorphism-text">{locale === "ar" ? "المدونة" : "Blog"}</span>
           </a>
           <a
-            className="rounded-glass glassmorph-border glassmorph-glow-opacity-01 glassmorph-border-width-[2px] px-3 py-2 text-xs font-semibold text-white/85 hover:bg-white/10"
+            className={navigationLinkClass}
             href="#career"
+            onClick={() => setNavigationOpen(false)}
           >
             <span className="glassmorphism-text">{t.career}</span>
           </a>
+          </div>
           <button
             type="button"
             onClick={() =>
               setLocale((current) => (current === "en" ? "ar" : "en"))
             }
-            className="rounded-glass px-3 py-2 text-xs font-semibold text-white glassmorph glassmorph-border hover:glassmorph-glow-opacity-30 cursor-pointer transition-glassmorph"
+            className="rounded-glass min-h-11 px-3 py-2 text-xs font-semibold text-white glassmorph glassmorph-border hover:glassmorph-glow-opacity-30 cursor-pointer transition-glassmorph"
             aria-label={t.language}
           >
             <span className="glassmorphism-text">{t.language}</span>

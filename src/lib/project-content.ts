@@ -3,7 +3,7 @@ import { parse } from "yaml";
 export type Project = { slug: string; repository: string; ref: string };
 export type Post = { project: Project; title: string; description: string; cover?: string; updatedAt: string | null; markdown: string };
 
-export function readProjects(env = process.env): Project[] {
+export function readProjects(env: { NABOUS_PROJECTS?: string } = { NABOUS_PROJECTS: process.env.NABOUS_PROJECTS }): Project[] {
   const value: unknown = JSON.parse(env.NABOUS_PROJECTS || "[]");
   if (!Array.isArray(value) || value.length > 50) throw new Error("NABOUS_PROJECTS must be an array of at most 50 projects");
   const slugs = new Set<string>();

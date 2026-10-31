@@ -30,10 +30,17 @@ export default async function Article({ params }: { params: Promise<{ slug: stri
   const { slug } = await params;
   const post = await load(slug);
   return <main className="blog-shell"><BlogNav /><article className="glassmorph rounded-glass blog-article">
-    <header>{post.cover && <img className="blog-cover" src={assetUrl(slug, post.cover)} alt="" width="960" height="540" />}<h1>{post.title}</h1><PostDate value={post.updatedAt} /><Link href={`/lab/${slug}/`}>Open the playground →</Link></header>
+    <header>{post.cover && <img className="blog-cover" src={assetUrl(slug, post.cover)} alt="" width="960" height="540" />}<h1 className="glassmorphism-text">{post.title}</h1>{post.description && <p className="blog-dek">{post.description}</p>}<PostDate value={post.updatedAt} /><Link className="blog-playground-link" href={`/lab/${slug}/`}>Open the playground →</Link></header>
     <div className="blog-prose"><ReactMarkdown remarkPlugins={[remarkGfm]} urlTransform={source => {
       const safe = defaultUrlTransform(source);
       return safe ? assetUrl(slug, safe) : "";
+    }} components={{
+      h1: ({ children }) => <h2 className="glassmorphism-text">{children}</h2>,
+      h2: ({ children }) => <h2 className="glassmorphism-text">{children}</h2>,
+      h3: ({ children }) => <h3 className="glassmorphism-text">{children}</h3>,
+      h4: ({ children }) => <h4 className="glassmorphism-text">{children}</h4>,
+      h5: ({ children }) => <h5 className="glassmorphism-text">{children}</h5>,
+      h6: ({ children }) => <h6 className="glassmorphism-text">{children}</h6>,
     }}>{post.markdown}</ReactMarkdown></div>
   </article><p><Link href="/blog/">← All articles</Link></p></main>;
 }
