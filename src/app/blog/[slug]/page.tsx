@@ -30,11 +30,19 @@ export default async function Article({ params }: { params: Promise<{ slug: stri
   const { slug } = await params;
   const post = await load(slug);
   return <main className="blog-shell"><BlogNav /><article className="glassmorph rounded-glass blog-article">
-    <header>{post.cover && <img className="blog-cover" src={assetUrl(slug, post.cover)} alt="" width="960" height="540" />}<h1 className="glassmorphism-text">{post.title}</h1>{post.description && <p className="blog-dek">{post.description}</p>}<PostDate value={post.updatedAt} /><Link className="blog-playground-link" href={`/lab/${slug}/`}>Open the playground →</Link></header>
+    <header>{post.cover && <img className="blog-cover" src={assetUrl(slug, post.cover)} alt="" width="960" height="540" />}<h1 className="glassmorphism-text">{post.title}</h1>{post.description && <p className="blog-dek glassmorphism-text">{post.description}</p>}<PostDate value={post.updatedAt} /><Link className="blog-playground-link glassmorphism-text" href={`/lab/${slug}/`}>Open the playground →</Link></header>
     <div className="blog-prose"><ReactMarkdown remarkPlugins={[remarkGfm]} urlTransform={source => {
       const safe = defaultUrlTransform(source);
       return safe ? assetUrl(slug, safe) : "";
     }} components={{
+      p: ({ children }) => <p className="glassmorphism-text">{children}</p>,
+      li: ({ children }) => <li className="glassmorphism-text">{children}</li>,
+      strong: ({ children }) => <strong className="glassmorphism-text">{children}</strong>,
+      em: ({ children }) => <em className="glassmorphism-text">{children}</em>,
+      blockquote: ({ children }) => <blockquote className="glassmorphism-text">{children}</blockquote>,
+      th: ({ children }) => <th className="glassmorphism-text">{children}</th>,
+      td: ({ children }) => <td className="glassmorphism-text">{children}</td>,
+      a: ({ children, href }) => <a className="glassmorphism-text" href={href}>{children}</a>,
       h1: ({ children }) => <h2 className="glassmorphism-text">{children}</h2>,
       h2: ({ children }) => <h2 className="glassmorphism-text">{children}</h2>,
       h3: ({ children }) => <h3 className="glassmorphism-text">{children}</h3>,

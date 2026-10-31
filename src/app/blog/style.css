@@ -2,6 +2,8 @@
 .blog-nav{display:flex;justify-content:space-between;margin-bottom:3rem;gap:1rem;font-weight:600}
 .blog-home{display:inline-flex;align-items:center;gap:.75rem}
 .blog-shell a{color:#80efdf;text-underline-offset:.22em}
+.blog-shell a:not(.blog-card){text-decoration-line:underline;text-decoration-thickness:1px}
+.blog-shell a:not(.blog-card):hover{text-decoration-thickness:2px}
 .blog-shell h1{font-family:var(--font-display);font-size:clamp(2rem,5vw,3.5rem);font-weight:800;line-height:1.15;letter-spacing:-.045em;max-width:25ch;margin:1.5rem 0 1rem;text-wrap:balance}
 .blog-dek{max-width:65ch;font-family:system-ui,sans-serif;font-size:clamp(1.125rem,2vw,1.35rem);font-weight:400;line-height:1.65;color:#c8e2eb;margin:0 0 1.25rem}
 .blog-playground-link{display:inline-block;font-weight:600;margin-top:.5rem}
