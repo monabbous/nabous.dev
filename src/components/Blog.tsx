@@ -7,7 +7,7 @@ export function assetUrl(slug: string, source: string): string {
 }
 
 export function PostCards({ posts }: { posts: Post[] }) {
-  return <div className="blog-cards">{posts.map(post => <Link className="glassmorph blog-card" href={`/blog/${post.project.slug}/`} key={post.project.slug}>
+  return <div className="blog-cards">{posts.map(post => <Link className="glassmorph rounded-glass blog-card" href={`/blog/${post.project.slug}/`} key={post.project.slug}>
     {post.cover && <img src={assetUrl(post.project.slug, post.cover)} alt="" width="960" height="540" loading="lazy" />}
     <div><h3>{post.title}</h3><PostDate value={post.updatedAt} /><p>{post.description}</p></div>
   </Link>)}</div>;

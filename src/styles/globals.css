@@ -15,6 +15,7 @@
   --breakpoint-ss: 390px;
 
   --font-display: "Cascadia Mono", "Noto Kufi Arabic", monospace;
+  --radius-glass: 0.25rem;
 }
 
 @import "./glassmorphism.css";
@@ -53,7 +54,7 @@
 }
 
 .rounderd-glass {
-  border-radius: 0.25rem;
+  border-radius: var(--radius-glass);
 }
 
 .card {

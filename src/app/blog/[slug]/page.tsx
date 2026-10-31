@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 export default async function Article({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const post = await load(slug);
-  return <main className="blog-shell"><BlogNav /><article className="glassmorph blog-article">
+  return <main className="blog-shell"><BlogNav /><article className="glassmorph rounded-glass blog-article">
     <header>{post.cover && <img className="blog-cover" src={assetUrl(slug, post.cover)} alt="" width="960" height="540" />}<h1>{post.title}</h1><PostDate value={post.updatedAt} /><Link href={`/lab/${slug}/`}>Open the playground →</Link></header>
     <div className="blog-prose"><ReactMarkdown remarkPlugins={[remarkGfm]} urlTransform={source => {
       const safe = defaultUrlTransform(source);
