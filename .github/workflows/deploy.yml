@@ -1,10 +1,9 @@
-name: Deploy
-
+name: Check, build and deploy
 on:
+  pull_request:
+    branches: [master]
   push:
     branches: [master]
-    paths:
-      - '**/**'
   workflow_dispatch:
     inputs:
       mode:
@@ -12,27 +11,76 @@ on:
         type: choice
         default: deploy
         options: [inspect, deploy]
+permissions:
+  contents: read
+concurrency:
+  group: nabous-dev-${{ github.ref }}
+  cancel-in-progress: false
 jobs:
-  deploy:
+  check:
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.mode != 'inspect' }}
     runs-on: ubuntu-latest
-    concurrency:
-      group: nabous-dev-production
-      cancel-in-progress: false
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
-        if: inputs.mode != 'inspect'
         with:
           node-version: '24'
-      - name: Validate runtime application
-        if: inputs.mode != 'inspect'
+      - name: Install dependencies and run tests
         run: |
           corepack enable
           corepack prepare pnpm@9.15.4 --activate
           pnpm install --frozen-lockfile
           pnpm test
+      - name: Build Next.js for endpoint verification
+        run: pnpm build
+      - name: Smoke-test generated favicon endpoints
+        run: |
+          pnpm exec next start -p 3100 > /tmp/next-start.log 2>&1 &
+          echo $! > /tmp/next-start.pid
+          trap 'kill $(cat /tmp/next-start.pid) 2>/dev/null || true' EXIT
+          node <<'NODE'
+          const assert = require('node:assert/strict');
+          const base = 'http://localhost:3100';
+          const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+          async function get(path) {
+            const response = await fetch(base + path);
+            assert.equal(response.status, 200, path + ' status');
+            return response;
+          }
+          (async () => {
+            let ready = false;
+            for (let i = 0; i < 30; i++) {
+              try { await get('/'); ready = true; break; } catch { await sleep(1000); }
+            }
+            assert.ok(ready, 'Next.js server failed to start');
+            for (const [path, size] of [['/icon', 32], ['/apple-icon', 180]]) {
+              const response = await get(path);
+              assert.match(response.headers.get('content-type') || '', /image\/png/);
+              const bytes = Buffer.from(await response.arrayBuffer());
+              assert.equal(bytes.subarray(0, 8).toString('hex'), '89504e470d0a1a0a', path + ' PNG signature');
+              assert.equal(bytes.readUInt32BE(16), size, path + ' width');
+              assert.equal(bytes.readUInt32BE(20), size, path + ' height');
+            }
+            const svg = await get('/nabous-dev-logo.svg');
+            assert.match(svg.headers.get('content-type') || '', /svg/);
+            const manifest = await get('/manifest.webmanifest');
+            assert.ok((await manifest.json()).icons.length > 0);
+            const html = await (await get('/')).text();
+            assert.match(html, /nabous-dev-logo\.svg/);
+            assert.match(html, /apple-icon/);
+            console.log('Favicon endpoints, dimensions, manifest and homepage metadata verified.');
+          })().catch(error => { console.error(error); process.exitCode = 1; });
+          NODE
+
+  build:
+    needs: check
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
       - name: Build production image on CI
-        if: inputs.mode != 'inspect'
         env:
           DEPLOY_SHA: ${{ github.sha }}
         run: |
@@ -40,9 +88,28 @@ jobs:
           docker build --label "org.opencontainers.image.revision=$DEPLOY_SHA" \
             -t "nabous-dev-runtime:$DEPLOY_SHA" .
           docker save "nabous-dev-runtime:$DEPLOY_SHA" | gzip > release.tar.gz
-          echo "IMAGE_SHA256=$(sha256sum release.tar.gz | cut -d ' ' -f 1)" >> "$GITHUB_ENV"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: production-image
+          path: release.tar.gz
+          retention-days: 1
+  deploy:
+    needs: build
+    if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 45
+    concurrency:
+      group: nabous-dev-production
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/download-artifact@v4
+        with:
+          name: production-image
+      - name: Compute archive checksum
+        run: echo "IMAGE_SHA256=$(sha256sum release.tar.gz | cut -d ' ' -f 1)" >> "$GITHUB_ENV"
       - name: Transfer production image
-        if: inputs.mode != 'inspect'
         uses: appleboy/scp-action@v1
         with:
           host: ${{ secrets.DROPLET_IP }}
@@ -52,7 +119,6 @@ jobs:
           source: release.tar.gz
           target: /opt/nabous.dev-incoming/${{ github.run_id }}-${{ github.run_attempt }}
       - name: Encode runtime configuration
-        if: inputs.mode != 'inspect'
         env:
           NABOUS_PROJECTS: ${{ vars.NABOUS_PROJECTS }}
         run: |
@@ -74,17 +140,6 @@ jobs:
           command_timeout: 30m
           script: |
             set -eu
-            if [ '${{ inputs.mode }}' = inspect ]; then
-              docker version --format '{{.Server.Version}}'
-              nginx -t
-              ls -l /etc/nginx/sites-enabled
-              cat /etc/nginx/sites-enabled/nabous.dev.conf
-              nginx -T 2>/dev/null | grep -E '^# configuration file|^[[:space:]]*(server_name|root |listen |location |try_files )'
-              docker ps --filter name=nabous --format '{{.Names}} {{.Image}} {{.Ports}}'
-              df -h / /var/lib/docker
-              docker system df
-              exit 0
-            fi
             if [ ! -d /opt/nabous.dev-runtime/.git ]; then
               git clone https://github.com/monabbous/nabous.dev.git /opt/nabous.dev-runtime
             fi
@@ -105,3 +160,22 @@ jobs:
             incoming=/opt/nabous.dev-incoming/${{ github.run_id }}-${{ github.run_attempt }}
             rm -f -- "$incoming/release.tar.gz"
             if [ -d "$incoming" ]; then rmdir -- "$incoming"; fi
+  inspect:
+    if: github.event_name == 'workflow_dispatch' && inputs.mode == 'inspect'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Inspect production prerequisites
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DROPLET_IP }}
+          username: root
+          passphrase: ${{ secrets.DROPLET_SSH_PASSPHRASE }}
+          key: ${{ secrets.DROPLET_SSH_KEY }}
+          script: |
+            docker version --format '{{.Server.Version}}'
+            nginx -t
+            ls -l /etc/nginx/sites-enabled
+            cat /etc/nginx/sites-enabled/nabous.dev.conf
+            docker ps --filter name=nabous --format '{{.Names}} {{.Image}} {{.Ports}}'
+            df -h / /var/lib/docker
+            docker system df
