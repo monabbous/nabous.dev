@@ -3,6 +3,8 @@ import assert from "node:assert/strict";
 import { articleMetadata, articleStructuredData } from "../src/lib/content-metadata";
 import { parseBlog, type Post } from "../src/lib/project-content";
 import { renderLabDocument } from "../src/lib/lab-document";
+import { siteIcons, faviconLinks } from "../src/constants/site-icons";
+import { metadata as rootMetadata } from "../src/constants/metadata";
 
 const post: Post = { project: { slug: "slidebox", repository: "monabbous/slidebox", ref: "main" }, title: "A CSS story", description: "Native inputs and margins.", cover: "assets/cover.webp", socialImage: "assets/social.jpg", socialImageWidth: 1920, socialImageHeight: 1080, markdown: "Body", updatedAt: "2026-10-31T12:00:00Z" };
 
@@ -11,7 +13,7 @@ test("article metadata uses a static social image, canonical URL, and website ic
   assert.equal(metadata.alternates?.canonical, "https://nabous.dev/blog/slidebox/");
   assert.match(JSON.stringify(metadata.openGraph), /https:\/\/nabous.dev\/project-assets\/slidebox\/assets\/social.jpg/);
   assert.match(JSON.stringify(metadata.twitter), /summary_large_image/);
-  assert.match(JSON.stringify(metadata.icons), /nabous-dev-logo.svg/);
+  assert.deepEqual(metadata.icons, siteIcons);
   assert.equal(articleStructuredData(post).dateModified, post.updatedAt);
   assert.equal(articleStructuredData(post).image, "https://nabous.dev/project-assets/slidebox/assets/social.jpg");
 });
@@ -30,7 +32,7 @@ test("the host injects server-rendered lab chrome and metadata while preserving 
   assert.ok(head.includes('<meta name="twitter:card" content="summary_large_image">'));
   assert.ok(head.includes('href="/generated/lab-shell.css"'));
   assert.ok(head.includes('href="https://nabous.dev/lab/slidebox/"'));
-  assert.ok(head.includes("nabous-dev-logo.svg"));
+  for (const link of faviconLinks) assert.ok(head.includes(link));
   assert.ok(html.includes('data-nabous-shell'));
   assert.ok(html.includes('<h1>Slidebox</h1><input type="checkbox">'));
   assert.ok(html.includes('src="./script.js"'));
@@ -52,4 +54,11 @@ test("local lab icons avoid a duplicate CDN and malformed image metadata falls b
   assert.doesNotMatch(html, /cdnjs.cloudflare.com/);
   assert.match(html, /assets\/fontawesome\/css\/all.min.css/);
   assert.ok(html.includes('property="og:image" content="https://nabous.dev/project-assets/slidebox/assets/social.jpg"'));
+});
+
+
+test("all Next and lab pages share one favicon definition", () => {
+  assert.deepEqual(rootMetadata.icons, siteIcons);
+  assert.equal(siteIcons.icon[0].url, "/nabous-dev-logo.svg");
+  assert.ok(faviconLinks.some(link => link.includes('rel="apple-touch-icon"')));
 });

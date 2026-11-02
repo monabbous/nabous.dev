@@ -1,9 +1,10 @@
-import { Metadata } from "next"
+import type { Metadata } from "next"
+import { siteIcons } from "./site-icons"
 
 
 export const metadata: Metadata = {
     metadataBase: new URL("https://nabous.dev"),
-    icons: '/nabous-dev-logo.svg',
+    icons: siteIcons,
     title: "Mohamed Nabous | Senior Software Developer",
     description: "Senior Fullstack Developer specialized in frontend, with 9 years' experience across 60+ diverse projects.",
     openGraph: {
