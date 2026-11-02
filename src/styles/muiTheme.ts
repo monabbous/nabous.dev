@@ -1,25 +1,15 @@
-'use client';
+"use client";
 
 import { createTheme } from "@mui/material/styles";
 
-
+// MUI requires concrete colors for its palette calculations; mirror palette.css.
 export const muiTheme = createTheme({
-    palette: {
-        primary: {
-            main: "rgb(94 234 212)"
-        }
-    },
-    cssVariables: {
-
-    },
-    colorSchemes: {
-        dark: {
-            palette: {
-                background: {
-                    default: "rgb(15 23 42)",
-                    paper: "rgb(15 23 42)",
-                }
-            }
-        },
-    },
-})
+  cssVariables: true,
+  palette: {
+    mode: "dark",
+    primary: { main: "#ffaa71", contrastText: "#102729" },
+    secondary: { main: "#80aaa3" },
+    text: { primary: "#eee7dd", secondary: "#b3c3bd" },
+    background: { default: "#102729", paper: "#1b3536" },
+  },
+});

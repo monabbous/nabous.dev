@@ -1,0 +1,15 @@
+/* Ember from Lumenmorph, grounded in muted teal. Shared by the site and lab shell. */
+:root {
+  color-scheme: dark;
+  --colors__background: #102729;
+  --colors__primary: #2d5051;
+  --colors__accent: #ffaa71;
+  --colors__highlight: #ffd4a3;
+  --colors__secondary: #80aaa3;
+  --colors__surface: #1b3536;
+  --colors__ember-surface: #302028;
+  --colors__deep: #0b1b1d;
+  --colors__line: #547674;
+  --colors__text: #eee7dd;
+  --colors__muted: #b3c3bd;
+}

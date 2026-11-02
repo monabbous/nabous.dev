@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 
-const COLOR_KEYS = ["background", "primary", "accent"] as const;
+const COLOR_KEYS = ["background", "primary", "accent", "secondary", "highlight", "deep", "text"] as const;
 
 type ColorsObject = Partial<Record<(typeof COLOR_KEYS)[number], string>>;
 

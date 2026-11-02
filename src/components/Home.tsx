@@ -148,7 +148,7 @@ const copy = {
 } as const;
 
 type Locale = keyof typeof copy;
-const navigationLinkClass = "rounded-glass lumenmorph-border lumen-glow-opacity-[0.01] lumen-border-opacity-[0.03] lumen-border-width-[2px] px-3 py-2 text-xs font-semibold text-white/85 hover:bg-white/10 min-h-11 flex items-center justify-center whitespace-nowrap";
+const navigationLinkClass = "rounded-glass lumenmorph-border lumen-glow-opacity-[0.01] lumen-border-opacity-[0.03] lumen-border-width-[2px] px-3 py-2 text-xs font-semibold text-foreground/85 hover:bg-accent/10 min-h-11 flex items-center justify-center whitespace-nowrap";
 
 export default function Home({ recentBlog }: { recentBlog: React.ReactNode }) {
   const CANVAS_ID = "server-scene-canvas";
@@ -416,7 +416,7 @@ export default function Home({ recentBlog }: { recentBlog: React.ReactNode }) {
             onClick={() =>
               setLocale((current) => (current === "en" ? "ar" : "en"))
             }
-            className="rounded-glass min-h-11 px-3 py-2 text-xs font-semibold text-white lumenmorph lumenmorph-border hover:lumen-glow-opacity-30 hover:lumen-border-opacity-90 cursor-pointer transition-[--lumen-glow-opacity,--lumen-border-opacity] duration-300 motion-reduce:transition-none"
+            className="rounded-glass min-h-11 px-3 py-2 text-xs font-semibold text-foreground lumenmorph lumenmorph-border hover:lumen-glow-opacity-30 hover:lumen-border-opacity-90 cursor-pointer transition-[--lumen-glow-opacity,--lumen-border-opacity] duration-300 motion-reduce:transition-none"
             aria-label={t.language}
           >
             <span className="lumenmorph-text">{t.language}</span>
@@ -679,10 +679,10 @@ export default function Home({ recentBlog }: { recentBlog: React.ReactNode }) {
         >
           <div className="w-full max-w-4xl space-y-5">
             <div className="space-y-2">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/60 lumenmorph-text">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-foreground/60 lumenmorph-text">
                 Nabous.dev
               </p>
-              <h2 className="text-3xl font-bold text-white sm:text-4xl lumenmorph-text">
+              <h2 className="text-3xl font-bold text-foreground sm:text-4xl lumenmorph-text">
                 {t.projects}
               </h2>
             </div>
@@ -691,7 +691,7 @@ export default function Home({ recentBlog }: { recentBlog: React.ReactNode }) {
                 href={`https://modo.websites.nabous.dev/${locale}/`}
                 target="_blank"
                 rel="noreferrer"
-                className="group relative min-h-64 bg-slate-950 md:min-h-0"
+                className="group relative min-h-64 bg-deep md:min-h-0"
                 aria-label={`${t.menuCta} — ${t.externalLabel}`}
               >
                 <video
@@ -705,8 +705,8 @@ export default function Home({ recentBlog }: { recentBlog: React.ReactNode }) {
                 >
                   <source src="/modo-demo.mp4" type="video/mp4" />
                 </video>
-                <span className="absolute inset-0 bg-gradient-to-t from-slate-950/65 via-transparent to-transparent" />
-                <span className="absolute bottom-5 inset-x-5 inline-flex w-fit items-center gap-3 lumenmorph lumenmorph-border px-4 py-3 text-sm font-bold text-white shadow-lg backdrop-blur-sm transition-colors group-hover:bg-cyan-500/25">
+                <span className="absolute inset-0 bg-gradient-to-t from-deep/65 via-transparent to-transparent" />
+                <span className="absolute bottom-5 inset-x-5 inline-flex w-fit items-center gap-3 lumenmorph lumenmorph-border px-4 py-3 text-sm font-bold text-foreground shadow-lg backdrop-blur-sm transition-colors group-hover:bg-accent/25">
                   <span className="lumenmorph-text">{t.menuCta}{" "}</span>
                   <span aria-hidden="true" className="text-lg lumenmorph-text leading-none">
                     ↗
@@ -714,39 +714,39 @@ export default function Home({ recentBlog }: { recentBlog: React.ReactNode }) {
                 </span>
               </a>
               <div className="p-6 sm:p-8 text-left rtl:text-right">
-                <div className="text-[0.65rem] uppercase tracking-[0.18em] text-cyan-100/70 lumenmorph-text">
+                <div className="text-[0.65rem] uppercase tracking-[0.18em] text-accent/80 lumenmorph-text">
                   {t.menuEyebrow}
                 </div>
-                <h3 className="mt-2 text-2xl font-semibold text-white lumenmorph-text">
+                <h3 className="mt-2 text-2xl font-semibold text-foreground lumenmorph-text">
                   {t.menuTitle}
                 </h3>
-                <p className="mt-3 text-sm leading-7 text-white/75 lumenmorph-text">
+                <p className="mt-3 text-sm leading-7 text-foreground/75 lumenmorph-text">
                   {t.menuBody}
                 </p>
                 <a
                   href="https://websites.nabous.dev"
                   target="_blank"
                   rel="noreferrer"
-                  className="mt-7 block border-t border-white/15 pt-5 group"
+                  className="mt-7 block border-t border-secondary/15 pt-5 group"
                   aria-label={`${t.websitesCta} — ${t.externalLabel}`}
                 >
-                  <div className="text-[0.65rem] uppercase tracking-[0.18em] text-white/60 lumenmorph-text">
+                  <div className="text-[0.65rem] uppercase tracking-[0.18em] text-foreground/60 lumenmorph-text">
                     {t.websitesEyebrow}
                   </div>
-                  <div className="mt-1 text-lg font-semibold text-white lumenmorph-text">
+                  <div className="mt-1 text-lg font-semibold text-foreground lumenmorph-text">
                     {t.websitesTitle}
                   </div>
-                  <div className="mt-2 text-sm text-white/75 lumenmorph-text">
+                  <div className="mt-2 text-sm text-foreground/75 lumenmorph-text">
                     {t.websitesBody}
                   </div>
-                  <div className="mt-4 text-sm font-semibold text-white group-hover:text-cyan-100 lumenmorph-text">
+                  <div className="mt-4 text-sm font-semibold text-foreground group-hover:text-highlight lumenmorph-text">
                     {t.websitesCta} <span aria-hidden="true">↗</span>
                   </div>
                 </a>
               </div>
             </div>
             <div className="grid gap-3 sm:grid-cols-3">
-              <h3 className="sm:col-span-3 text-xs font-semibold uppercase tracking-[0.18em] text-white/60 lumenmorph-text">
+              <h3 className="sm:col-span-3 text-xs font-semibold uppercase tracking-[0.18em] text-foreground/60 lumenmorph-text">
                 {t.proofTitle}
               </h3>
               <a
@@ -756,10 +756,10 @@ export default function Home({ recentBlog }: { recentBlog: React.ReactNode }) {
                 className="rounded-glass p-4 lumenmorph lumenmorph-border hover:lumen-glow-opacity-30 hover:lumen-border-opacity-90 transition-[--lumen-glow-opacity,--lumen-border-opacity] duration-300 motion-reduce:transition-none text-left rtl:text-right"
                 aria-label={`${t.pixelTitle} — ${t.externalLabel}`}
               >
-                <h3 className="font-semibold text-white lumenmorph-text">
+                <h3 className="font-semibold text-foreground lumenmorph-text">
                   {t.pixelTitle}
                 </h3>
-                <p className="mt-2 text-xs leading-5 text-white/70 lumenmorph-text">
+                <p className="mt-2 text-xs leading-5 text-foreground/70 lumenmorph-text">
                   {t.pixelBody}
                 </p>
               </a>
@@ -770,10 +770,10 @@ export default function Home({ recentBlog }: { recentBlog: React.ReactNode }) {
                 className="rounded-glass p-4 lumenmorph lumenmorph-border hover:lumen-glow-opacity-30 hover:lumen-border-opacity-90 transition-[--lumen-glow-opacity,--lumen-border-opacity] duration-300 motion-reduce:transition-none text-left rtl:text-right"
                 aria-label={`${t.kudoTitle} — ${t.externalLabel}`}
               >
-                <h3 className="font-semibold text-white lumenmorph-text">
+                <h3 className="font-semibold text-foreground lumenmorph-text">
                   {t.kudoTitle}
                 </h3>
-                <p className="mt-2 text-xs leading-5 text-white/70 lumenmorph-text">
+                <p className="mt-2 text-xs leading-5 text-foreground/70 lumenmorph-text">
                   {t.kudoBody}
                 </p>
               </a>
@@ -784,10 +784,10 @@ export default function Home({ recentBlog }: { recentBlog: React.ReactNode }) {
                 className="rounded-glass p-4 lumenmorph lumenmorph-border hover:lumen-glow-opacity-30 hover:lumen-border-opacity-90 transition-[--lumen-glow-opacity,--lumen-border-opacity] duration-300 motion-reduce:transition-none text-left rtl:text-right"
                 aria-label={`${t.avantProjectTitle} — ${t.externalLabel}`}
               >
-                <h3 className="font-semibold text-white lumenmorph-text">
+                <h3 className="font-semibold text-foreground lumenmorph-text">
                   {t.avantProjectTitle}
                 </h3>
-                <p className="mt-2 text-xs leading-5 text-white/70 lumenmorph-text">
+                <p className="mt-2 text-xs leading-5 text-foreground/70 lumenmorph-text">
                   {t.avantProjectBody}
                 </p>
               </a>
@@ -801,13 +801,13 @@ export default function Home({ recentBlog }: { recentBlog: React.ReactNode }) {
         >
           <div className="w-full max-w-4xl space-y-8">
             <div className="max-w-2xl space-y-3">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/60 lumenmorph-text">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-foreground/60 lumenmorph-text">
                 {t.careerEyebrow}
               </p>
-              <h2 className="text-3xl font-bold leading-tight text-white sm:text-4xl lumenmorph-text">
+              <h2 className="text-3xl font-bold leading-tight text-foreground sm:text-4xl lumenmorph-text">
                 {t.careerTitle}
               </h2>
-              <p className="text-sm leading-7 text-white/75 lumenmorph-text">
+              <p className="text-sm leading-7 text-foreground/75 lumenmorph-text">
                 {t.careerLead}
               </p>
             </div>
@@ -817,29 +817,29 @@ export default function Home({ recentBlog }: { recentBlog: React.ReactNode }) {
                 [t.avantPeriod, t.avantTitle, t.avantBody],
                 [t.impactPeriod, t.impactTitle, t.impactBody],
               ].map(([period, title, body]) => (
-                <li key={title} className="relative bg-slate-950/15 p-5 sm:p-6">
-                  <span className="mb-7 block h-2 w-2 bg-cyan-200 shadow-[0_0_18px_rgba(103,232,249,0.9)]" />
-                  <p className="text-xs font-semibold tracking-[0.16em] text-cyan-100/70 lumenmorph-text">
+                <li key={title} className="relative bg-deep/15 p-5 sm:p-6">
+                  <span className="mb-7 block h-2 w-2 bg-accent shadow-[0_0_12px_rgb(from_var(--colors__accent)_r_g_b_/_0.4)]" />
+                  <p className="text-xs font-semibold tracking-[0.16em] text-accent/80 lumenmorph-text">
                     {period}
                   </p>
-                  <h3 className="mt-2 text-lg font-semibold text-white lumenmorph-text">
+                  <h3 className="mt-2 text-lg font-semibold text-foreground lumenmorph-text">
                     {title}
                   </h3>
-                  <p className="mt-3 text-sm leading-6 text-white/70 lumenmorph-text">
+                  <p className="mt-3 text-sm leading-6 text-foreground/70 lumenmorph-text">
                     {body}
                   </p>
                 </li>
               ))}
             </ol>
-            <div className="border-t border-white/15 pt-5">
-              <h3 className="text-xs font-semibold uppercase tracking-[0.18em] text-white/60 lumenmorph-text">
+            <div className="border-t border-secondary/15 pt-5">
+              <h3 className="text-xs font-semibold uppercase tracking-[0.18em] text-foreground/60 lumenmorph-text">
                 {t.skillsTitle}
               </h3>
               <ul className="mt-3 flex flex-wrap gap-2">
                 {t.skills.map((skill) => (
                   <li
                     key={skill}
-                    className="lumenmorph lumenmorph-border px-3 py-2 text-xs text-white/80"
+                    className="lumenmorph lumenmorph-border px-3 py-2 text-xs text-foreground/80"
                   >
                     <span className="lumenmorph-text">{skill}</span>
                   </li>
@@ -852,7 +852,7 @@ export default function Home({ recentBlog }: { recentBlog: React.ReactNode }) {
       {play && !paused && !needsLandscape && (
         <button
           type="button"
-          className="fixed top-4 right-4 z-20 px-4 py-2 lumenmorph lumenmorph-border hover:lumen-glow-opacity-30 hover:lumen-border-opacity-90 text-white  text-sm backdrop-blur-md shadow-lg active:scale-95 transition-transform"
+          className="fixed top-4 right-4 z-20 px-4 py-2 lumenmorph lumenmorph-border hover:lumen-glow-opacity-30 hover:lumen-border-opacity-90 text-foreground  text-sm backdrop-blur-md shadow-lg active:scale-95 transition-transform"
           onClick={pauseGame}
         >
           {t.pause}
@@ -865,13 +865,13 @@ export default function Home({ recentBlog }: { recentBlog: React.ReactNode }) {
         <TutorialCard onClose={() => setShowTutorial(false)} isTouch={isTouchDevice} />
       )} */}
       {play && needsLandscape && (
-        <div className="fixed inset-0 z-30 flex items-center justify-center bg-black/70 text-white text-center px-6">
+        <div className="fixed inset-0 z-30 flex items-center justify-center bg-black/70 text-foreground text-center px-6">
           <div className="space-y-3 max-w-md">
             <h2 className="text-2xl font-bold">{t.rotateTitle}</h2>
-            <p className="text-sm text-white/80">{t.rotateBody}</p>
+            <p className="text-sm text-foreground/80">{t.rotateBody}</p>
             <button
               type="button"
-              className="mt-2 px-4 py-2 rounded-lg bg-white/15 border border-white/25 text-white text-sm backdrop-blur-md shadow-lg"
+              className="mt-2 px-4 py-2 rounded-lg bg-accent/15 border border-secondary/25 text-foreground text-sm backdrop-blur-md shadow-lg"
               onClick={quitToHome}
             >
               {t.backHome}
@@ -921,7 +921,7 @@ function PauseScreen({
 
   return (
     <div className="fixed inset-0 z-30 flex items-center justify-center bg-black/70 backdrop-blur-lg px-4">
-      <div className="lumenmorph lumenmorph-border text-white w-[min(90vw,520px)] p-6 space-y-5">
+      <div className="lumenmorph lumenmorph-border text-foreground w-[min(90vw,520px)] p-6 space-y-5">
         <div className="flex items-center justify-between gap-3">
           <h2 className="text-2xl font-bold">{labels.paused}</h2>
           <button
@@ -932,10 +932,10 @@ function PauseScreen({
             {labels.backHome}
           </button>
         </div>
-        <p className="text-sm text-white/80">{labels.mouseFree}</p>
+        <p className="text-sm text-foreground/80">{labels.mouseFree}</p>
         <div className="grid grid-cols-2 gap-3 text-sm">
           <div className="lumenmorph lumenmorph-border p-3 space-y-1">
-            <div className="text-xs uppercase tracking-wide text-white/60">
+            <div className="text-xs uppercase tracking-wide text-foreground/60">
               {labels.movement}
             </div>
             <div>WASD / Left Stick</div>
@@ -943,7 +943,7 @@ function PauseScreen({
             <div>Space to jump</div>
           </div>
           <div className="lumenmorph lumenmorph-border p-3 space-y-1">
-            <div className="text-xs uppercase tracking-wide text-white/60">
+            <div className="text-xs uppercase tracking-wide text-foreground/60">
               {labels.actions}
             </div>
             <div>E / B to interact</div>
@@ -977,9 +977,9 @@ function _ShooterHud({ score, timeMs }: { score: number; timeMs: number }) {
   const minutes = Math.floor(seconds / 60);
   const secPad = String(seconds % 60).padStart(2, "0");
   return (
-    <div className="fixed top-4 left-4 z-20 flex flex-col gap-2 min-w-[220px] text-white pointer-events-none">
+    <div className="fixed top-4 left-4 z-20 flex flex-col gap-2 min-w-[220px] text-foreground pointer-events-none">
       <div className="lumenmorph lumenmorph-border backdrop-blur-md px-4 py-3 shadow-lg">
-        <div className="text-xs uppercase tracking-wide text-white/60 mb-1">
+        <div className="text-xs uppercase tracking-wide text-foreground/60 mb-1">
           Status
         </div>
         <div className="flex items-center justify-between">
@@ -993,8 +993,8 @@ function _ShooterHud({ score, timeMs }: { score: number; timeMs: number }) {
           </span>
         </div>
       </div>
-      <div className="fixed inset-0 pointer-events-none flex items-center justify-center text-white/70">
-        <div className="w-5 h-5 border border-white/50 rounded-glass" />
+      <div className="fixed inset-0 pointer-events-none flex items-center justify-center text-foreground/70">
+        <div className="w-5 h-5 border border-secondary/50 rounded-glass" />
       </div>
     </div>
   );
@@ -1008,14 +1008,14 @@ function _TutorialCard({
   isTouch: boolean;
 }) {
   return (
-    <div className="fixed bottom-6 left-4 z-20 w-[min(360px,90vw)] text-white pointer-events-auto">
+    <div className="fixed bottom-6 left-4 z-20 w-[min(360px,90vw)] text-foreground pointer-events-auto">
       <div className="lumenmorph lumenmorph-border backdrop-blur-xl shadow-xl p-4 space-y-3">
         <div className="flex items-center justify-between gap-3">
           <div className="text-sm font-semibold">How to play</div>
           <button
             type="button"
             onClick={onClose}
-            className="text-xs px-2 py-1 rounded-md bg-white/15 border border-white/25 hover:lumen-glow-opacity-30 hover:lumen-border-opacity-90"
+            className="text-xs px-2 py-1 rounded-md bg-accent/15 border border-secondary/25 hover:lumen-glow-opacity-30 hover:lumen-border-opacity-90"
           >
             Got it
           </button>
@@ -1145,7 +1145,7 @@ function TouchButton({
     <button
       type="button"
       aria-label={aria}
-      className={`px-4 py-3 lumenmorph lumenmorph-border text-white text-xs uppercase tracking-wide backdrop-blur-md shadow-lg active:scale-95 transition-transform pointer-events-auto ${wide ? "min-w-[84px]" : "min-w-[64px]"}`}
+      className={`px-4 py-3 lumenmorph lumenmorph-border text-foreground text-xs uppercase tracking-wide backdrop-blur-md shadow-lg active:scale-95 transition-transform pointer-events-auto ${wide ? "min-w-[84px]" : "min-w-[64px]"}`}
       {...rest}
     >
       {label}
@@ -1231,20 +1231,20 @@ function AnalogStick({
 
   return (
     <div
-      className="relative w-[140px] h-[140px] rounded-full bg-white/5 border border-white/15 backdrop-blur-xl text-white"
+      className="relative w-[140px] h-[140px] rounded-full bg-accent/5 border border-secondary/15 backdrop-blur-xl text-foreground"
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
       onPointerLeave={handlePointerLeave}
     >
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none text-xs uppercase tracking-wide text-white/60">
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none text-xs uppercase tracking-wide text-foreground/60">
         {label}
       </div>
-      <div className="absolute inset-2 rounded-full border border-white/15" />
-      <div className="absolute inset-8 rounded-full border border-white/15" />
+      <div className="absolute inset-2 rounded-full border border-secondary/15" />
+      <div className="absolute inset-8 rounded-full border border-secondary/15" />
       <div
-        className="absolute top-1/2 left-1/2 w-12 h-12 rounded-full bg-white/30 border border-white/40 shadow-lg pointer-events-none"
+        className="absolute top-1/2 left-1/2 w-12 h-12 rounded-full bg-accent/30 border border-secondary/40 shadow-lg pointer-events-none"
         style={{
           transform: `translate(calc(-50% + ${thumb.x}px), calc(-50% + ${thumb.y}px))`,
         }}

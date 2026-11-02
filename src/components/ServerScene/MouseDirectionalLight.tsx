@@ -1,9 +1,10 @@
+import { useCssVarsColors } from "@nabous.dev/providers/ColorsProvider";
 import { useFrame, useThree } from "@react-three/fiber";
 import React, { useMemo, useRef } from "react";
 import * as THREE from "three";
 
 export function MouseSpotLight({
-  color = "#ff0000",
+  color,
   intensity = 45,
   distance = 45,
   angle = 0.35,
@@ -21,6 +22,7 @@ export function MouseSpotLight({
   backOffset?: number;
   targetDistance?: number;
 }) {
+  const colors = useCssVarsColors();
   const light = useRef<THREE.SpotLight>(null);
   const target = useRef<THREE.Object3D>(null);
   const { camera, mouse } = useThree();
@@ -53,7 +55,7 @@ export function MouseSpotLight({
     <>
       <spotLight
         ref={light}
-        color={color}
+        color={color ?? colors.accent}
         intensity={intensity}
         distance={distance}
         angle={angle}

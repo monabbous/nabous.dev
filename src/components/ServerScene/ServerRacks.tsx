@@ -2,21 +2,13 @@ import { useCssVarsColors } from "@nabous.dev/providers/ColorsProvider";
 import { RoundedBox } from "@react-three/drei";
 import React from "react";
 
-// export const screenMaterial = (
-//   <meshLambertMaterial
-//     color={"var(--colors__accent)"}
-//     emissive={0x00b2b2}
-//     emissiveIntensity={0.5}
-//   />
-// );
-
 export function ScreenMaterial({ powerOn = true }: { powerOn?: boolean }) {
   const colors = useCssVarsColors();
 
   return (
     <meshLambertMaterial
       color={colors.accent}
-      emissive={0x00b2b2}
+      emissive={colors.accent}
       emissiveIntensity={powerOn ? 0.6 : 0.1}
     />
   );

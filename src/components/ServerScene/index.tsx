@@ -78,9 +78,6 @@ export function ServerScene({
   const playerRef = useRef<RapierRigidBody | null>(null);
   const lookRef = useRef({ yaw: 0, pitch: 0 });
   const isGameActive = play && !paused;
-  const neonMagenta = "#ff2bd4";
-  const neonCyan = "#32f8ff";
-  const bgCyber = "#05040d";
 
   useEffect(() => {
     if (!onObjectives) return;
@@ -138,7 +135,7 @@ export function ServerScene({
           <group name={"sun-group"} position={[0, 10, -100]}>
             <directionalLight
               name={"sun-light"}
-              color={"white"}
+              color={colors.highlight}
               intensity={20}
               // intensity={0}
               // castShadow
@@ -146,11 +143,11 @@ export function ServerScene({
             />
             <mesh name={"sun-object"}>
               <sphereGeometry args={[5, 32, 32]} />
-              <meshLambertMaterial emissive={"white"} emissiveIntensity={20} />
+              <meshLambertMaterial emissive={colors.accent} emissiveIntensity={20} />
             </mesh>
           </group>
           <pointLight
-            color={isGameActive ? neonCyan : "white"}
+            color={colors.secondary}
             intensity={isGameActive ? 0 : 10000}
             // intensity={0}
             position={[10, 100, -10]}
@@ -158,7 +155,7 @@ export function ServerScene({
             // visible={false}
           />
           <spotLight
-            color={isGameActive ? neonMagenta : "white"}
+            color={colors.highlight}
             intensity={isGameActive ? 0 : 2000}
             // intensity={0}
             position={[30, 80, 30]}
@@ -176,15 +173,15 @@ export function ServerScene({
           />
           <ambientLight
             intensity={isGameActive ? 0 : 1.75}
-            color={isGameActive ? "#6af" : "white"}
+            color={colors.text}
           />
           <directionalLight
-            color={isGameActive ? neonCyan : "white"}
+            color={colors.secondary}
             intensity={isGameActive ? 0 : 1}
             position={[10, 0, -10]}
           />
           <directionalLight
-            color={isGameActive ? neonMagenta : "white"}
+            color={colors.highlight}
             intensity={isGameActive ? 0 : 0.5}
             position={[0, 0, 100]}
           />
@@ -206,8 +203,8 @@ export function ServerScene({
               transparent
               side={FrontSide}
               emissiveIntensity={0}
-              color={isGameActive ? bgCyber : colors.background}
-              emissive={isGameActive ? neonMagenta : colors.background}
+              color={isGameActive ? colors.deep : colors.background}
+              emissive={isGameActive ? colors.accent : colors.background}
               dithering
             />
           </mesh>
@@ -353,7 +350,7 @@ export function ServerScene({
             <mesh scale={100}>
               <sphereGeometry args={[1, 64, 64]} />
               <Color
-                color={isGameActive ? bgCyber : colors.background}
+                color={isGameActive ? colors.deep : colors.background}
                 alpha={1}
                 mode="normal"
               />
@@ -366,6 +363,7 @@ export function ServerScene({
 }
 
 const Shard = ({ position }: { position: THREE.Vector3 }) => {
+  const colors = useCssVarsColors();
   const ref = useRef<THREE.Mesh>(null);
   useFrame((_, dt) => {
     if (!ref.current) return;
@@ -378,8 +376,8 @@ const Shard = ({ position }: { position: THREE.Vector3 }) => {
     <mesh ref={ref} position={position} castShadow receiveShadow>
       <icosahedronGeometry args={[0.6, 0]} />
       <meshStandardMaterial
-        color="#6bffef"
-        emissive="#52f0ff"
+        color={colors.secondary}
+        emissive={colors.accent}
         emissiveIntensity={2}
         metalness={0.3}
         roughness={0.2}
@@ -395,6 +393,7 @@ const HackTerminal = ({
   position: THREE.Vector3;
   hacked: boolean;
 }) => {
+  const colors = useCssVarsColors();
   const ref = useRef<THREE.Mesh>(null);
   useFrame((_, dt) => {
     if (!ref.current) return;
@@ -406,8 +405,8 @@ const HackTerminal = ({
       <mesh ref={ref} castShadow receiveShadow>
         <boxGeometry args={[1, 1.8, 0.6]} />
         <meshStandardMaterial
-          color={hacked ? "#1b1b1f" : "#1a1f3a"}
-          emissive={hacked ? "#33ff88" : "#ff2bd4"}
+          color={hacked ? colors.deep : colors.primary}
+          emissive={hacked ? colors.secondary : colors.accent}
           emissiveIntensity={hacked ? 1.4 : 1.9}
           metalness={0.35}
           roughness={0.3}
@@ -416,8 +415,8 @@ const HackTerminal = ({
       <mesh position={[0, 1.1, 0.36]}>
         <planeGeometry args={[0.6, 0.6]} />
         <meshStandardMaterial
-          color={hacked ? "#33ff88" : "#52f0ff"}
-          emissive={hacked ? "#33ff88" : "#52f0ff"}
+          color={hacked ? colors.secondary : colors.accent}
+          emissive={hacked ? colors.secondary : colors.accent}
           emissiveIntensity={1.5}
           metalness={0.1}
           roughness={0.35}
@@ -430,6 +429,7 @@ const HackTerminal = ({
 };
 
 const TargetDummy = ({ position }: { position: THREE.Vector3 }) => {
+  const colors = useCssVarsColors();
   const ref = useRef<THREE.Mesh>(null);
   useFrame((_, dt) => {
     if (!ref.current) return;
@@ -440,8 +440,8 @@ const TargetDummy = ({ position }: { position: THREE.Vector3 }) => {
     <mesh ref={ref} position={position} castShadow receiveShadow>
       <icosahedronGeometry args={[1.1, 1]} />
       <meshStandardMaterial
-        color="#ff2bd4"
-        emissive="#52f0ff"
+        color={colors.accent}
+        emissive={colors.accent}
         emissiveIntensity={2.4}
         metalness={0.4}
         roughness={0.25}
@@ -799,6 +799,7 @@ function PlayerController({
   onInteract,
   onFire,
 }: PlayerControllerProps) {
+  const colors = useCssVarsColors();
   const inputRef = useRef<InputState>({ ...baseInputState });
   const jumpBuffer = useRef(false);
   const interactBuffer = useRef(false);
@@ -1043,7 +1044,7 @@ function PlayerController({
       <mesh castShadow receiveShadow scale={0.1}>
         <capsuleGeometry args={[0.5, 2, 6, 12]} />
         <meshStandardMaterial
-          color="#7dd3fc"
+          color={colors.secondary}
           metalness={0.1}
           roughness={0.6}
           emissiveIntensity={0.3}

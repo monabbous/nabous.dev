@@ -2,19 +2,21 @@
 @import url("https://fonts.googleapis.com/css2?family=Cascadia+Mono:ital,wght@0,200..700;1,200..700&family=Noto+Kufi+Arabic:wght@400;500;600;700&display=swap");
 
 @import "tailwindcss";
+@import "./palette.css";
 @import "@monabbous/lumenmorph/motion";
 
 @plugin "@monabbous/lumenmorph/tailwind";
 @source inline("lumenmorph");
 
 @theme {
-  /* --*: initial;
-
-    --color-*: initial; */
-
   --color-primary: var(--colors__primary);
   --color-accent: var(--colors__accent);
   --color-background: var(--colors__background);
+  --color-secondary: var(--colors__secondary);
+  --color-highlight: var(--colors__highlight);
+  --color-foreground: var(--colors__text);
+  --color-muted: var(--colors__muted);
+  --color-deep: var(--colors__deep);
 
   --breakpoint-ss: 390px;
 
@@ -23,13 +25,10 @@
 }
 
 :root {
-  --colors__background: #063c59;
-  --colors__primary: #2a5b7c;
-  --colors__accent: #00b2b2;
-
-  --lumen-bg: rgb(from var(--colors__background) r g b / 0.4);
-  --lumen-solid-bg: var(--colors__background);
+  --lumen-bg: rgb(from var(--colors__ember-surface) r g b / 0.4);
+  --lumen-solid-bg: var(--colors__ember-surface);
   --lumen-glow-color: var(--colors__accent);
+  --lumen-border-glow-color: var(--colors__highlight);
   --lumen-glow-size: 30vmax;
   --lumen-glow-opacity: 0.1;
   --lumen-blur: 40px;
@@ -38,8 +37,10 @@
   --lumen-border-color: transparent;
   --lumen-border-opacity: 0.3;
   --lumen-text-glow-size: 80vmax;
-  --lumen-text-fill: rgb(255 255 255 / 0.7);
-  --lumen-text-outline: rgb(255 255 255 / 0.2);
+  --lumen-text-color: var(--colors__text);
+  --lumen-text-glow-opacity: 0.5;
+  --lumen-text-fill: rgb(from var(--colors__text) r g b / 0.8);
+  --lumen-text-outline: rgb(from var(--colors__highlight) r g b / 0.2);
 }
 
 @property --lumen-glow-opacity {
@@ -72,7 +73,18 @@
 }
 
 body {
+  color: var(--colors__text);
   font-family: var(--font-display);
+}
+
+::selection {
+  background: var(--colors__accent);
+  color: var(--colors__deep);
+}
+
+:focus-visible {
+  outline: 2px solid var(--colors__accent);
+  outline-offset: 3px;
 }
 
 @media (prefers-reduced-motion: no-preference) {
