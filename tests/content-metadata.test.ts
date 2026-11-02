@@ -36,3 +36,20 @@ test("the host injects server-rendered lab chrome and metadata while preserving 
   assert.ok(html.includes('src="./script.js"'));
   assert.equal((head.match(/<title>/g) ?? []).length, 1);
 });
+
+test("nested example metadata uses its own canonical URL, title and static social image", () => {
+  const html = renderLabDocument('<html><head><title>Old</title><meta name="lab:title" content="Glass &amp; light"><meta content="./og.png?v=abc" name="lab:image"><meta name="lab:image:width" content="1200"><meta name="lab:image:height" content="630"><meta name="description" content="Edit &amp; share."></head><body>Example</body></html>', post.project, post, ["examples", "climate", "index.html"]);
+  assert.match(html, /<title>Glass &amp; light \| nabous.dev<\/title>/);
+  assert.match(html, /rel="canonical" href="https:\/\/nabous.dev\/lab\/slidebox\/examples\/climate\/"/);
+  assert.match(html, /property="og:image" content="https:\/\/nabous.dev\/lab\/slidebox\/examples\/climate\/og.png\?v=abc"/);
+  assert.match(html, /property="og:image:width" content="1200"/);
+  assert.match(html, /name="twitter:image" content="https:\/\/nabous.dev\/lab\/slidebox\/examples\/climate\/og.png\?v=abc"/);
+  assert.doesNotMatch(html, /&amp;amp;/);
+});
+
+test("local lab icons avoid a duplicate CDN and malformed image metadata falls back", () => {
+  const html = renderLabDocument('<html><head><link rel="stylesheet" href="../../assets/fontawesome/css/all.min.css"><meta name="lab:image" content="http://["></head><body></body></html>', post.project, post);
+  assert.doesNotMatch(html, /cdnjs.cloudflare.com/);
+  assert.match(html, /assets\/fontawesome\/css\/all.min.css/);
+  assert.ok(html.includes('property="og:image" content="https://nabous.dev/project-assets/slidebox/assets/social.jpg"'));
+});

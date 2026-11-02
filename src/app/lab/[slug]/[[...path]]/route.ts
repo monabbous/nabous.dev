@@ -9,19 +9,20 @@ export async function GET(request: Request, { params }: { params: Promise<{ slug
   const project = readProjects().find(project => project.slug === slug);
   if (!project) return new Response("Not found", { status: 404 });
   const url = new URL(request.url);
-  if (!path?.length && !url.pathname.endsWith("/")) {
+  const directory = !path?.length || !path.at(-1)?.includes(".");
+  if (directory && !url.pathname.endsWith("/")) {
     url.pathname += "/";
     return new Response(null, { status: 308, headers: { Location: url.pathname + url.search } });
   }
   try {
-    const parts = path?.length ? path : ["index.html"];
+    const parts = directory ? [...(path ?? []), "index.html"] : path!;
     const response = await fetchContent(project, ["lab", ...parts]);
     if (!response.ok) return new Response("Content unavailable", { status: response.status === 404 ? 404 : 502 });
     const extension = parts.at(-1)?.split(".").at(-1)?.toLowerCase() ?? "";
     let body: BodyInit | null = response.body;
     if (extension === "html") {
       const post = await getPost(project).catch(() => null);
-      body = renderLabDocument(await response.text(), project, post);
+      body = renderLabDocument(await response.text(), project, post, parts);
     }
     return new Response(body, { headers: {
       "Content-Type": types[extension] ?? "application/octet-stream",

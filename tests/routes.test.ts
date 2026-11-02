@@ -17,6 +17,15 @@ test("runtime proxies preserve paths, MIME types, directory indexes, and failure
     const index = await lab(new Request("https://nabous.dev/lab/slidebox/"), { params: Promise.resolve({ slug: "slidebox" }) });
     assert.match(index.headers.get("content-type")!, /text\/html/);
     assert.ok(urls.some(url => url.endsWith("/public/lab/index.html")));
+    const nestedRedirect = await lab(new Request("https://nabous.dev/lab/slidebox/examples/climate?view=code"), { params: Promise.resolve({ slug: "slidebox", path: ["examples", "climate"] }) });
+    assert.equal(nestedRedirect.status, 308);
+    assert.equal(nestedRedirect.headers.get("location"), "/lab/slidebox/examples/climate/?view=code");
+    const nested = await lab(new Request("https://nabous.dev/lab/slidebox/examples/climate/"), { params: Promise.resolve({ slug: "slidebox", path: ["examples", "climate"] }) });
+    assert.equal(nested.status, 200);
+    assert.ok(urls.some(url => url.endsWith("/public/lab/examples/climate/index.html")));
+    assert.match(nested.headers.get("content-type")!, /text\/html/);
+    const png = await lab(new Request("https://nabous.dev/lab/slidebox/examples/climate/og.png"), { params: Promise.resolve({ slug: "slidebox", path: ["examples", "climate", "og.png"] }) });
+    assert.equal(png.headers.get("content-type"), "image/png");
     const css = await lab(new Request("https://nabous.dev/lab/slidebox/style.css"), { params: Promise.resolve({ slug: "slidebox", path: ["style.css"] }) });
     assert.match(css.headers.get("content-type")!, /text\/css/);
     assert.equal(css.headers.get("cache-control"), "no-store");
