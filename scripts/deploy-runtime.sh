@@ -19,6 +19,8 @@ fi
 cd "$APP"
 git fetch origin "$DEPLOY_SHA"
 git switch --detach "$DEPLOY_SHA"
+# Retain the live container and one rollback without accumulating old releases.
+python3 scripts/cleanup-runtime.py
 # Runtime configuration is deliberately absent from the Docker build.
 docker build -t "nabous-dev-runtime:$DEPLOY_SHA" -f Dockerfile .
 printf '%s' "$PROJECTS_BASE64" | base64 --decode > "$BACKUP/projects.json"
@@ -76,4 +78,7 @@ if ! curl --fail --silent --show-error --retry 10 --retry-all-errors --retry-del
   exit 1
 fi
 printf '%s\n' "$DEPLOY_SHA" > "$BACKUP/deployed-sha"
+trap - EXIT
+# Cleanup failure must not roll back an already healthy deployment.
+python3 scripts/cleanup-runtime.py || echo 'Warning: runtime cleanup failed.'
 echo "Runtime deployed. Previous container: ${OLD:-none}. Backup: $BACKUP"
