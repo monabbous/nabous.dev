@@ -1,5 +1,6 @@
 import type { Post, Project } from "./project-content";
 import { articleSocialImage } from "./content-metadata";
+import { faviconLinks } from "../constants/site-icons";
 
 const escape = (value: string) => value.replaceAll("&", "&amp;").replaceAll('"', "&quot;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 
@@ -31,7 +32,7 @@ export function renderLabDocument(source: string, project: Project, post?: Post 
   const meta = (key: string, value: string, property = false) => `<meta ${property ? "property" : "name"}="${key}" content="${escape(value)}">`;
   const head = [
     `<title>${escape(title)}</title>`, meta("description", description),
-    `<link rel="canonical" href="${url}">`, '<link rel="icon" href="/nabous-dev-logo.svg" type="image/svg+xml">',
+    `<link rel="canonical" href="${url}">`, ...faviconLinks,
     ...(source.includes("assets/fontawesome/css/all.min.css") ? [] : ['<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">']),
     '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>',
     '<link rel="stylesheet" href="/generated/lab-shell.css">',
