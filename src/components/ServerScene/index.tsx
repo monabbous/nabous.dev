@@ -16,6 +16,7 @@ import * as THREE from "three";
 import { FrontSide, PCFSoftShadowMap, SpotLight, Vector3 } from "three";
 import { DebrisRain } from "./DebrisRain";
 import { PostFX } from "./PostFx";
+import { PointerGlow } from "./PointerGlow";
 import { ServerRacks } from "./ServerRacks";
 import { cameraDamping, createScrollStops, sampleScrollCamera, scrollCameraBank, scrollShot, type ScrollStop } from "./scroll-camera";
 
@@ -343,6 +344,7 @@ export function ServerScene({
             rackPowerOn={rackPowerOn}
             lookRef={lookRef}
           />
+          <PointerGlow enabled={!play} />
           <PostFX />
           <Environment background resolution={64}>
             <mesh scale={100}>
