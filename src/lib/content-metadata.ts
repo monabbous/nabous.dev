@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { Post } from "./project-content";
 import { assetUrl } from "./public-url";
+import { siteIcons } from "../constants/site-icons";
 
 export function articleSocialImage(post: Post) {
   const source = post.socialImage ?? post.cover;
@@ -18,7 +19,7 @@ export function articleMetadata(post: Post): Metadata {
     authors: [{ name: "Mohamed Nabous", url: "https://nabous.dev" }],
     alternates: { canonical: url },
     robots: { index: true, follow: true, googleBot: { "max-image-preview": "large" } },
-    icons: { icon: { url: "/nabous-dev-logo.svg", type: "image/svg+xml" } },
+    icons: siteIcons,
     openGraph: { type: "article", siteName: "nabous.dev", url, title: post.title, description, authors: ["https://nabous.dev"],
       ...(post.updatedAt ? { modifiedTime: post.updatedAt } : {}), ...(image ? { images: [image] } : {}),
     },
