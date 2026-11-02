@@ -21,8 +21,8 @@ git fetch origin "$DEPLOY_SHA"
 git switch --detach "$DEPLOY_SHA"
 # Retain the live container and one rollback without accumulating old releases.
 python3 scripts/cleanup-runtime.py
-# Runtime configuration is deliberately absent from the Docker build.
-docker build -t "nabous-dev-runtime:$DEPLOY_SHA" -f Dockerfile .
+# Compilation and dependency installation happen on CI, never on this server.
+bash scripts/load-runtime-image.sh
 printf '%s' "$PROJECTS_BASE64" | base64 --decode > "$BACKUP/projects.json"
 python3 - "$BACKUP/projects.json" "$BACKUP/runtime.env" <<'PY'
 import json, pathlib, sys, os
@@ -56,6 +56,7 @@ elif ss -ltn '( sport = :3120 )' | grep -q ':3120'; then
   exit 1
 fi
 docker run -d --name "$NAME" --restart unless-stopped --env-file "$BACKUP/runtime.env" \
+  --log-driver local --log-opt max-size=10m --log-opt max-file=3 \
   --security-opt no-new-privileges --cap-drop ALL \
   -p 127.0.0.1:3120:3000 "nabous-dev-runtime:$DEPLOY_SHA"
 NEW_STARTED=1

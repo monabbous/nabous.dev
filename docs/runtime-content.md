@@ -78,7 +78,9 @@ You can provide the server-only `NABOUS_GITHUB_TOKEN` to increase GitHub API lim
 
 After starting the server with your runtime environment, open `/health`, `/blog/`, `/blog/<slug>/`, and `/lab/<slug>/`. Check the lab's relative CSS and module requests in your browser's network panel. A missing project returns a 404; an upstream lab failure returns a 502. Article pages surface upstream errors rather than presenting them as a missing article. Indexes omit unavailable upstream articles so one repository does not hide the others.
 
-The deployment script preserves `/var/www/html`, backs up the exact Nginx site file, changes only the inspected static fallback, checks Nginx syntax, and restores previous routing/runtime on failure. Other Nginx locations and included snippets remain unchanged. Backups and stopped previous containers remain on the server for deliberate rollback; the script does not prune other applications.
+GitHub Actions runs the unit tests and builds the production Docker image (including the Next.js build, lint and type checks). It transfers only the compressed runtime image over SSH. The server checks its SHA-256 checksum and commit label before replacing the running container; it never installs build dependencies or compiles the website. The uploaded archive is removed on success or failure.
+
+The deployment script preserves `/var/www/html`, backs up the exact Nginx site file, changes only the inspected static fallback, checks Nginx syntax, and restores previous routing/runtime on failure. Other Nginx locations and included snippets remain unchanged. It retains the live website and one stopped rollback container, removes older unmounted website containers and unreferenced website image tags, and caps each new website container's local Docker logs at three 10 MB files. Configuration backups remain on the server. Application deployment does not prune other applications or their volumes.
 
 ## Verify analytics
 

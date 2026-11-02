@@ -31,7 +31,26 @@ jobs:
           corepack prepare pnpm@9.15.4 --activate
           pnpm install --frozen-lockfile
           pnpm test
-          pnpm build
+      - name: Build production image on CI
+        if: inputs.mode != 'inspect'
+        env:
+          DEPLOY_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          docker build --label "org.opencontainers.image.revision=$DEPLOY_SHA" \
+            -t "nabous-dev-runtime:$DEPLOY_SHA" .
+          docker save "nabous-dev-runtime:$DEPLOY_SHA" | gzip > release.tar.gz
+          echo "IMAGE_SHA256=$(sha256sum release.tar.gz | cut -d ' ' -f 1)" >> "$GITHUB_ENV"
+      - name: Transfer production image
+        if: inputs.mode != 'inspect'
+        uses: appleboy/scp-action@v1
+        with:
+          host: ${{ secrets.DROPLET_IP }}
+          username: root
+          passphrase: ${{ secrets.DROPLET_SSH_PASSPHRASE }}
+          key: ${{ secrets.DROPLET_SSH_KEY }}
+          source: release.tar.gz
+          target: /opt/nabous.dev-incoming/${{ github.run_id }}-${{ github.run_attempt }}
       - name: Encode runtime configuration
         if: inputs.mode != 'inspect'
         env:
@@ -44,12 +63,14 @@ jobs:
           DEPLOY_SHA: ${{ github.sha }}
           PROJECTS_BASE64: ${{ env.PROJECTS_BASE64 }}
           CONTENT_CACHE_SECONDS: ${{ vars.NABOUS_CONTENT_CACHE_SECONDS || '0' }}
+          IMAGE_ARCHIVE: /opt/nabous.dev-incoming/${{ github.run_id }}-${{ github.run_attempt }}/release.tar.gz
+          IMAGE_SHA256: ${{ env.IMAGE_SHA256 }}
         with:
           host: ${{ secrets.DROPLET_IP }}
           username: root
           passphrase: ${{ secrets.DROPLET_SSH_PASSPHRASE }}
           key: ${{ secrets.DROPLET_SSH_KEY }}
-          envs: DEPLOY_SHA,PROJECTS_BASE64,CONTENT_CACHE_SECONDS
+          envs: DEPLOY_SHA,PROJECTS_BASE64,CONTENT_CACHE_SECONDS,IMAGE_ARCHIVE,IMAGE_SHA256
           command_timeout: 30m
           script: |
             set -eu
@@ -60,6 +81,8 @@ jobs:
               cat /etc/nginx/sites-enabled/nabous.dev.conf
               nginx -T 2>/dev/null | grep -E '^# configuration file|^[[:space:]]*(server_name|root |listen |location |try_files )'
               docker ps --filter name=nabous --format '{{.Names}} {{.Image}} {{.Ports}}'
+              df -h / /var/lib/docker
+              docker system df
               exit 0
             fi
             if [ ! -d /opt/nabous.dev-runtime/.git ]; then
@@ -69,3 +92,16 @@ jobs:
             git fetch origin "$DEPLOY_SHA"
             git switch --detach "$DEPLOY_SHA"
             bash scripts/deploy-runtime.sh
+      - name: Remove transferred archive
+        if: always() && inputs.mode != 'inspect'
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DROPLET_IP }}
+          username: root
+          passphrase: ${{ secrets.DROPLET_SSH_PASSPHRASE }}
+          key: ${{ secrets.DROPLET_SSH_KEY }}
+          script: |
+            set -eu
+            incoming=/opt/nabous.dev-incoming/${{ github.run_id }}-${{ github.run_attempt }}
+            rm -f -- "$incoming/release.tar.gz"
+            if [ -d "$incoming" ]; then rmdir -- "$incoming"; fi

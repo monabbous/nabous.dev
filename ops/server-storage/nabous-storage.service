@@ -1,0 +1,11 @@
+[Unit]
+Description=Retain deployed application images and bound old build cache
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /usr/local/lib/nabous-storage/cleanup-server-images.py --apply
+ExecStart=/usr/bin/docker buildx prune --force --filter until=168h --max-used-space 512mb
+TimeoutStartSec=15min
+Nice=10
