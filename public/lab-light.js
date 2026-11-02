@@ -1,29 +1,8 @@
-// nabous.dev owns this optional pointer-light enhancement for hosted labs.
-const root = document.documentElement;
-const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-let frame;
-let x;
-let y;
+import { trackPointer } from "/generated/lumenmorph-pointer.mjs";
 
-function clear() {
-  cancelAnimationFrame(frame);
-  frame = undefined;
-  root.style.removeProperty("--mouse-x");
-  root.style.removeProperty("--mouse-y");
-}
-
-window.addEventListener("pointermove", event => {
-  if (event.pointerType === "touch" || reducedMotion.matches) return;
-  x = event.clientX;
-  y = event.clientY;
-  if (frame !== undefined) return;
-  frame = requestAnimationFrame(() => {
-    root.style.setProperty("--mouse-x", `${x}px`);
-    root.style.setProperty("--mouse-y", `${y}px`);
-    frame = undefined;
-  });
-}, { passive: true });
-
-document.addEventListener("pointerleave", clear);
-window.addEventListener("blur", clear);
-reducedMotion.addEventListener("change", clear);
+// Keep host coordinates unsmoothed: hosted demos animate their own coordinate owner.
+let stop = trackPointer();
+window.addEventListener("pagehide", () => stop());
+window.addEventListener("pageshow", event => {
+  if (event.persisted) stop = trackPointer();
+});

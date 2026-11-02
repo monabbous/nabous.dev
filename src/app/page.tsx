@@ -8,8 +8,8 @@ export const dynamic = "force-dynamic";
 export default async function HomePage() {
   const posts = await getPosts();
   return <Home recentBlog={<section id="blog" className="w-full max-w-4xl py-24 text-white scroll-mt-4">
-    <h2 className="text-3xl font-bold text-white sm:text-4xl glassmorphism-text">Latest from the blog</h2>
+    <h2 className="text-3xl font-bold text-white sm:text-4xl lumenmorph-text">Latest from the blog</h2>
     {posts.length ? <PostCards posts={posts.slice(0, 3)} /> : <p className="my-6">Articles are temporarily unavailable. Please check back soon.</p>}
-    <Link className="inline-flex items-center gap-3 rounded-glass glassmorph glassmorph-border px-4 py-3 text-sm font-bold text-white shadow-lg hover:glassmorph-glow-opacity-30 transition-glassmorph" href="/blog/"><span className="glassmorphism-text">View all articles</span><i className="fa-solid fa-arrow-right glassmorphism-text" aria-hidden="true" /></Link>
+    <Link className="inline-flex items-center gap-3 rounded-glass lumenmorph lumenmorph-border px-4 py-3 text-sm font-bold text-white shadow-lg hover:lumen-glow-opacity-30 hover:lumen-border-opacity-90 transition-[--lumen-glow-opacity,--lumen-border-opacity] duration-300 motion-reduce:transition-none" href="/blog/"><span className="lumenmorph-text">View all articles</span><i className="fa-solid fa-arrow-right lumenmorph-text" aria-hidden="true" /></Link>
   </section>} />;
 }

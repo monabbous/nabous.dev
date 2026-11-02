@@ -17,7 +17,7 @@ export function renderLabDocument(source: string, project: Project, post?: Post 
     `<link rel="canonical" href="${url}">`, '<link rel="icon" href="/nabous-dev-logo.svg" type="image/svg+xml">',
     '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">',
     '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>',
-    '<link rel="stylesheet" href="/lab-shell.css">',
+    '<link rel="stylesheet" href="/generated/lab-shell.css">',
     '<script type="module" src="/lab-light.js"></script>',
     meta("robots", "index,follow,max-image-preview:large"), meta("author", "Mohamed Nabous"),
     ...Object.entries({ "og:type": "website", "og:site_name": "nabous.dev", "og:title": title, "og:description": description, "og:url": url, "og:image": image, "og:image:alt": `${name} playground preview` }).map(([key, value]) => meta(key, value, true)),

@@ -18,5 +18,5 @@ export default async function LabIndex() {
     const title = project.slug.split("-").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
     return { project, title, description: `Open the ${title} playground and try the experiment.`, cover: post?.cover, updatedAt: null };
   });
-  return <main className="blog-shell"><BlogNav /><h1 className="glassmorphism-text">Lab</h1><p className="blog-dek glassmorphism-text">Interactive projects and experiments.</p>{labs.length ? <PostCards posts={labs} target="lab" /> : <p className="glassmorphism-text">No experiments are configured right now.</p>}</main>;
+  return <main className="blog-shell"><BlogNav /><h1 className="lumenmorph-text">Lab</h1><p className="blog-dek lumenmorph-text">Interactive projects and experiments.</p>{labs.length ? <PostCards posts={labs} target="lab" /> : <p className="lumenmorph-text">No experiments are configured right now.</p>}</main>;
 }

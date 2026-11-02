@@ -43,3 +43,6 @@ next-env.d.ts
 
 # deployment
 .live
+
+# Generated Lumenmorph assets for standalone lab documents
+/public/generated/

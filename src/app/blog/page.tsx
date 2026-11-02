@@ -12,5 +12,5 @@ export const metadata: Metadata = {
 };
 export default async function BlogIndex() {
   const posts = await getPosts();
-  return <main className="blog-shell"><BlogNav /><h1 className="glassmorphism-text">Blog</h1><p className="blog-dek glassmorphism-text">Notes on building things for the web.</p>{posts.length ? <PostCards posts={posts} /> : <p>No articles available right now. Please check back soon.</p>}</main>;
+  return <main className="blog-shell"><BlogNav /><h1 className="lumenmorph-text">Blog</h1><p className="blog-dek lumenmorph-text">Notes on building things for the web.</p>{posts.length ? <PostCards posts={posts} /> : <p>No articles available right now. Please check back soon.</p>}</main>;
 }

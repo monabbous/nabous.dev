@@ -1,3 +1,6 @@
+@import "tailwindcss/theme" layer(theme);
+@import "tailwindcss/utilities" layer(utilities) source(none);
+@plugin "@monabbous/lumenmorph/tailwind";
 
 @import url("https://fonts.googleapis.com/css2?family=Cascadia+Mono:ital,wght@0,200..700;1,200..700&family=Noto+Kufi+Arabic:wght@400;500;600;700&display=swap");
 
@@ -9,24 +12,16 @@
   --line: #467b96;
   --text: #e8f6fa;
   --muted: #a1c7d8;
-  /* Port of nabous.dev/src/styles/glassmorphism.css, without Tailwind. */
-  --colors__background: var(--bg);
-  --colors__primary: var(--primary);
-  --colors__accent: var(--accent);
-  --glassmorphism-bg__position-x: var(--mouse-x, -100vmax);
-  --glassmorphism-bg__position-y: var(--mouse-y, -100vmax);
-  --glassmorph-glow-opacity: .1;
-  --glassmorph-glow-coverage: 30%;
-  --glass-base: radial-gradient(circle at bottom center, hsla(from var(--colors__accent) h s l / .1) 0%, transparent 50%) center center / 100vw 100vh no-repeat;
-  --glass-light: radial-gradient(circle at var(--glassmorphism-bg__position-x) var(--glassmorphism-bg__position-y), hsla(from var(--colors__accent) h s l / var(--glassmorph-glow-opacity)) 0%, transparent var(--glassmorph-glow-coverage));
-  --glass-bg: var(--glass-base), var(--glass-light) center center / 100vw 100vh fixed no-repeat, linear-gradient(hsla(from var(--colors__background) h s l / .4), hsla(from var(--colors__background) h s l / .4));
-  --glass-border: var(--glass-base), radial-gradient(circle at var(--glassmorphism-bg__position-x) var(--glassmorphism-bg__position-y), hsla(from var(--colors__accent) h s l / calc(var(--glassmorph-glow-opacity) * 3)) 0%, transparent calc(var(--glassmorph-glow-coverage) * 1.33)) center center / 100vw 100vh fixed no-repeat;
+  /* Hosted labs still consume this coordinate contract. The package owns tracking. */
+  --mouse-x: var(--lumen-x, 50vw);
+  --mouse-y: var(--lumen-y, 35vh);
+  --lab-ambient: radial-gradient(circle at bottom center, rgb(from var(--accent) r g b / .1), transparent 50%) center / 100vw 100vh no-repeat;
   font-family: "Cascadia Mono", "Noto Kufi Arabic", monospace;
 }
 * { box-sizing: border-box; }
 body {
   margin: 0;
-  background: var(--glass-base), radial-gradient(ellipse at 10% 5%, #087d8659, transparent 55%), radial-gradient(ellipse at 95% 65%, #2a5b7c99, transparent 60%), var(--bg);
+  background: var(--lab-ambient), radial-gradient(ellipse at 10% 5%, #087d8659, transparent 55%), radial-gradient(ellipse at 95% 65%, #2a5b7c99, transparent 60%), var(--bg);
   background-attachment: fixed;
   color: var(--text);
   font-size: 14px;
@@ -133,45 +128,32 @@ select { background: #195675; color: var(--text); border: 1px solid #5c90a7; bor
 pre { font: 11px/1.65 ui-monospace, SFMono-Regular, monospace; white-space: pre; overflow: auto; max-height: 300px; padding: 15px; border-radius: 7px; border: 1px solid var(--line); background: #082b40; color: #b8f1eb; }
 footer { text-align: center; color: var(--muted); font-size: 11px; padding: 24px; }
 
-/* Glass surfaces: https://github.com/monabbous/nabous.dev/blob/master/src/styles/glassmorphism.css */
+/* Theme only the host's surfaces; embedded demos own their material defaults. */
+.topbar, .card, .button, .seg button, .color-grid label,
+:is(.brand-glass, .preset-brand) .slidebox,
+.brand-glass .slidebox-group, .brand-glass .slidebox-range,
+.brand-glass [data-slidebox-range-visual] {
+  --lumen-bg: rgb(from var(--bg) r g b / .4);
+  --lumen-solid-bg: var(--bg);
+  --lumen-glow-color: var(--accent);
+  --lumen-glow-opacity: .1;
+  --lumen-glow-size: 30vmax;
+  --lumen-blur: 40px;
+  --lumen-saturation: 1;
+  --lumen-border-width: 1px;
+  --lumen-border-color: transparent;
+  --lumen-border-opacity: .3;
+}
+
+/* Apply the installed package to the hosted labs' existing markup. */
 .topbar, .card, .button, .seg button, .color-grid label {
-  position: relative;
+  @apply lumenmorph lumenmorph-border;
   isolation: isolate;
-  background: var(--glass-bg);
-  background-color: transparent;
-  border-color: transparent;
-  -webkit-backdrop-filter: blur(40px);
-  backdrop-filter: blur(40px);
 }
-.topbar::before, .card::before, .button::before, .seg button::before, .color-grid label::before {
-  content: "";
-  position: absolute;
-  inset: -1px;
-  z-index: 2;
-  border-radius: inherit;
-  border: 1px solid transparent;
-  pointer-events: none;
-  background: var(--glass-border);
-  -webkit-mask: linear-gradient(white, white) padding-box, linear-gradient(white, white);
-  -webkit-mask-composite: xor;
-  mask: linear-gradient(white, white) padding-box, linear-gradient(white, white);
-  mask-composite: exclude;
-}
-.topbar::before { inset: 0; border-width: 0 0 1px; }
-.card { border-width: 2px; }
-.card::before {
-  /* glassmorph-border, as used by the About card on nabous.dev. */
-  inset: -1px;
-  margin: auto;
-  z-index: 100;
-  border: inherit;
-  border-color: transparent;
-  padding: inherit;
-}
+.card { --lumen-border-width: 2px; }
 .button.active, .seg button.active, .button.primary {
-  background: var(--glass-bg);
-  background-color: #00b2b21a;
-  border-color: #00b2b233;
+  --lumen-bg: #00b2b21a;
+  --lumen-border-color: #00b2b233;
 }
 .button:hover, .seg button:hover { border-color: #31e1d8; }
 .card-header, .section-pad.divider { border-color: #467b9666; }
@@ -188,10 +170,10 @@ select option { background: var(--bg); color: var(--text); }
   :is(.brand-glass, .preset-brand) .slidebox,
   .brand-glass .slidebox-group,
   .brand-glass .slidebox-range {
-    background: var(--glass-base), var(--glass-light) center center / 100vw 100vh fixed no-repeat, linear-gradient(hsla(from var(--_track) h s l / .4), hsla(from var(--_track) h s l / .4));
-    border-color: hsla(from var(--_border) h s l / .25);
-    -webkit-backdrop-filter: blur(40px);
-    backdrop-filter: blur(40px);
+    @apply lumenmorph;
+    --lumen-bg: rgb(from var(--_track) r g b / .4);
+    border-radius: var(--slidebox-radius, 100vw);
+    border-color: rgb(from var(--_border) r g b / .25);
     box-shadow: none;
   }
   :is(.brand-glass, .preset-brand) .slidebox { --_glass-thumb: var(--_off); position: relative; isolation: isolate; }
@@ -200,46 +182,36 @@ select option { background: var(--bg); color: var(--text); }
     position: relative;
     z-index: 3;
   }
-  :is(.brand-glass, .preset-brand) .slidebox::before,
-  .brand-glass .slidebox-group::after {
-    content: "";
-    position: absolute;
-    inset: -1px;
-    z-index: 2;
-    border: 1px solid transparent;
-    border-radius: inherit;
-    pointer-events: none;
-    background: var(--glass-border);
-    -webkit-mask: linear-gradient(white, white) padding-box, linear-gradient(white, white);
-    -webkit-mask-composite: xor;
-    mask: linear-gradient(white, white) padding-box, linear-gradient(white, white);
-    mask-composite: exclude;
+  :is(.brand-glass, .preset-brand) .slidebox {
+    @apply lumenmorph-border;
+    --lumen-border-color: rgb(from var(--_border) r g b / .25);
+    --lumen-border-width: 1px;
   }
   :is(.brand-glass, .preset-brand) .slidebox::after,
   .brand-glass .slidebox-group::before,
   .brand-glass .slidebox-group > label > input:checked + span::before,
   .brand-glass [data-slidebox-range-visual] > span {
-    background: var(--glass-base), var(--glass-light) center center / 100vw 100vh fixed no-repeat, linear-gradient(var(--_glass-thumb, var(--_on, #00b2b2)), var(--_glass-thumb, var(--_on, #00b2b2))) !important;
-    -webkit-backdrop-filter: blur(40px);
-    backdrop-filter: blur(40px);
+    @apply lumenmorph;
+    --lumen-bg: var(--_glass-thumb, var(--_on, #00b2b2));
+    border-radius: inherit;
     box-shadow: none;
   }
   .brand-glass .slidebox-range::-webkit-slider-thumb {
-    background: var(--glass-base), var(--glass-light) center center / 100vw 100vh fixed no-repeat, linear-gradient(var(--_on), var(--_on));
-    -webkit-backdrop-filter: blur(40px);
-    backdrop-filter: blur(40px);
+    @apply lumenmorph;
+    --lumen-bg: var(--_glass-thumb, var(--_on, #00b2b2));
+    border-radius: inherit;
     box-shadow: none;
   }
   .brand-glass .slidebox-range::-moz-range-thumb {
-    background: var(--glass-base), var(--glass-light) center center / 100vw 100vh fixed no-repeat, linear-gradient(var(--_on), var(--_on));
-    backdrop-filter: blur(40px);
+    @apply lumenmorph;
+    --lumen-bg: var(--_on);
+    border-radius: inherit;
     box-shadow: none;
   }
   .brand-glass .slidebox-range[data-slidebox-range-dragging]::-webkit-slider-thumb { background: transparent; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
   .brand-glass .slidebox-range[data-slidebox-range-dragging]::-moz-range-thumb { background: transparent; box-shadow: none; backdrop-filter: none; }
   .brand-glass .slidebox-range[data-slidebox-range-fill] {
     --_fill-color: var(--_on);
-    --_range-track-image: var(--glass-light);
   }
   .preset-brand .slidebox {
     --_track: #2a5b7c;
@@ -290,7 +262,7 @@ select option { background: var(--bg); color: var(--text); }
    their content and functional component CSS, not this website theme. */
 :root { --studio-radius: 4px; --studio-mono: "Cascadia Mono", "Noto Kufi Arabic", monospace; }
 html { scroll-padding-top: 24px; }
-body { background: radial-gradient(ellipse at 88% 10%, #00b2b21a, transparent 45%), var(--glass-base), var(--bg); background-attachment: fixed; }
+body { background: radial-gradient(ellipse at 88% 10%, #00b2b21a, transparent 45%), var(--lab-ambient), var(--bg); background-attachment: fixed; }
 .topbar { max-width: 1248px; margin: auto; padding: 24px; border: 0; background: transparent; backdrop-filter: none; -webkit-backdrop-filter: none; }
 .topbar::before { display: none; }
 .wordmark { font: 13px/1.6 var(--studio-mono); letter-spacing: -.035em; white-space: nowrap; }

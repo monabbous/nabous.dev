@@ -2,8 +2,7 @@
 import Link from "next/link";
 
 import { ServerScene } from "@nabous.dev/components/ServerScene";
-import { SVGGlassMorph } from "@nabous.dev/components/SVGGlassMorph";
-import { SVGGlassMorphText } from "@nabous.dev/components/SVGGlassMorphText";
+import { LumenIcon, LumenText } from "@monabbous/lumenmorph/react";
 import {
   type HTMLAttributes,
   type MutableRefObject,
@@ -149,7 +148,7 @@ const copy = {
 } as const;
 
 type Locale = keyof typeof copy;
-const navigationLinkClass = "rounded-glass glassmorph-border glassmorph-glow-opacity-01 glassmorph-border-width-[2px] px-3 py-2 text-xs font-semibold text-white/85 hover:bg-white/10 min-h-11 flex items-center justify-center whitespace-nowrap";
+const navigationLinkClass = "rounded-glass lumenmorph-border lumen-glow-opacity-[0.01] lumen-border-opacity-[0.03] lumen-border-width-[2px] px-3 py-2 text-xs font-semibold text-white/85 hover:bg-white/10 min-h-11 flex items-center justify-center whitespace-nowrap";
 
 export default function Home({ recentBlog }: { recentBlog: React.ReactNode }) {
   const CANVAS_ID = "server-scene-canvas";
@@ -371,7 +370,7 @@ export default function Home({ recentBlog }: { recentBlog: React.ReactNode }) {
         }}
         className="fixed top-4 inset-x-0 z-20 px-4 pointer-events-none"
       >
-        <nav aria-label={locale === "ar" ? "التنقل الرئيسي" : "Main navigation"} className="mx-auto flex w-full max-w-sm flex-wrap items-center justify-between gap-1 rounded-glass p-1 glassmorph glassmorph-border pointer-events-auto sm:w-fit sm:max-w-full sm:flex-nowrap">
+        <nav aria-label={locale === "ar" ? "التنقل الرئيسي" : "Main navigation"} className="mx-auto flex w-full max-w-sm flex-wrap items-center justify-between gap-1 rounded-glass p-1 lumenmorph lumenmorph-border pointer-events-auto sm:w-fit sm:max-w-full sm:flex-nowrap">
           <button
             type="button"
             ref={navigationToggleRef}
@@ -381,7 +380,7 @@ export default function Home({ recentBlog }: { recentBlog: React.ReactNode }) {
             onClick={() => setNavigationOpen(open => !open)}
           >
             <i className={`fa-solid ${navigationOpen ? "fa-xmark" : "fa-bars"} me-2`} aria-hidden="true" />
-            <span className="glassmorphism-text">{locale === "ar" ? "القائمة" : "Menu"}</span>
+            <span className="lumenmorph-text">{locale === "ar" ? "القائمة" : "Menu"}</span>
           </button>
           <div id="homepage-navigation" className={`${navigationOpen ? "grid" : "hidden"} order-last w-full grid-cols-2 gap-1 sm:order-none sm:flex sm:w-auto`} onKeyDown={event => { if (event.key === "Escape") { setNavigationOpen(false); navigationToggleRef.current?.focus(); } }}>
           <a
@@ -389,27 +388,27 @@ export default function Home({ recentBlog }: { recentBlog: React.ReactNode }) {
             href="#about"
             onClick={() => setNavigationOpen(false)}
           >
-            <span className="glassmorphism-text">{t.about}</span>
+            <span className="lumenmorph-text">{t.about}</span>
           </a>
           <a
             className={navigationLinkClass}
             href="#projects"
             onClick={() => setNavigationOpen(false)}
           >
-            <span className="glassmorphism-text">{t.projects}</span>
+            <span className="lumenmorph-text">{t.projects}</span>
           </a>
           <a className={navigationLinkClass} href="#blog" onClick={() => setNavigationOpen(false)}>
-            <span className="glassmorphism-text">{locale === "ar" ? "المدونة" : "Blog"}</span>
+            <span className="lumenmorph-text">{locale === "ar" ? "المدونة" : "Blog"}</span>
           </a>
           <a
             className={navigationLinkClass}
             href="#career"
             onClick={() => setNavigationOpen(false)}
           >
-            <span className="glassmorphism-text">{t.career}</span>
+            <span className="lumenmorph-text">{t.career}</span>
           </a>
           <Link className={`${navigationLinkClass} col-span-2 sm:col-auto`} href="/lab/" onClick={() => setNavigationOpen(false)}>
-            <span className="glassmorphism-text">{locale === "ar" ? "المختبر" : "Lab"}</span>
+            <span className="lumenmorph-text">{locale === "ar" ? "المختبر" : "Lab"}</span>
           </Link>
           </div>
           <button
@@ -417,10 +416,10 @@ export default function Home({ recentBlog }: { recentBlog: React.ReactNode }) {
             onClick={() =>
               setLocale((current) => (current === "en" ? "ar" : "en"))
             }
-            className="rounded-glass min-h-11 px-3 py-2 text-xs font-semibold text-white glassmorph glassmorph-border hover:glassmorph-glow-opacity-30 cursor-pointer transition-glassmorph"
+            className="rounded-glass min-h-11 px-3 py-2 text-xs font-semibold text-white lumenmorph lumenmorph-border hover:lumen-glow-opacity-30 hover:lumen-border-opacity-90 cursor-pointer transition-[--lumen-glow-opacity,--lumen-border-opacity] duration-300 motion-reduce:transition-none"
             aria-label={t.language}
           >
-            <span className="glassmorphism-text">{t.language}</span>
+            <span className="lumenmorph-text">{t.language}</span>
           </button>
         </nav>
       </header>
@@ -431,7 +430,7 @@ export default function Home({ recentBlog }: { recentBlog: React.ReactNode }) {
         >
           <div
             className={
-              "card gap-x-2 sm:gap-x-4 glassmorph glassmorph-border w-full max-w-[420px] grid grid-cols-[minmax(100px,1fr)_2fr] md:grid-cols-1 relative md:self-center self-end justify-self-center"
+              "card gap-x-2 sm:gap-x-4 lumenmorph lumenmorph-border w-full max-w-[420px] grid grid-cols-[minmax(100px,1fr)_2fr] md:grid-cols-1 relative md:self-center self-end justify-self-center"
             }
             style={{
               gridAutoColumns: "min-content",
@@ -465,12 +464,17 @@ export default function Home({ recentBlog }: { recentBlog: React.ReactNode }) {
             />
             <h1 className="sr-only">{t.name}</h1>
             <div className="mt-5 col-span-1">
-              <SVGGlassMorphText
-                className="w-full"
+              <LumenText
+                className="w-full h-auto"
+                width={336}
+                height={40}
+                fontSize={40}
+                strokeWidth={4}
+                aria-hidden="true"
                 textProps={{ direction: "ltr" }}
               >
                 Mohamed Nabous
-              </SVGGlassMorphText>
+              </LumenText>
             </div>
             <h3
               className="
@@ -480,7 +484,7 @@ export default function Home({ recentBlog }: { recentBlog: React.ReactNode }) {
               text-center
               mt-2
               md:text-left
-              glassmorphism-text
+              lumenmorph-text
               col-span-1
               "
             >
@@ -492,7 +496,7 @@ export default function Home({ recentBlog }: { recentBlog: React.ReactNode }) {
               text-center
               mt-2
               md:text-left
-              glassmorphism-text
+              lumenmorph-text
               ss:col-span-1
               col-span-2
               "
@@ -508,18 +512,19 @@ export default function Home({ recentBlog }: { recentBlog: React.ReactNode }) {
               >
                 {/* <i className="fa-brands fa-linkedin" /> */}
                 {/* "\f08c" */}
-                <SVGGlassMorphText
-                  width={"26"}
-                  height={"26"}
+                <LumenText
+                  width={26}
+                  height={26}
+                  fontSize={25}
+                  strokeWidth={2.6}
+                  aria-hidden="true"
                   textProps={{
                     fontFamily: "'Font Awesome 6 Brands'",
                     fontWeight: "400",
-                    fontSize: "25",
-                    strokeWidth: "10%",
                   }}
                 >
                   &#xf08c;
-                </SVGGlassMorphText>
+                </LumenText>
               </a>
               <a
                 href="https://github.com/monabbous"
@@ -528,18 +533,19 @@ export default function Home({ recentBlog }: { recentBlog: React.ReactNode }) {
                 aria-label="GitHub"
               >
                 {/* <i className="fa-brands fa-github" /> */}
-                <SVGGlassMorphText
-                  width={"26"}
-                  height={"26"}
+                <LumenText
+                  width={26}
+                  height={26}
+                  fontSize={25}
+                  strokeWidth={2.6}
+                  aria-hidden="true"
                   textProps={{
                     fontFamily: "'Font Awesome 6 Brands'",
                     fontWeight: "400",
-                    fontSize: "25",
-                    strokeWidth: "10%",
                   }}
                 >
                   &#xf09b;
-                </SVGGlassMorphText>
+                </LumenText>
               </a>
               <a
                 href="https://dev.to/nabous"
@@ -548,18 +554,19 @@ export default function Home({ recentBlog }: { recentBlog: React.ReactNode }) {
                 aria-label="DEV Community"
               >
                 {/* <i className="fa-brands fa-dev" /> */}
-                <SVGGlassMorphText
-                  width={"26"}
-                  height={"26"}
+                <LumenText
+                  width={26}
+                  height={26}
+                  fontSize={25}
+                  strokeWidth={2.6}
+                  aria-hidden="true"
                   textProps={{
                     fontFamily: "'Font Awesome 6 Brands'",
                     fontWeight: "400",
-                    fontSize: "25",
-                    strokeWidth: "10%",
                   }}
                 >
                   &#xf6cc;
-                </SVGGlassMorphText>
+                </LumenText>
               </a>
               <a
                 href="https://twitter.com/spideymanthe1st"
@@ -568,18 +575,19 @@ export default function Home({ recentBlog }: { recentBlog: React.ReactNode }) {
                 aria-label="X"
               >
                 {/* <i className="fa-brands fa-x-twitter" /> */}
-                <SVGGlassMorphText
-                  width={"26"}
-                  height={"26"}
+                <LumenText
+                  width={26}
+                  height={26}
+                  fontSize={25}
+                  strokeWidth={2.6}
+                  aria-hidden="true"
                   textProps={{
                     fontFamily: "'Font Awesome 6 Brands'",
                     fontWeight: "400",
-                    fontSize: "25",
-                    strokeWidth: "10%",
                   }}
                 >
                   &#xe61b;
-                </SVGGlassMorphText>
+                </LumenText>
               </a>
               <a
                 href="https://facebook.com/nabous.dev"
@@ -588,18 +596,19 @@ export default function Home({ recentBlog }: { recentBlog: React.ReactNode }) {
                 aria-label="Facebook"
               >
                 {/* <i className="fa-brands fa-facebook" /> */}
-                <SVGGlassMorphText
-                  width={"26"}
-                  height={"26"}
+                <LumenText
+                  width={26}
+                  height={26}
+                  fontSize={25}
+                  strokeWidth={2.6}
+                  aria-hidden="true"
                   textProps={{
                     fontFamily: "'Font Awesome 6 Brands'",
                     fontWeight: "400",
-                    fontSize: "25",
-                    strokeWidth: "10%",
                   }}
                 >
                   &#xf09a;
-                </SVGGlassMorphText>
+                </LumenText>
               </a>
               <a
                 href="https://instagram.com/nabous.dev"
@@ -608,18 +617,19 @@ export default function Home({ recentBlog }: { recentBlog: React.ReactNode }) {
                 aria-label="Instagram"
               >
                 {/* <i className="fa-brands fa-instagram" /> */}
-                <SVGGlassMorphText
-                  width={"26"}
-                  height={"26"}
+                <LumenText
+                  width={26}
+                  height={26}
+                  fontSize={25}
+                  strokeWidth={2.6}
+                  aria-hidden="true"
                   textProps={{
                     fontFamily: "'Font Awesome 6 Brands'",
                     fontWeight: "400",
-                    fontSize: "25",
-                    strokeWidth: "10%",
                   }}
                 >
                   &#xf16d;
-                </SVGGlassMorphText>
+                </LumenText>
               </a>
               <a
                 href="https://wa.me/+218928832185"
@@ -628,18 +638,19 @@ export default function Home({ recentBlog }: { recentBlog: React.ReactNode }) {
                 aria-label="WhatsApp"
               >
                 {/* <i className="fa-brands fa-whatsapp" /> */}
-                <SVGGlassMorphText
-                  width={"26"}
-                  height={"26"}
+                <LumenText
+                  width={26}
+                  height={26}
+                  fontSize={25}
+                  strokeWidth={2.6}
+                  aria-hidden="true"
                   textProps={{
                     fontFamily: "'Font Awesome 6 Brands'",
                     fontWeight: "400",
-                    fontSize: "25",
-                    strokeWidth: "10%",
                   }}
                 >
                   &#xf232;
-                </SVGGlassMorphText>
+                </LumenText>
               </a>
             </div>
           </div>
@@ -650,16 +661,15 @@ export default function Home({ recentBlog }: { recentBlog: React.ReactNode }) {
             }
             onClick={handleEnterGame}
           >
-            <SVGGlassMorphText className="h-40">Play</SVGGlassMorphText>
-            <SVGGlassMorph>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 640 640"
-                className="h-20"
-              >
-                <path d="M187.2 100.9C174.8 94.1 159.8 94.4 147.6 101.6C135.4 108.8 128 121.9 128 136L128 504C128 518.1 135.5 531.2 147.6 538.4C159.7 545.6 174.8 545.9 187.2 539.1L523.2 355.1C536 348.1 544 334.6 544 320C544 305.4 536 291.9 523.2 284.9L187.2 100.9z" />
-              </svg>
-            </SVGGlassMorph>
+            <LumenText width={96} height={40} fontSize={40} strokeWidth={4} className="h-40 w-auto">Play</LumenText>
+            <LumenIcon
+              viewBox="0 0 640 640"
+              width={80}
+              height={80}
+              strokeWidth={64}
+              className="h-20 w-20"
+              paths="M187.2 100.9C174.8 94.1 159.8 94.4 147.6 101.6C135.4 108.8 128 121.9 128 136L128 504C128 518.1 135.5 531.2 147.6 538.4C159.7 545.6 174.8 545.9 187.2 539.1L523.2 355.1C536 348.1 544 334.6 544 320C544 305.4 536 291.9 523.2 284.9L187.2 100.9z"
+            />
           </button>
         </section>
         <div id="space" className="min-h-[50vh]"></div>
@@ -669,14 +679,14 @@ export default function Home({ recentBlog }: { recentBlog: React.ReactNode }) {
         >
           <div className="w-full max-w-4xl space-y-5">
             <div className="space-y-2">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/60 glassmorphism-text">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/60 lumenmorph-text">
                 Nabous.dev
               </p>
-              <h2 className="text-3xl font-bold text-white sm:text-4xl glassmorphism-text">
+              <h2 className="text-3xl font-bold text-white sm:text-4xl lumenmorph-text">
                 {t.projects}
               </h2>
             </div>
-            <div className="grid overflow-hidden rounded-glass glassmorph glassmorph-border md:grid-cols-[1.05fr_0.95fr]">
+            <div className="grid rounded-glass lumenmorph lumenmorph-border md:grid-cols-[1.05fr_0.95fr]">
               <a
                 href={`https://modo.websites.nabous.dev/${locale}/`}
                 target="_blank"
@@ -696,21 +706,21 @@ export default function Home({ recentBlog }: { recentBlog: React.ReactNode }) {
                   <source src="/modo-demo.mp4" type="video/mp4" />
                 </video>
                 <span className="absolute inset-0 bg-gradient-to-t from-slate-950/65 via-transparent to-transparent" />
-                <span className="absolute bottom-5 inset-x-5 inline-flex w-fit items-center gap-3 glassmorph glassmorph-border px-4 py-3 text-sm font-bold text-white shadow-lg backdrop-blur-sm transition-colors group-hover:bg-cyan-500/25">
-                  <span className="glassmorphism-text">{t.menuCta}{" "}</span>
-                  <span aria-hidden="true" className="text-lg glassmorphism-text leading-none">
+                <span className="absolute bottom-5 inset-x-5 inline-flex w-fit items-center gap-3 lumenmorph lumenmorph-border px-4 py-3 text-sm font-bold text-white shadow-lg backdrop-blur-sm transition-colors group-hover:bg-cyan-500/25">
+                  <span className="lumenmorph-text">{t.menuCta}{" "}</span>
+                  <span aria-hidden="true" className="text-lg lumenmorph-text leading-none">
                     ↗
                   </span>
                 </span>
               </a>
               <div className="p-6 sm:p-8 text-left rtl:text-right">
-                <div className="text-[0.65rem] uppercase tracking-[0.18em] text-cyan-100/70 glassmorphism-text">
+                <div className="text-[0.65rem] uppercase tracking-[0.18em] text-cyan-100/70 lumenmorph-text">
                   {t.menuEyebrow}
                 </div>
-                <h3 className="mt-2 text-2xl font-semibold text-white glassmorphism-text">
+                <h3 className="mt-2 text-2xl font-semibold text-white lumenmorph-text">
                   {t.menuTitle}
                 </h3>
-                <p className="mt-3 text-sm leading-7 text-white/75 glassmorphism-text">
+                <p className="mt-3 text-sm leading-7 text-white/75 lumenmorph-text">
                   {t.menuBody}
                 </p>
                 <a
@@ -720,36 +730,36 @@ export default function Home({ recentBlog }: { recentBlog: React.ReactNode }) {
                   className="mt-7 block border-t border-white/15 pt-5 group"
                   aria-label={`${t.websitesCta} — ${t.externalLabel}`}
                 >
-                  <div className="text-[0.65rem] uppercase tracking-[0.18em] text-white/60 glassmorphism-text">
+                  <div className="text-[0.65rem] uppercase tracking-[0.18em] text-white/60 lumenmorph-text">
                     {t.websitesEyebrow}
                   </div>
-                  <div className="mt-1 text-lg font-semibold text-white glassmorphism-text">
+                  <div className="mt-1 text-lg font-semibold text-white lumenmorph-text">
                     {t.websitesTitle}
                   </div>
-                  <div className="mt-2 text-sm text-white/75 glassmorphism-text">
+                  <div className="mt-2 text-sm text-white/75 lumenmorph-text">
                     {t.websitesBody}
                   </div>
-                  <div className="mt-4 text-sm font-semibold text-white group-hover:text-cyan-100 glassmorphism-text">
+                  <div className="mt-4 text-sm font-semibold text-white group-hover:text-cyan-100 lumenmorph-text">
                     {t.websitesCta} <span aria-hidden="true">↗</span>
                   </div>
                 </a>
               </div>
             </div>
             <div className="grid gap-3 sm:grid-cols-3">
-              <h3 className="sm:col-span-3 text-xs font-semibold uppercase tracking-[0.18em] text-white/60 glassmorphism-text">
+              <h3 className="sm:col-span-3 text-xs font-semibold uppercase tracking-[0.18em] text-white/60 lumenmorph-text">
                 {t.proofTitle}
               </h3>
               <a
                 href="https://pixel-store.ly/"
                 target="_blank"
                 rel="noreferrer"
-                className="rounded-glass p-4 glassmorph glassmorph-border hover:glassmorph-glow-opacity-30 transition-glassmorph text-left rtl:text-right"
+                className="rounded-glass p-4 lumenmorph lumenmorph-border hover:lumen-glow-opacity-30 hover:lumen-border-opacity-90 transition-[--lumen-glow-opacity,--lumen-border-opacity] duration-300 motion-reduce:transition-none text-left rtl:text-right"
                 aria-label={`${t.pixelTitle} — ${t.externalLabel}`}
               >
-                <h3 className="font-semibold text-white glassmorphism-text">
+                <h3 className="font-semibold text-white lumenmorph-text">
                   {t.pixelTitle}
                 </h3>
-                <p className="mt-2 text-xs leading-5 text-white/70 glassmorphism-text">
+                <p className="mt-2 text-xs leading-5 text-white/70 lumenmorph-text">
                   {t.pixelBody}
                 </p>
               </a>
@@ -757,13 +767,13 @@ export default function Home({ recentBlog }: { recentBlog: React.ReactNode }) {
                 href="https://ordering.kudo.ly/"
                 target="_blank"
                 rel="noreferrer"
-                className="rounded-glass p-4 glassmorph glassmorph-border hover:glassmorph-glow-opacity-30 transition-glassmorph text-left rtl:text-right"
+                className="rounded-glass p-4 lumenmorph lumenmorph-border hover:lumen-glow-opacity-30 hover:lumen-border-opacity-90 transition-[--lumen-glow-opacity,--lumen-border-opacity] duration-300 motion-reduce:transition-none text-left rtl:text-right"
                 aria-label={`${t.kudoTitle} — ${t.externalLabel}`}
               >
-                <h3 className="font-semibold text-white glassmorphism-text">
+                <h3 className="font-semibold text-white lumenmorph-text">
                   {t.kudoTitle}
                 </h3>
-                <p className="mt-2 text-xs leading-5 text-white/70 glassmorphism-text">
+                <p className="mt-2 text-xs leading-5 text-white/70 lumenmorph-text">
                   {t.kudoBody}
                 </p>
               </a>
@@ -771,13 +781,13 @@ export default function Home({ recentBlog }: { recentBlog: React.ReactNode }) {
                 href="http://oneavant.com/"
                 target="_blank"
                 rel="noreferrer"
-                className="rounded-glass p-4 glassmorph glassmorph-border hover:glassmorph-glow-opacity-30 transition-glassmorph text-left rtl:text-right"
+                className="rounded-glass p-4 lumenmorph lumenmorph-border hover:lumen-glow-opacity-30 hover:lumen-border-opacity-90 transition-[--lumen-glow-opacity,--lumen-border-opacity] duration-300 motion-reduce:transition-none text-left rtl:text-right"
                 aria-label={`${t.avantProjectTitle} — ${t.externalLabel}`}
               >
-                <h3 className="font-semibold text-white glassmorphism-text">
+                <h3 className="font-semibold text-white lumenmorph-text">
                   {t.avantProjectTitle}
                 </h3>
-                <p className="mt-2 text-xs leading-5 text-white/70 glassmorphism-text">
+                <p className="mt-2 text-xs leading-5 text-white/70 lumenmorph-text">
                   {t.avantProjectBody}
                 </p>
               </a>
@@ -791,17 +801,17 @@ export default function Home({ recentBlog }: { recentBlog: React.ReactNode }) {
         >
           <div className="w-full max-w-4xl space-y-8">
             <div className="max-w-2xl space-y-3">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/60 glassmorphism-text">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/60 lumenmorph-text">
                 {t.careerEyebrow}
               </p>
-              <h2 className="text-3xl font-bold leading-tight text-white sm:text-4xl glassmorphism-text">
+              <h2 className="text-3xl font-bold leading-tight text-white sm:text-4xl lumenmorph-text">
                 {t.careerTitle}
               </h2>
-              <p className="text-sm leading-7 text-white/75 glassmorphism-text">
+              <p className="text-sm leading-7 text-white/75 lumenmorph-text">
                 {t.careerLead}
               </p>
             </div>
-            <ol className="grid gap-px overflow-hidden rounded-glass glassmorph glassmorph-border md:grid-cols-3">
+            <ol className="grid gap-px rounded-glass lumenmorph lumenmorph-border md:grid-cols-3">
               {[
                 [t.sadeemPeriod, t.sadeemTitle, t.sadeemBody],
                 [t.avantPeriod, t.avantTitle, t.avantBody],
@@ -809,29 +819,29 @@ export default function Home({ recentBlog }: { recentBlog: React.ReactNode }) {
               ].map(([period, title, body]) => (
                 <li key={title} className="relative bg-slate-950/15 p-5 sm:p-6">
                   <span className="mb-7 block h-2 w-2 bg-cyan-200 shadow-[0_0_18px_rgba(103,232,249,0.9)]" />
-                  <p className="text-xs font-semibold tracking-[0.16em] text-cyan-100/70 glassmorphism-text">
+                  <p className="text-xs font-semibold tracking-[0.16em] text-cyan-100/70 lumenmorph-text">
                     {period}
                   </p>
-                  <h3 className="mt-2 text-lg font-semibold text-white glassmorphism-text">
+                  <h3 className="mt-2 text-lg font-semibold text-white lumenmorph-text">
                     {title}
                   </h3>
-                  <p className="mt-3 text-sm leading-6 text-white/70 glassmorphism-text">
+                  <p className="mt-3 text-sm leading-6 text-white/70 lumenmorph-text">
                     {body}
                   </p>
                 </li>
               ))}
             </ol>
             <div className="border-t border-white/15 pt-5">
-              <h3 className="text-xs font-semibold uppercase tracking-[0.18em] text-white/60 glassmorphism-text">
+              <h3 className="text-xs font-semibold uppercase tracking-[0.18em] text-white/60 lumenmorph-text">
                 {t.skillsTitle}
               </h3>
               <ul className="mt-3 flex flex-wrap gap-2">
                 {t.skills.map((skill) => (
                   <li
                     key={skill}
-                    className="glassmorph glassmorph-border px-3 py-2 text-xs text-white/80"
+                    className="lumenmorph lumenmorph-border px-3 py-2 text-xs text-white/80"
                   >
-                    <span className="glassmorphism-text">{skill}</span>
+                    <span className="lumenmorph-text">{skill}</span>
                   </li>
                 ))}
               </ul>
@@ -842,7 +852,7 @@ export default function Home({ recentBlog }: { recentBlog: React.ReactNode }) {
       {play && !paused && !needsLandscape && (
         <button
           type="button"
-          className="fixed top-4 right-4 z-20 px-4 py-2 glassmorph glassmorph-border hover:glassmorph-glow-opacity-30 text-white  text-sm backdrop-blur-md shadow-lg active:scale-95 transition-transform"
+          className="fixed top-4 right-4 z-20 px-4 py-2 lumenmorph lumenmorph-border hover:lumen-glow-opacity-30 hover:lumen-border-opacity-90 text-white  text-sm backdrop-blur-md shadow-lg active:scale-95 transition-transform"
           onClick={pauseGame}
         >
           {t.pause}
@@ -871,7 +881,7 @@ export default function Home({ recentBlog }: { recentBlog: React.ReactNode }) {
       )}
       {/* <div className="container mx-auto py-10 ">
         <div className="grid justify-center md:grid-cols-[1fr_1fr] lg:grid-cols-[1fr_2fr] px-2 md:px-4 min-h-screen">
-          <div className="card glassmorphism w-full my-auto p-6">
+          <div className="card lumenmorph lumenmorph-border w-full my-auto p-6">
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis
             perferendis aliquid incidunt aperiam provident accusamus tempore,
             saepe nesciunt aspernatur hic eum expedita. Exercitationem provident
@@ -911,12 +921,12 @@ function PauseScreen({
 
   return (
     <div className="fixed inset-0 z-30 flex items-center justify-center bg-black/70 backdrop-blur-lg px-4">
-      <div className="glassmorph glassmorph-border text-white w-[min(90vw,520px)] p-6 space-y-5">
+      <div className="lumenmorph lumenmorph-border text-white w-[min(90vw,520px)] p-6 space-y-5">
         <div className="flex items-center justify-between gap-3">
           <h2 className="text-2xl font-bold">{labels.paused}</h2>
           <button
             type="button"
-            className="px-3 py-2 glassmorph glassmorph-border hover:glassmorph-glow-opacity-30 text-xs font-semibold cursor-pointer"
+            className="px-3 py-2 lumenmorph lumenmorph-border hover:lumen-glow-opacity-30 hover:lumen-border-opacity-90 text-xs font-semibold cursor-pointer"
             onClick={onQuit}
           >
             {labels.backHome}
@@ -924,7 +934,7 @@ function PauseScreen({
         </div>
         <p className="text-sm text-white/80">{labels.mouseFree}</p>
         <div className="grid grid-cols-2 gap-3 text-sm">
-          <div className="glassmorph glassmorph-border p-3 space-y-1">
+          <div className="lumenmorph lumenmorph-border p-3 space-y-1">
             <div className="text-xs uppercase tracking-wide text-white/60">
               {labels.movement}
             </div>
@@ -932,7 +942,7 @@ function PauseScreen({
             <div>Shift to sprint</div>
             <div>Space to jump</div>
           </div>
-          <div className="glassmorph glassmorph-border p-3 space-y-1">
+          <div className="lumenmorph lumenmorph-border p-3 space-y-1">
             <div className="text-xs uppercase tracking-wide text-white/60">
               {labels.actions}
             </div>
@@ -944,14 +954,14 @@ function PauseScreen({
         <div className="flex gap-3 justify-end">
           <button
             type="button"
-            className="px-4 py-2 glassmorph glassmorph-border hover:glassmorph-glow-opacity-30 text-sm font-semibold cursor-pointer"
+            className="px-4 py-2 lumenmorph lumenmorph-border hover:lumen-glow-opacity-30 hover:lumen-border-opacity-90 text-sm font-semibold cursor-pointer"
             onClick={onQuit}
           >
             {labels.quit}
           </button>
           <button
             type="button"
-            className="px-4 py-2 glassmorph glassmorph-border hover:glassmorph-glow-opacity-30  font-semibold shadow cursor-pointer"
+            className="px-4 py-2 lumenmorph lumenmorph-border hover:lumen-glow-opacity-30 hover:lumen-border-opacity-90  font-semibold shadow cursor-pointer"
             onClick={onResume}
           >
             {labels.resume}
@@ -968,7 +978,7 @@ function _ShooterHud({ score, timeMs }: { score: number; timeMs: number }) {
   const secPad = String(seconds % 60).padStart(2, "0");
   return (
     <div className="fixed top-4 left-4 z-20 flex flex-col gap-2 min-w-[220px] text-white pointer-events-none">
-      <div className="glassmorph glassmorph-border backdrop-blur-md px-4 py-3 shadow-lg">
+      <div className="lumenmorph lumenmorph-border backdrop-blur-md px-4 py-3 shadow-lg">
         <div className="text-xs uppercase tracking-wide text-white/60 mb-1">
           Status
         </div>
@@ -999,13 +1009,13 @@ function _TutorialCard({
 }) {
   return (
     <div className="fixed bottom-6 left-4 z-20 w-[min(360px,90vw)] text-white pointer-events-auto">
-      <div className="glassmorph glassmorph-border backdrop-blur-xl shadow-xl p-4 space-y-3">
+      <div className="lumenmorph lumenmorph-border backdrop-blur-xl shadow-xl p-4 space-y-3">
         <div className="flex items-center justify-between gap-3">
           <div className="text-sm font-semibold">How to play</div>
           <button
             type="button"
             onClick={onClose}
-            className="text-xs px-2 py-1 rounded-md bg-white/15 border border-white/25 hover:glassmorph-glow-opacity-30"
+            className="text-xs px-2 py-1 rounded-md bg-white/15 border border-white/25 hover:lumen-glow-opacity-30 hover:lumen-border-opacity-90"
           >
             Got it
           </button>
@@ -1135,7 +1145,7 @@ function TouchButton({
     <button
       type="button"
       aria-label={aria}
-      className={`px-4 py-3 glassmorph glassmorph-border text-white text-xs uppercase tracking-wide backdrop-blur-md shadow-lg active:scale-95 transition-transform pointer-events-auto ${wide ? "min-w-[84px]" : "min-w-[64px]"}`}
+      className={`px-4 py-3 lumenmorph lumenmorph-border text-white text-xs uppercase tracking-wide backdrop-blur-md shadow-lg active:scale-95 transition-transform pointer-events-auto ${wide ? "min-w-[84px]" : "min-w-[64px]"}`}
       {...rest}
     >
       {label}

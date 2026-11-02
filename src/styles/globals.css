@@ -2,6 +2,10 @@
 @import url("https://fonts.googleapis.com/css2?family=Cascadia+Mono:ital,wght@0,200..700;1,200..700&family=Noto+Kufi+Arabic:wght@400;500;600;700&display=swap");
 
 @import "tailwindcss";
+@import "@monabbous/lumenmorph/motion";
+
+@plugin "@monabbous/lumenmorph/tailwind";
+@source inline("lumenmorph");
 
 @theme {
   /* --*: initial;
@@ -18,35 +22,36 @@
   --radius-glass: 0.25rem;
 }
 
-@import "./glassmorphism.css";
-
 :root {
   --colors__background: #063c59;
   --colors__primary: #2a5b7c;
   --colors__accent: #00b2b2;
 
-  --glassmorphism-bg__position-x: calc(var(--mouse-x, -100vmax));
-  --glassmorphism-bg__position-y: calc(var(--mouse-y, -100vmax));
-
-  --_base-glassmorphism-bg: radial-gradient(
-      circle at bottom center,
-      hsla(from var(--colors__accent) h s l / 0.1) 0%,
-      transparent 50%
-    )
-    center center / 100vw 100vh no-repeat;
+  --lumen-bg: rgb(from var(--colors__background) r g b / 0.4);
+  --lumen-solid-bg: var(--colors__background);
+  --lumen-glow-color: var(--colors__accent);
+  --lumen-glow-size: 30vmax;
+  --lumen-glow-opacity: 0.1;
+  --lumen-blur: 40px;
+  --lumen-saturation: 1;
+  --lumen-border-width: 2px;
+  --lumen-border-color: transparent;
+  --lumen-border-opacity: 0.3;
+  --lumen-text-glow-size: 80vmax;
+  --lumen-text-fill: rgb(255 255 255 / 0.7);
+  --lumen-text-outline: rgb(255 255 255 / 0.2);
 }
 
-@supports (background-clip: text) and (-webkit-background-clip: text) and
-  (-webkit-text-fill-color: transparent) {
-  .glassmorphism-text {
-    --glassmorph-glow-coverage: 80%;
-    @apply glassmorph glassmorph-glow-opacity-100 glassmorph-bgcolor-[transparent] glassmorph-bg-clip-text;
-    /* background-clip: text; */
-    color: hsla(from white h s l / 0.7);
-    backdrop-filter: none !important;
-    -webkit-text-stroke-width: 2px;
-    -webkit-text-stroke-color: hsla(from var(--colors__accent) h s l / 0.0);
-  }
+@property --lumen-glow-opacity {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0.1;
+}
+
+@property --lumen-border-opacity {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0.3;
 }
 
 [dir="rtl"] canvas {
@@ -75,28 +80,3 @@ body {
     scroll-behavior: smooth;
   }
 }
-
-/* * {
-  cursor: none !important;
-} */
-
-/* body::after {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 40px;
-  height: 40px;
-  z-index: 999999999999999;
-  background: radial-gradient(
-    circle at center,
-    hsla(from var(--colors__accent) h s 80 / 1) 20%,
-    transparent 50%
-  );
-  pointer-events: none;
-
-  transform: translate(
-    calc(var(--mouse-x, -100vmax) - 50%),
-    calc(var(--mouse-y, -100vmax) - 50%)
-  );
-} */

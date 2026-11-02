@@ -28,7 +28,7 @@ test("the host injects server-rendered lab chrome and metadata while preserving 
   const head = html.split("</head>")[0];
   assert.ok(head.includes('<meta property="og:image" content="https://nabous.dev/project-assets/slidebox/assets/social.jpg">'));
   assert.ok(head.includes('<meta name="twitter:card" content="summary_large_image">'));
-  assert.ok(head.includes('href="/lab-shell.css"'));
+  assert.ok(head.includes('href="/generated/lab-shell.css"'));
   assert.ok(head.includes('href="https://nabous.dev/lab/slidebox/"'));
   assert.ok(head.includes("nabous-dev-logo.svg"));
   assert.ok(html.includes('data-nabous-shell'));

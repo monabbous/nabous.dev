@@ -17,6 +17,9 @@ importers:
       '@emotion/styled':
         specifier: ^11.14.0
         version: 11.14.1(@emotion/react@11.14.0(@types/react@19.2.18)(react@19.2.8))(@types/react@19.2.18)(react@19.2.8)
+      '@monabbous/lumenmorph':
+        specifier: ^0.1.0
+        version: 0.1.0(react@19.2.8)(tailwindcss@4.3.3)
       '@mui/material':
         specifier: ^7.0.1
         version: 7.3.11(@emotion/react@11.14.0(@types/react@19.2.18)(react@19.2.8))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.18)(react@19.2.8))(@types/react@19.2.18)(react@19.2.8))(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
@@ -619,6 +622,26 @@ packages:
 
   '@mediapipe/tasks-vision@0.10.17':
     resolution: {integrity: sha512-CZWV/q6TTe8ta61cZXjfnnHsfWIdFhms03M9T7Cnd5y2mdpylJM0rF1qRq+wsQVRMLz1OYPVEBU9ph2Bx8cxrg==}
+
+  '@monabbous/lumenmorph@0.1.0':
+    resolution: {integrity: sha512-9VVjj+7JISC8Q8TMoieXFawAxnvMwymz9xh6c+1fhknKFT7UVnIvIzYbaPo90qifCa/Akq00R8RbkPyI6zakMw==}
+    peerDependencies:
+      '@angular/core': '>=21 <22'
+      react: '>=18 <20'
+      svelte: '>=5 <6'
+      tailwindcss: '>=3.4 <5'
+      vue: '>=3.5 <4'
+    peerDependenciesMeta:
+      '@angular/core':
+        optional: true
+      react:
+        optional: true
+      svelte:
+        optional: true
+      tailwindcss:
+        optional: true
+      vue:
+        optional: true
 
   '@monogrid/gainmap-js@3.4.0':
     resolution: {integrity: sha512-2Z0FATFHaoYJ8b+Y4y4Hgfn3FRFwuU5zRrk+9dFWp4uGAdHGqVEdP7HP+gLA3X469KXHmfupJaUbKo1b/aDKIg==}
@@ -3782,6 +3805,11 @@ snapshots:
       '@jridgewell/sourcemap-codec': 1.5.5
 
   '@mediapipe/tasks-vision@0.10.17': {}
+
+  '@monabbous/lumenmorph@0.1.0(react@19.2.8)(tailwindcss@4.3.3)':
+    optionalDependencies:
+      react: 19.2.8
+      tailwindcss: 4.3.3
 
   '@monogrid/gainmap-js@3.4.0(three@0.175.0)':
     dependencies:
