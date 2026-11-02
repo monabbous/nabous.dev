@@ -9,7 +9,7 @@ export function ScreenMaterial({ powerOn = true }: { powerOn?: boolean }) {
     <meshLambertMaterial
       color={colors.accent}
       emissive={colors.accent}
-      emissiveIntensity={powerOn ? 0.6 : 0.1}
+      emissiveIntensity={powerOn ? 1.8 : 0.1}
     />
   );
 }
