@@ -10,6 +10,7 @@ import { useCssVarsColors } from "@nabous.dev/providers/ColorsProvider";
 
 export type Debris = {
   id: string;
+  tone: "teal" | "ember";
   kind: "box" | "sphere" | "capsule";
   size: [number, number, number]; // used for box
   radius: number; // used for sphere/capsule
@@ -106,6 +107,7 @@ export function DebrisRain({
       const d: Debris = {
         id: `${now}-${rng().toString(16).slice(2)}`,
         kind,
+        tone: rng() < 0.18 ? "ember" : "teal",
         size,
         radius: radiusVal,
         height: heightVal,
@@ -130,7 +132,7 @@ export function DebrisRain({
           nowRef={nowRef}
           warpInMs={warpInMs}
           warpOutMs={warpOutMs}
-          mass={mass}
+          mass={d.tone === "ember" ? mass * 4 : mass}
         />
       ))}
     </>
@@ -156,7 +158,8 @@ function DebrisItem({
   const lightRef = useRef<THREE.PointLight | null>(null);
   const applied = useRef(false);
 
-  const baseIntensity = 30 + 30 * (mass / 25);
+  // Keep the heavy ember pieces from washing out the scene.
+  const baseIntensity = d.tone === "ember" ? 180 : 150;
 
   useFrame(() => {
     const b = rb.current;
@@ -235,12 +238,12 @@ function DebrisItem({
           )}
 
           {/* Swap this for your material if you want */}
-          <ScreenMaterial />
+          <ScreenMaterial tone={d.tone} />
         </mesh>
 
         <pointLight
           ref={lightRef}
-          color={colors.accent}
+          color={d.tone === "ember" ? colors.ember : colors.accent}
           intensity={baseIntensity}
           distance={100}
           decay={1.5}

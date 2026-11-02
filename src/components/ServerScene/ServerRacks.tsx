@@ -2,13 +2,20 @@ import { useCssVarsColors } from "@nabous.dev/providers/ColorsProvider";
 import { RoundedBox } from "@react-three/drei";
 import React from "react";
 
-export function ScreenMaterial({ powerOn = true }: { powerOn?: boolean }) {
+export function ScreenMaterial({
+  powerOn = true,
+  tone = "teal",
+}: {
+  powerOn?: boolean;
+  tone?: "teal" | "ember";
+}) {
   const colors = useCssVarsColors();
+  const lightColor = tone === "ember" ? colors.ember : colors.accent;
 
   return (
     <meshLambertMaterial
-      color={colors.accent}
-      emissive={colors.accent}
+      color={lightColor}
+      emissive={lightColor}
       emissiveIntensity={powerOn ? 1.8 : 0.1}
     />
   );
@@ -64,7 +71,7 @@ function ScreenWithButtons({ powerOn }: { powerOn: boolean }) {
         args={[0.5, 0.125, 0.1]}
         position={[-0.15, 0, 0.5 - 0.001]}
       >
-        <ScreenMaterial powerOn={powerOn} />
+        <ScreenMaterial powerOn={powerOn} tone="ember" />
       </RoundedBox>
 
       {/* Buttons */}

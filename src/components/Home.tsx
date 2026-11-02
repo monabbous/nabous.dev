@@ -456,16 +456,15 @@ export default function Home({ recentBlog }: { recentBlog: React.ReactNode }) {
                   object-cover
                   aspect-w-1
 		            shadow-lg
-                  sm:row-[1/5]
-                  row-[1/4]
-                  md:row-[unset]
+                  row-span-2
+                  md:row-auto
                   col-span-1
               "
             />
             <h1 className="sr-only">{t.name}</h1>
             <div className="mt-5 col-span-1">
               <LumenText
-                className="w-full h-auto"
+                className="name-ember w-full h-auto"
                 width={336}
                 height={40}
                 fontSize={40}
@@ -497,8 +496,7 @@ export default function Home({ recentBlog }: { recentBlog: React.ReactNode }) {
               mt-2
               md:text-left
               lumenmorph-text
-              ss:col-span-1
-              col-span-2
+              col-span-full
               "
             >
               {t.bio}
@@ -706,7 +704,7 @@ export default function Home({ recentBlog }: { recentBlog: React.ReactNode }) {
                   <source src="/modo-demo.mp4" type="video/mp4" />
                 </video>
                 <span className="absolute inset-0 bg-gradient-to-t from-deep/65 via-transparent to-transparent" />
-                <span className="absolute bottom-5 inset-x-5 inline-flex w-fit items-center gap-3 lumenmorph lumenmorph-border px-4 py-3 text-sm font-bold text-foreground shadow-lg backdrop-blur-sm transition-colors group-hover:bg-accent/25">
+                <span className="ember-cta absolute bottom-5 inset-x-5 inline-flex w-fit items-center gap-3 lumenmorph lumenmorph-border px-4 py-3 text-sm font-bold text-foreground shadow-lg backdrop-blur-sm transition-colors group-hover:bg-ember/15">
                   <span className="lumenmorph-text">{t.menuCta}{" "}</span>
                   <span aria-hidden="true" className="text-lg lumenmorph-text leading-none">
                     ↗
@@ -739,7 +737,7 @@ export default function Home({ recentBlog }: { recentBlog: React.ReactNode }) {
                   <div className="mt-2 text-sm text-foreground/75 lumenmorph-text">
                     {t.websitesBody}
                   </div>
-                  <div className="mt-4 text-sm font-semibold text-foreground group-hover:text-highlight lumenmorph-text">
+                  <div className="ember-cta lumenmorph lumenmorph-border mt-4 inline-flex items-center gap-2 rounded-glass px-4 py-3 text-sm font-semibold text-foreground">
                     {t.websitesCta} <span aria-hidden="true">↗</span>
                   </div>
                 </a>

@@ -13,6 +13,7 @@
   --color-accent: var(--colors__accent);
   --color-background: var(--colors__background);
   --color-secondary: var(--colors__secondary);
+  --color-ember: var(--colors__ember);
   --color-highlight: var(--colors__highlight);
   --color-foreground: var(--colors__text);
   --color-muted: var(--colors__muted);
@@ -25,8 +26,8 @@
 }
 
 :root {
-  --lumen-bg: rgb(from var(--colors__ember-surface) r g b / 0.4);
-  --lumen-solid-bg: var(--colors__ember-surface);
+  --lumen-bg: rgb(from var(--colors__surface) r g b / 0.4);
+  --lumen-solid-bg: var(--colors__surface);
   --lumen-glow-color: var(--colors__accent);
   --lumen-border-glow-color: var(--colors__highlight);
   --lumen-glow-size: 30vmax;
@@ -37,9 +38,10 @@
   --lumen-border-color: transparent;
   --lumen-border-opacity: 0.3;
   --lumen-text-glow-size: 80vmax;
-  --lumen-text-color: var(--colors__text);
+  --lumen-text-color: rgb(from var(--colors__text) r g b / 0.85);
+  --lumen-text-stroke-width: 0px;
   --lumen-text-glow-opacity: 0.5;
-  --lumen-text-fill: rgb(from var(--colors__text) r g b / 0.8);
+  --lumen-text-fill: rgb(from var(--colors__text) r g b / 0.7);
   --lumen-text-outline: rgb(from var(--colors__highlight) r g b / 0.2);
 }
 
@@ -91,4 +93,39 @@ body {
   html {
     scroll-behavior: smooth;
   }
+}
+
+/* Present from server-rendered HTML, before WebGL or physics is ready. */
+.scene-backdrop {
+  width: 100vw;
+  height: 100vh;
+  background:
+    radial-gradient(ellipse at 70% 60%, rgb(from var(--colors__ember) r g b / .08), transparent 35%),
+    radial-gradient(ellipse at 65% 40%, rgb(from var(--colors__accent) r g b / .25), transparent 65%),
+    linear-gradient(145deg, var(--colors__deep), var(--colors__background) 50%, var(--colors__primary));
+}
+.scene-render { transition: opacity 700ms ease-out; }
+@media (prefers-reduced-motion: reduce) {
+  .scene-render { transition: none; }
+}
+
+.ember-cta {
+  --lumen-glow-color: var(--colors__ember);
+  --lumen-border-glow-color: var(--colors__ember);
+  --lumen-glow-opacity: .2;
+  --lumen-border-color: rgb(from var(--colors__ember) r g b / .25);
+  box-shadow: 0 0 24px rgb(from var(--colors__ember) r g b / .12), inset 0 0 18px rgb(from var(--colors__ember) r g b / .06);
+}
+.ember-cta:hover, .ember-cta:focus-visible, .group:hover .ember-cta {
+  --lumen-glow-opacity: .35;
+  --lumen-border-opacity: .8;
+  box-shadow: 0 0 32px rgb(from var(--colors__ember) r g b / .22);
+}
+
+.name-ember {
+  --lumen-glow-color: var(--colors__ember);
+  --lumen-border-glow-color: var(--colors__ember);
+  --lumen-text-fill: rgb(from var(--colors__ember) r g b / .7);
+  --lumen-text-outline: rgb(from var(--colors__ember) r g b / .25);
+  filter: drop-shadow(0 0 10px rgb(from var(--colors__ember) r g b / .18));
 }

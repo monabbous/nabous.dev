@@ -134,8 +134,8 @@ footer { text-align: center; color: var(--muted); font-size: 11px; padding: 24px
 :is(.brand-glass, .preset-brand) .slidebox,
 .brand-glass .slidebox-group, .brand-glass .slidebox-range,
 .brand-glass [data-slidebox-range-visual] {
-  --lumen-bg: rgb(from var(--colors__ember-surface) r g b / .4);
-  --lumen-solid-bg: var(--colors__ember-surface);
+  --lumen-bg: rgb(from var(--colors__surface) r g b / .4);
+  --lumen-solid-bg: var(--colors__surface);
   --lumen-glow-color: var(--accent);
   --lumen-border-glow-color: var(--colors__highlight);
   --lumen-glow-opacity: .1;
@@ -154,8 +154,11 @@ footer { text-align: center; color: var(--muted); font-size: 11px; padding: 24px
 }
 .card { --lumen-border-width: 2px; }
 .button.active, .seg button.active, .button.primary {
-  --lumen-bg: rgb(from var(--colors__accent) r g b / .1);
-  --lumen-border-color: rgb(from var(--colors__accent) r g b / .2);
+  --lumen-glow-color: var(--colors__ember);
+  --lumen-border-glow-color: var(--colors__ember);
+  box-shadow: 0 0 20px rgb(from var(--colors__ember) r g b / .12);
+  --lumen-bg: rgb(from var(--colors__ember) r g b / .1);
+  --lumen-border-color: rgb(from var(--colors__ember) r g b / .2);
 }
 .button:hover, .seg button:hover { border-color: var(--colors__accent); }
 .card-header, .section-pad.divider { border-color: rgb(from var(--colors__line) r g b / .4); }

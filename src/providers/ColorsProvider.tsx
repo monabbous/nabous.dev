@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 
-const COLOR_KEYS = ["background", "primary", "accent", "secondary", "highlight", "deep", "text"] as const;
+const COLOR_KEYS = ["background", "primary", "accent", "secondary", "highlight", "deep", "text", "ember"] as const;
 
 type ColorsObject = Partial<Record<(typeof COLOR_KEYS)[number], string>>;
 
@@ -13,29 +13,20 @@ export function CssVarsProvider({ children }: { children: React.ReactNode }) {
   const [colors, setColors] = React.useState<ColorsObject>({});
 
   React.useLayoutEffect(() => {
-    function getWindowBgColor() {
-      if (typeof window !== "undefined") {
-        requestAnimationFrame(() => {
-          const computedBgColor = getComputedStyle(document.documentElement);
-
-          const newColors: Record<string, string> = {};
-          COLOR_KEYS.forEach((key) => {
-            newColors[key] =
-              computedBgColor.getPropertyValue(`--colors__${key}`)?.trim() ||
-              "";
-          });
-          setColors(newColors);
-        });
-      }
+    // The palette is static CSS. Read it once after mounting instead of
+    // refreshing every scene consumer on every frame.
+    const styles = getComputedStyle(document.documentElement);
+    const palette: ColorsObject = {};
+    for (const key of COLOR_KEYS) {
+      palette[key] = styles.getPropertyValue(`--colors__${key}`).trim();
     }
-
-    const interval = setInterval(getWindowBgColor, 16.67);
-    getWindowBgColor();
-    return () => clearInterval(interval);
+    setColors(palette);
   }, []);
 
+  const value = React.useMemo(() => ({ colors }), [colors]);
+
   return (
-    <CssVarsProviderContext.Provider value={{ colors }}>
+    <CssVarsProviderContext.Provider value={value}>
       {children}
     </CssVarsProviderContext.Provider>
   );

@@ -11,12 +11,13 @@ import {
   RigidBody,
 } from "@react-three/rapier";
 import { Color } from "lamina";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { FrontSide, PCFSoftShadowMap, SpotLight, Vector3 } from "three";
 import { DebrisRain } from "./DebrisRain";
 import { PostFX } from "./PostFx";
 import { ServerRacks } from "./ServerRacks";
+import { cameraDamping, createScrollStops, sampleScrollCamera, scrollCameraBank, scrollShot, type ScrollStop } from "./scroll-camera";
 
 const RACK_TARGET = new Vector3(10, 0, -10);
 const SHARD_POSITIONS: Vector3[] = [
@@ -58,6 +59,9 @@ export function ServerScene({
   onObjectives,
 }: ServerSceneProps) {
   const colors = useCssVarsColors();
+  const [sceneReady, setSceneReady] = useState(false);
+  const revealScene = useCallback(() => setSceneReady(true), []);
+  const paletteReady = Boolean(colors.background && colors.accent && colors.ember);
   const [rackPowerOn, setRackPowerOn] = useState(true);
   const [collectedShards, setCollectedShards] = useState<boolean[]>(() =>
     SHARD_POSITIONS.map(() => false),
@@ -90,18 +94,11 @@ export function ServerScene({
     });
   }, [collectedShards, hackedTerminals, onObjectives, rackPowerOn]);
 
-  // const bgColor = useMemo(
-  //   () =>
-  //     typeof window === "undefined"
-  //       ? ""
-  //       : getComputedStyle(document.body)?.backgroundColor,
-  //   []
-  // );
-
   return (
-    <>
-      <Canvas
+    <div className="scene-backdrop" data-scene-ready={sceneReady}>
+      {paletteReady && <Canvas
         id="server-scene-canvas"
+        className="scene-render"
         dpr={[1, 1.8]}
         gl={{
           antialias: true,
@@ -116,7 +113,7 @@ export function ServerScene({
         style={{
           width: "100vw",
           height: "100vh",
-          background: "black",
+          opacity: sceneReady ? 1 : 0,
         }}
         scene={{
           scale: new Vector3(1, 1, 1),
@@ -131,6 +128,7 @@ export function ServerScene({
           timeStep="vary"
           maxCcdSubsteps={2}
         >
+          <SceneReady onReady={revealScene} />
           {/* <OrbitControls /> */}
           <group name={"sun-group"} position={[0, 10, -100]}>
             <directionalLight
@@ -357,9 +355,19 @@ export function ServerScene({
             </mesh>
           </Environment>
         </Physics>
-      </Canvas>
-    </>
+      </Canvas>}
+    </div>
   );
+}
+
+// This mounts only once the scene's Suspense dependencies (including physics)
+// have resolved. Reveal after completed frames, rather than canvas creation.
+function SceneReady({ onReady }: { onReady: () => void }) {
+  const frames = useRef(0);
+  useFrame(() => {
+    if (++frames.current === 3) onReady();
+  });
+  return null;
 }
 
 const Shard = ({ position }: { position: THREE.Vector3 }) => {
@@ -463,13 +471,11 @@ const MainSceneEffects = ({
 }) => {
   const { scene, camera } = useThree();
 
-  const scrollContainer = useMemo(() => {
-    if (typeof window === "undefined") return null;
-    return document.body;
-  }, []);
-
-  const isMobileRef = useRef(false);
-  const scrollFractionRef = useRef(0);
+  const scrollYRef = useRef(0);
+  const viewportRef = useRef({ width: 1024, height: 768 });
+  const stopsRef = useRef<ScrollStop[]>([]);
+  const reducedMotionRef = useRef(false);
+  const cameraInitialized = useRef(false);
 
   const serverRacksRef = useRef<THREE.Object3D | null>(null);
   const spotLightRef = useRef<SpotLight | null>(null);
@@ -477,6 +483,7 @@ const MainSceneEffects = ({
   const camTarget = useRef(new THREE.Vector3(150, 100, 150));
   const camFocus = useRef(new THREE.Vector3(0, 0, 0));
   const camFov = useRef(9);
+  const camBank = useRef(0);
   const strideLength = 1.2; // meters per step for head-bob pacing
 
   const desiredPosRef = useRef(new THREE.Vector3());
@@ -489,43 +496,40 @@ const MainSceneEffects = ({
   const bobAmpRef = useRef(0);
 
   useEffect(() => {
-    if (!scrollContainer) return;
-
-    const onResize = () => {
-      isMobileRef.current = window.innerWidth < 768;
+    const sections = ["space", "projects", "blog", "career"].map(id => document.getElementById(id));
+    const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const updateMotion = () => { reducedMotionRef.current = motion.matches; };
+    const updateScroll = () => { scrollYRef.current = window.scrollY; };
+    const measure = () => {
+      updateScroll();
+      const { innerWidth: width, innerHeight: height } = window;
+      viewportRef.current = { width, height };
+      const tops = sections.map((section, index) => section
+        ? section.getBoundingClientRect().top + window.scrollY
+        : height * (index + 1));
+      stopsRef.current = createScrollStops(height, tops[0], tops[1], tops[2], tops[3]);
     };
-
-    const onScroll = () => {
-      const scrollY = scrollContainer.scrollTop || 0;
-      const docHeight = scrollContainer.scrollHeight || 0;
-      const winHeight = scrollContainer.clientHeight || 0;
-      const scrollableHeight = docHeight - winHeight;
-      scrollFractionRef.current =
-        scrollableHeight > 0 ? scrollY / scrollableHeight : 0;
-    };
-
-    onResize();
-    onScroll();
-
-    window.addEventListener("resize", onResize, { passive: true });
-    scrollContainer.addEventListener("scroll", onScroll, { passive: true });
-
+    updateMotion();
+    measure();
+    window.addEventListener("resize", measure, { passive: true });
+    window.addEventListener("scroll", updateScroll, { passive: true });
+    motion.addEventListener("change", updateMotion);
+    const observer = new ResizeObserver(measure);
+    observer.observe(document.body);
+    sections.forEach(section => { if (section) observer.observe(section); });
     return () => {
-      window.removeEventListener("resize", onResize);
-      scrollContainer.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", measure);
+      window.removeEventListener("scroll", updateScroll);
+      motion.removeEventListener("change", updateMotion);
+      observer.disconnect();
     };
-  }, [scrollContainer]);
+  }, []);
 
   useEffect(() => {
     serverRacksRef.current = scene.getObjectByName("server-racks") ?? null;
     spotLightRef.current =
       (scene.getObjectByName("spotLight") as SpotLight) ?? null;
   }, [scene]);
-
-  const spaceElement = useMemo(() => {
-    if (typeof document === "undefined") return null;
-    return document.getElementById("space");
-  }, []);
 
   // const groundMesh = useMemo(() => {
   //   if (typeof document === "undefined") return null;
@@ -538,15 +542,12 @@ const MainSceneEffects = ({
   // }, [groundMesh]);
 
   useFrame((_, dt) => {
-    const lerpPos = active ? 0.12 : 0.08;
-    const lerpFocus = active ? 0.18 : 0.12;
+    const lerpPos = cameraDamping(dt, active ? 9 : 7);
+    const lerpFocus = cameraDamping(dt, active ? 12 : 7);
     let desiredFov = active ? 55 : 9;
+    let desiredBank = 0;
 
     let moveSpeed = 0;
-
-    const spaceElementRect = spaceElement?.getBoundingClientRect();
-    const spaceElementHeight = spaceElementRect?.height ?? 0;
-    const spaceElementTop = spaceElementRect?.top ?? 0;
 
     if (active && playerRef.current) {
       const p = playerRef.current.translation();
@@ -593,79 +594,33 @@ const MainSceneEffects = ({
       desiredFocusRef.current.copy(base).add(lookAheadRef.current);
       desiredFocusRef.current.addScaledVector(camShakeRef.current, 0.3);
     } else {
-      const t = THREE.MathUtils.smoothstep(scrollFractionRef.current, 0, 1);
-      const isMobile = isMobileRef.current;
-      // const isRtl =
-      //   // typeof document !== "undefined" && document.documentElement.dir === "rtl";
-      //   false;
-      const idlePos = desiredPosRef.current.set(
-        (isMobile ? 142 : 150) - t * (isMobile ? 260 : 290),
-        (isMobile ? 84 : 100) - t * (isMobile ? 26 : 35),
-        (isMobile ? 142 : 150) - t * (isMobile ? 37 : 45),
-      );
-      const idleFocus = desiredFocusRef.current.set(
-        (isMobile ? 23 : 0) + t * (isMobile ? -8 : 15),
-        (isMobile ? 5 : 0) + t * 10,
-        (isMobile ? 7 : -5) + t * 8,
-      );
-
-      idlePos.y +=
-        Math.max(
-          0,
-          -(spaceElementTop - spaceElementHeight) / spaceElementHeight,
-        ) * (isMobile ? -20 : -30);
-      idlePos.x +=
-        Math.max(
-          0,
-          -(spaceElementTop - spaceElementHeight) / spaceElementHeight,
-        ) * (isMobile ? -10 : -50);
-      idlePos.z +=
-        Math.max(
-          0,
-          -(spaceElementTop - spaceElementHeight) / spaceElementHeight,
-        ) * (isMobile ? -10 : -10);
-
-      const groundMesh = _.scene.getObjectByName(
-        "server-scene-ground-mesh",
-      ) as THREE.Mesh | null;
-      const groundMaterial =
-        groundMesh?.material as THREE.MeshLambertMaterial | null;
-
-      // set the ground alpha based on the camera height, should go near 0 when camera is low and stop at zero,
-      // should start fading from y = 10
-      // the fade should be eased, so that it fades faster at the end
-
-      const CUTOFF_Y = 20;
-
-      if (groundMaterial) {
-        // const groundAlpha = THREE.MathUtils.clamp((idlePos.y - 10) / 20, 0, 1);
-        // const groundAlpha = THREE.MathUtils.clamp((idlePos.y - CUTOFF_Y) / 20, 0, 1);
-        // groundMaterial.opacity = groundAlpha;
-
-        const groundAlpha = THREE.MathUtils.clamp(
-          (idlePos.y - CUTOFF_Y) / 20,
-          0,
-          1,
-        );
-        const easedAlpha = THREE.MathUtils.smoothstep(groundAlpha, 0, 1);
-        groundMaterial.opacity = easedAlpha;
-      }
-
-      camTarget.current.lerp(idlePos, 0.06);
-      camFocus.current.lerp(idleFocus, 0.06);
+      const { width, height } = viewportRef.current;
+      const shot = reducedMotionRef.current ? 0 : scrollShot(scrollYRef.current, stopsRef.current);
+      desiredFov = sampleScrollCamera(shot, width, height, desiredPosRef.current, desiredFocusRef.current);
+      desiredBank = scrollCameraBank(shot, width);
 
       // bleed out shake when idle
       bobAmpRef.current = THREE.MathUtils.lerp(bobAmpRef.current, 0, 0.2);
       camShakeRef.current.set(0, 0, 0);
     }
 
+    // Start at the current scroll position (including restored history), with no fly-in.
+    if (!cameraInitialized.current || (!active && reducedMotionRef.current)) {
+      camTarget.current.copy(desiredPosRef.current);
+      camFocus.current.copy(desiredFocusRef.current);
+      camFov.current = desiredFov;
+      camBank.current = desiredBank;
+      cameraInitialized.current = true;
+    }
     camTarget.current.lerp(desiredPosRef.current, lerpPos);
     camFocus.current.lerp(desiredFocusRef.current, lerpFocus);
 
     camera.position.copy(camTarget.current);
     camera.lookAt(camFocus.current);
+    camBank.current = THREE.MathUtils.lerp(camBank.current, desiredBank, cameraDamping(dt));
+    camera.rotateZ(camBank.current);
 
-    camFov.current = THREE.MathUtils.lerp(camFov.current, desiredFov, 0.08);
+    camFov.current = THREE.MathUtils.lerp(camFov.current, desiredFov, cameraDamping(dt));
     (camera as THREE.PerspectiveCamera).fov = camFov.current;
     camera.updateProjectionMatrix();
 

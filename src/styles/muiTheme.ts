@@ -7,9 +7,9 @@ export const muiTheme = createTheme({
   cssVariables: true,
   palette: {
     mode: "dark",
-    primary: { main: "#ffaa71", contrastText: "#102729" },
-    secondary: { main: "#80aaa3" },
-    text: { primary: "#eee7dd", secondary: "#b3c3bd" },
-    background: { default: "#102729", paper: "#1b3536" },
+    primary: { main: "#69b4b0", contrastText: "#10333b" },
+    secondary: { main: "#ffaa71" },
+    text: { primary: "#e4eeee", secondary: "#a9c4c8" },
+    background: { default: "#10333b", paper: "#1b424a" },
   },
 });
