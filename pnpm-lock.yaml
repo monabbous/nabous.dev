@@ -18,8 +18,8 @@ importers:
         specifier: ^11.14.0
         version: 11.14.1(@emotion/react@11.14.0(@types/react@19.2.18)(react@19.2.8))(@types/react@19.2.18)(react@19.2.8)
       '@monabbous/lumenmorph':
-        specifier: ^0.1.1
-        version: 0.1.1(react@19.2.8)(tailwindcss@4.3.3)
+        specifier: ^0.1.2
+        version: 0.1.2(react@19.2.8)(tailwindcss@4.3.3)
       '@mui/material':
         specifier: ^7.0.1
         version: 7.3.11(@emotion/react@11.14.0(@types/react@19.2.18)(react@19.2.8))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.18)(react@19.2.8))(@types/react@19.2.18)(react@19.2.8))(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
@@ -623,8 +623,8 @@ packages:
   '@mediapipe/tasks-vision@0.10.17':
     resolution: {integrity: sha512-CZWV/q6TTe8ta61cZXjfnnHsfWIdFhms03M9T7Cnd5y2mdpylJM0rF1qRq+wsQVRMLz1OYPVEBU9ph2Bx8cxrg==}
 
-  '@monabbous/lumenmorph@0.1.1':
-    resolution: {integrity: sha512-QqqsS5Hu9z3RU8Yp5fcuNhFbOYBe5aGJSez99cmGOhZ3HSoVFxLE3bpNPGLQ9Jg2Ru17iou2i0gkA/34uR72JA==}
+  '@monabbous/lumenmorph@0.1.2':
+    resolution: {integrity: sha512-2imnAFro2QMTVbHDQ4S7FpVHSeEHIVJfIlo9G0tp4OETkaaImXwv3civj01xKTXFG0qxqt0h34wiXdEyTyqmgw==}
     peerDependencies:
       '@angular/core': '>=21 <22'
       react: '>=18 <20'
@@ -3806,7 +3806,7 @@ snapshots:
 
   '@mediapipe/tasks-vision@0.10.17': {}
 
-  '@monabbous/lumenmorph@0.1.1(react@19.2.8)(tailwindcss@4.3.3)':
+  '@monabbous/lumenmorph@0.1.2(react@19.2.8)(tailwindcss@4.3.3)':
     optionalDependencies:
       react: 19.2.8
       tailwindcss: 4.3.3
