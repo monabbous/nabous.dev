@@ -1,0 +1,119 @@
+/* Static film texture: no animation loop, flicker, or intercepted clicks. */
+:root { --analog-grain-opacity: .03; --analog-scanline-opacity: .025; --analog-vignette-opacity: .06; }
+/* Reading and operating surfaces keep just a trace of the homepage's texture. */
+body:not(:has(.hero)) { --analog-grain-opacity: .012; --analog-scanline-opacity: .012; --analog-vignette-opacity: .025; }
+
+/* Static CRT scan lines and a very soft curved-screen vignette. No fullscreen
+   shader, animated turbulence, flicker, or extra WebGL render target. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  pointer-events: none;
+  background: repeating-linear-gradient(0deg, transparent 0 2px, rgb(35 30 20 / var(--analog-scanline-opacity)) 2px 3px),
+    radial-gradient(ellipse at center, transparent 55%, rgb(35 30 20 / var(--analog-vignette-opacity)) 100%);
+}
+[data-theme="dark"] { --analog-scanline-opacity: .08; --analog-vignette-opacity: .18; }
+[data-theme="dark"] body::before {
+  background: repeating-linear-gradient(0deg, transparent 0 2px, rgb(0 0 0 / var(--analog-scanline-opacity)) 2px 3px),
+    radial-gradient(ellipse at center, transparent 50%, rgb(0 0 0 / var(--analog-vignette-opacity)) 100%);
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: var(--analog-grain-opacity);
+  background-image: url("/film-grain.png");
+  background-size: 128px 128px;
+}
+
+/* Never filter an ancestor of glass: it creates a backdrop root and prevents
+   backdrop-filter from sampling the scene. Distort leaf content instead. */
+main :is(h1, h2), .wordmark {
+  filter: url("/analog-filter.svg#raster");
+}
+body:not(:has(.hero)) main :is(h1, h2), body:not(:has(.hero)) .wordmark { filter: none; }
+
+@media (prefers-reduced-motion: reduce), (forced-colors: active) {
+  body::before, body::after { display: none; }
+  main :is(h1, h2), .wordmark { filter: none; }
+}
+
+@media (pointer: coarse) {
+  main :is(h1, h2), .wordmark { filter: none; }
+}
+
+@media print {
+  body::before, body::after { display: none; }
+  main :is(h1, h2), .wordmark { filter: none; }
+}
+
+/* One power-cycle per deliberate theme change; snapshots avoid transforming
+   live fixed-position content or breaking Lumenmorph's backdrop sampling. */
+html[data-theme-transition="crt"]::view-transition {
+  background-color: #050504;
+  background-image: radial-gradient(ellipse at center, #fff8e9 0 20%, #ffd6a0b3 45%, transparent 75%);
+  background-position: center;
+  background-repeat: no-repeat;
+  animation: crt-phosphor 720ms linear both;
+}
+html[data-theme-transition="crt"]::view-transition-group(root) {
+  animation: none;
+}
+html[data-theme-transition="crt"]::view-transition-old(root),
+html[data-theme-transition="crt"]::view-transition-new(root) {
+  mix-blend-mode: normal;
+  transform-origin: center;
+}
+html[data-theme-transition="crt"]::view-transition-old(root) {
+  animation: crt-power-off 200ms cubic-bezier(.55, 0, .8, .2) both;
+}
+html[data-theme-transition="crt"]::view-transition-new(root) {
+  animation: crt-power-on 420ms cubic-bezier(.16, 1, .3, 1) 300ms both;
+}
+@keyframes crt-power-off {
+  0% { transform: scale(1); opacity: 1; filter: brightness(1) blur(0); }
+  45% { transform: scale(1.012, .035); opacity: 1; filter: brightness(1.3) blur(.4px); }
+  75% { transform: scale(1.02, .003); opacity: 1; filter: brightness(2) blur(1px); }
+  100% { transform: scale(.001, .003); opacity: 0; filter: brightness(2) blur(2px); }
+}
+@keyframes crt-power-on {
+  0% { transform: scale(.001, .003); opacity: 0; filter: brightness(2) blur(2px); }
+  20% { transform: scale(1, .003); opacity: 1; filter: brightness(1.7) blur(1px); }
+  35% { transform: scale(1.008, .08); opacity: 1; filter: brightness(1.3) blur(.7px); }
+  62% { transform: scale(1, 1.006); opacity: 1; filter: brightness(1.12) blur(.3px); }
+  84% { transform: scale(1, 1.002); opacity: 1; filter: brightness(1.03) blur(0); }
+  100% { transform: scale(1); opacity: 1; filter: brightness(1) blur(0); }
+}
+@keyframes crt-phosphor {
+  0%, 10% { background-size: 0 0; }
+  22% { background-size: 100vw 8px; }
+  31% { background-size: 8px 8px; }
+  39% { background-size: 0 0; }
+  43% { background-size: 6px 6px; }
+  55% { background-size: 100vw 6px; }
+  78%, 100% { background-size: 0 0; }
+}
+.crt-power-screen { position: fixed; inset: 0; z-index: 10001; pointer-events: none; background: #050504; }
+.crt-power-screen::before { content: ""; position: absolute; inset: 50% 0 auto; height: 8px;
+  background: radial-gradient(ellipse at center, #fff8e9 0 20%, #ffd6a0b3 45%, transparent 75%);
+  transform-origin: center; animation: crt-fallback-line 720ms linear both; }
+@keyframes crt-fallback-line {
+  0% { transform: scale(0, 0); opacity: 0; }
+  22% { transform: scale(1, 1); opacity: 1; }
+  31% { transform: scale(.006, 1); opacity: 1; }
+  39% { transform: scale(0); opacity: 0; }
+  43% { transform: scale(.006, 1); opacity: 1; }
+  55% { transform: scale(1, .75); opacity: 1; }
+  78%, 100% { transform: scale(1, 0); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce), (forced-colors: active) {
+  html[data-theme-transition="crt"]::view-transition-old(root),
+  html[data-theme-transition="crt"]::view-transition-new(root) { animation: none; }
+  html[data-theme-transition="crt"]::view-transition { animation: none; background-image: none; }
+  .crt-power-screen { display: none; }
+}

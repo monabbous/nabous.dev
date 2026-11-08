@@ -1,15 +1,42 @@
-/* Teal carries the site identity; Lumenmorph Ember lights selected details. Shared by the site and lab shell. */
+/* Off-white hardware, ink text, ember actions and warm incandescent lighting. */
+:root { scrollbar-color: var(--colors__line) var(--colors__background); scrollbar-width: thin; }
+:root::-webkit-scrollbar { width: 10px; height: 10px; }
+:root::-webkit-scrollbar-track { background: var(--colors__background); }
+:root::-webkit-scrollbar-thumb { background: var(--colors__line); border: 3px solid var(--colors__background); border-radius: 6px; }
+@media (forced-colors: active) { :root { scrollbar-color: auto; } }
 :root {
+  color-scheme: light;
+  --colors__background: #f7f6f2;
+  --colors__ground: #f7f6f2;
+  --colors__primary: #e8e6df;
+  --colors__accent: #963e18;
+  --colors__highlight: #151512;
+  --colors__secondary: #67655e;
+  --colors__surface: #fffefa;
+  --colors__ember: #a54117;
+  --colors__bulb: #ffd6a0;
+  --colors__deep: #eeece6;
+  --colors__line: #a19e94;
+  --colors__text: #1c1b17;
+  --colors__muted: #615e56;
+  --colors__board: #f2efe7;
+  --colors__light: #ffffff;
+  --colors__indicator: #ff6a24;
+}
+
+:root[data-theme="dark"] {
   color-scheme: dark;
-  --colors__background: #10333b;
-  --colors__primary: #295564;
-  --colors__accent: #69b4b0;
-  --colors__highlight: #b4dcd7;
-  --colors__secondary: #80b5b4;
-  --colors__surface: #1b424a;
-  --colors__ember: #ffaa71;
-  --colors__deep: #09262e;
-  --colors__line: #4d7781;
-  --colors__text: #e4eeee;
-  --colors__muted: #a9c4c8;
+  --colors__background: #171715;
+  --colors__ground: #242421;
+  --colors__primary: #34332e;
+  --colors__accent: #ffad76;
+  --colors__highlight: #f6f1e5;
+  --colors__secondary: #aaa598;
+  --colors__surface: #292823;
+  --colors__ember: #ffad76;
+  --colors__deep: #10100e;
+  --colors__line: #827b6c;
+  --colors__text: #f6f1e5;
+  --colors__muted: #bbb4a6;
+  --colors__board: #817b70;
 }

@@ -1,12 +1,12 @@
 @import "./palette.css";
+@import "./fonts.css";
+@import "./analog.css";
 @import "tailwindcss/theme" layer(theme);
 @import "tailwindcss/utilities" layer(utilities) source(none);
 @plugin "@monabbous/lumenmorph/tailwind";
 
-@import url("https://fonts.googleapis.com/css2?family=Cascadia+Mono:ital,wght@0,200..700;1,200..700&family=Noto+Kufi+Arabic:wght@400;500;600;700&display=swap");
 
 :root {
-  color-scheme: dark;
   --bg: var(--colors__background);
   --primary: var(--colors__primary);
   --accent: var(--colors__accent);
@@ -17,7 +17,7 @@
   --mouse-x: var(--lumen-x, 50vw);
   --mouse-y: var(--lumen-y, 35vh);
   --lab-ambient: radial-gradient(circle at bottom center, rgb(from var(--accent) r g b / .1), transparent 50%) center / 100vw 100vh no-repeat;
-  font-family: "Cascadia Mono", "Noto Kufi Arabic", monospace;
+  font-family: "IBM Plex Mono", "Noto Kufi Arabic", "Courier New", monospace;
 }
 * { box-sizing: border-box; }
 body {
@@ -134,16 +134,16 @@ footer { text-align: center; color: var(--muted); font-size: 11px; padding: 24px
 :is(.brand-glass, .preset-brand) .slidebox,
 .brand-glass .slidebox-group, .brand-glass .slidebox-range,
 .brand-glass [data-slidebox-range-visual] {
-  --lumen-bg: rgb(from var(--colors__surface) r g b / .4);
+  --lumen-bg: rgb(from var(--colors__surface) r g b / .5);
   --lumen-solid-bg: var(--colors__surface);
-  --lumen-glow-color: var(--accent);
-  --lumen-border-glow-color: var(--colors__highlight);
+  --lumen-glow-color: var(--colors__bulb);
+  --lumen-border-glow-color: var(--colors__bulb);
   --lumen-glow-opacity: .1;
   --lumen-glow-size: 30vmax;
   --lumen-blur: 40px;
   --lumen-saturation: 1;
   --lumen-border-width: 1px;
-  --lumen-border-color: transparent;
+  --lumen-border-color: rgb(from var(--colors__line) r g b / .45);
   --lumen-border-opacity: .3;
 }
 
@@ -219,10 +219,10 @@ select option { background: var(--bg); color: var(--text); }
     --_fill-color: var(--_on);
   }
   .preset-brand .slidebox {
-    --_track: var(--colors__primary);
-    --_border: var(--colors__line);
-    --_off: var(--colors__text);
-    --_on: var(--colors__accent);
+    --_track: var(--brand-track, var(--colors__primary));
+    --_border: var(--brand-border, var(--colors__line));
+    --_off: var(--brand-off, var(--colors__text));
+    --_on: var(--brand-on, var(--colors__accent));
   }
   .preset-browser .slidebox {
     --_track: Field;
@@ -265,9 +265,9 @@ select option { background: var(--bg); color: var(--text); }
 
 /* Hosted lab presentation, owned by nabous.dev. Project repositories supply
    their content and functional component CSS, not this website theme. */
-:root { --studio-radius: 4px; --studio-mono: "Cascadia Mono", "Noto Kufi Arabic", monospace; }
+:root { --studio-radius: 4px; --studio-mono: "IBM Plex Mono", "Noto Kufi Arabic", "Courier New", monospace; }
 html { scroll-padding-top: 24px; }
-body { background: radial-gradient(ellipse at 88% 10%, rgb(from var(--colors__accent) r g b / .1), transparent 45%), var(--lab-ambient), var(--bg); background-attachment: fixed; }
+body { background: var(--bg); background-attachment: fixed; }
 .topbar { max-width: 1248px; margin: auto; padding: 24px; border: 0; background: transparent; backdrop-filter: none; -webkit-backdrop-filter: none; }
 .topbar::before { display: none; }
 .wordmark { font: 13px/1.6 var(--studio-mono); letter-spacing: -.035em; white-space: nowrap; }
@@ -276,6 +276,12 @@ body { background: radial-gradient(ellipse at 88% 10%, rgb(from var(--colors__ac
 .studio-nav { display: flex; gap: 24px; }
 .site-link { font: 11px/1.6 var(--studio-mono); white-space: nowrap; }
 .site-link:hover, .intro-link:hover { color: var(--colors__accent); }
+.site-link, .intro-link {
+  @apply lumenmorph-text;
+  --lumen-text-color: var(--colors__text);
+  --lumen-glow-color: var(--colors__bulb);
+  --lumen-text-glow-opacity: .35;
+}
 .page { max-width: 1248px; }
 .intro { padding: 64px 0 40px; }
 .intro .eyebrow { margin-bottom: 22px; }
@@ -303,7 +309,52 @@ body { background: radial-gradient(ellipse at 88% 10%, rgb(from var(--colors__ac
 .card { margin-bottom: 0; }
 .studio-status > span { width: 5px; height: 5px; border-radius: 50%; background: var(--colors__accent); }
 .studio-layout { display: block; }
+h1, h2, .wordmark, .studio-nav { font-family: "VT323", "Handjet", "Noto Kufi Arabic", monospace; font-weight: 400; font-synthesis: none; }
+.wordmark { font-size: 20px; }
+.studio-nav .site-link { font-family: inherit; font-size: 16px; }
+.appearance-menu { position: relative; font: 18px/1.3 "VT323", monospace; }
+.appearance-menu summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; }
+.appearance-menu > div { position: absolute; inset-inline-end: 0; top: 100%; z-index: 30; padding: 8px; width: max-content; background: var(--colors__surface); border: 1px solid var(--line); border-radius: 4px; }
+.shell-theme-toggle { color: var(--text); background: var(--colors__surface); border: 0; min-height: 44px; padding: 8px 12px; font: inherit; }
+
+/* Hosted Lumenmorph: the site owns readable chrome; editable material samples
+   retain their own dark/transparent paint rather than inheriting shell colors. */
+.lm-lab { --lm-ink: var(--text); --lm-muted: var(--muted); --lm-accent: var(--colors__ember); font-size: 14px; }
+.lm-lab :is(h1, h2, h3) { font-family: "VT323", "Handjet", "Noto Kufi Arabic", monospace; font-weight: 400; letter-spacing: 0; }
+.lm-lab h1.lm-title { font-size: clamp(48px, 8vw, 80px); line-height: 1.05; max-width: none; margin-bottom: 24px; }
+.lm-lab .lm-title:has(svg) .title-label { position: static; width: auto; height: auto; overflow: visible; clip-path: none; white-space: normal; }
+.lm-lab #header-demo { display: none; }
+.lm-lab .playground-heading h2, .lm-lab #code-heading { font-size: 36px; line-height: 1.15; letter-spacing: 0; }
+.lm-lab .controls h2, .lm-lab .code-heading h2 { font-size: 28px; line-height: 1.2; letter-spacing: 0; }
+.lm-lab .quick-use h2 { font-size: 24px; }
+.lm-lab .quick-steps h3, .lm-lab .notes h3 { font-size: 22px; }
+.lm-lab .dek { font-size: 15px; max-width: 65ch; line-height: 1.75; }
+.lm-lab .collection-copy > p:not(.eyebrow) { color: var(--muted); font-size: 14px; }
+.lm-lab .controls { background: var(--colors__surface); border-color: var(--line); }
+.lm-lab .controls :is(button, .slidebox-group, input, select, textarea) {
+  --lumen-bg: var(--colors__primary);
+  --lumen-border-color: var(--colors__line);
+  --lumen-glow-color: var(--colors__bulb);
+  --lumen-solid-bg: var(--colors__surface);
+  color: var(--text);
+}
+.lm-lab .controls .material-picker {
+  --slidebox-off: var(--text);
+  --slidebox-selected-text: var(--text);
+  --slidebox-track: var(--colors__primary);
+  --slidebox-border: var(--line);
+}
+.lm-lab .controls .presets label { color: var(--text); }
+.lm-lab .controls output { color: var(--colors__accent); }
+.lm-lab .stage { --lm-ink: #f4eee3; --lm-muted: #c8c0b0; color: var(--lm-ink); background: #24231f; border-color: var(--line); color-scheme: dark; }
+.lm-lab .stage :is(.text-specimen, .icon-specimen) { --lumen-text-color: #f4eee3; }
+.lm-lab .stage h2 { font-size: 30px; }
+.lm-lab .stage :is(.hint, .status, .stage-label) { color: var(--lm-muted); }
+.lm-lab pre { background: #24231f; color: #f4eee3; border-color: var(--line); font: 12px/1.8 "IBM Plex Mono", monospace; }
+.lm-lab .copy-code { color: #f4eee3; --lumen-bg: #34322b; }
+.lm-lab .code-label, .lm-lab .notes p { font-size: 12px; color: var(--muted); }
 .studio .studio-canvas { display: block; padding: 0; min-width: 0; background: var(--colors__deep); }
+.studio .studio-canvas:not([data-scheme="light"]) { background: #24231f; color: #f4eee3; color-scheme: dark; }
 .studio .studio-canvas[data-scheme="light"] { background: #f2f4f3; }
 .studio-stage { container-type: inline-size; min-height: clamp(230px, 34vh, 340px); position: relative; display: grid; place-items: center; overflow: hidden; background-image: linear-gradient(rgb(from var(--colors__secondary) r g b / .06) 1px, transparent 1px), linear-gradient(90deg, rgb(from var(--colors__secondary) r g b / .06) 1px, transparent 1px); background-size: 28px 28px; }
 .stage-crosshair { position: absolute; inset: 0; margin: auto; width: 84%; height: 1px; background: rgb(from var(--colors__secondary) r g b / .2); pointer-events: none; }
@@ -327,7 +378,7 @@ body { background: radial-gradient(ellipse at 88% 10%, rgb(from var(--colors__ac
 .chapter-heading { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin: 56px 0 18px; scroll-margin-top: 24px; }
 .chapter-heading p { margin: 0; font: 12px/1.7 var(--studio-mono); color: var(--muted); }
 .checkbox-presets { margin-bottom: 0; }
-.presets-scroll { background: var(--colors__deep); }
+.presets-scroll { background: #24231f; }
 .workspace { gap: 20px; }
 .setting label, .field-label { font-size: 12px; line-height: 1.7; }
 .setting output, .code-name, pre { font-family: var(--studio-mono); }
@@ -385,4 +436,30 @@ footer { padding: 48px 24px; font-family: var(--studio-mono); }
   .color-grid { grid-template-columns: 1fr; }
   .preview { padding: 18px 12px; }
   .native-grid { gap: 7px; }
+}
+
+/* One shared baseline and gutter for the host header and each lab's content. */
+body { --lab-shell-width: 1248px; --lab-shell-gutter: 24px; }
+body:has(.lm-lab) { --lab-shell-width: 1100px; }
+body:has(.example-studio) { --lab-shell-width: 1360px; --lab-shell-gutter: 32px; }
+.lab-site-header { max-width: var(--lab-shell-width); padding: 20px var(--lab-shell-gutter); gap: 16px; flex-wrap: nowrap; }
+.lab-site-header .wordmark { min-height: 44px; font-size: 22px; line-height: 1; letter-spacing: 0; gap: 10px; }
+.lab-site-header .studio-nav { align-items: center; gap: 20px; }
+.lab-site-header .site-link, .lab-site-header .appearance-menu summary { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-size: 20px; line-height: 1; }
+.lab-site-header .site-link i { font-size: 13px; }
+.lab-site-header .appearance-menu > div .site-link { display: flex; }
+.page, .lm-lab, .example-studio { padding-inline: var(--lab-shell-gutter); }
+@media (max-width: 700px) {
+  body { --lab-shell-gutter: 20px; }
+  body:has(.example-studio) { --lab-shell-gutter: 20px; }
+  .lab-site-header { padding-block: 12px; gap: 12px; }
+  .lab-site-header .wordmark { font-size: 20px; }
+  .lab-site-header .studio-nav { gap: 12px; }
+  .lab-site-header .site-link, .lab-site-header .appearance-menu summary { font-size: 18px; }
+}
+@media (max-width: 360px) {
+  .lab-site-header { gap: 8px; }
+  .lab-site-header .wordmark { font-size: 18px; gap: 6px; }
+  .lab-site-header .studio-nav { gap: 8px; }
+  .lab-site-header .site-link { gap: 4px; }
 }

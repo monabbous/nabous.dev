@@ -55,7 +55,7 @@ export function MouseSpotLight({
     <>
       <spotLight
         ref={light}
-        color={color ?? colors.accent}
+        color={color ?? colors.bulb}
         intensity={intensity}
         distance={distance}
         angle={angle}

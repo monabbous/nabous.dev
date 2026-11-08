@@ -1,5 +1,7 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
+import { ThemeToggle } from "./ThemeToggle";
 
 import { ServerScene } from "@nabous.dev/components/ServerScene";
 import { LumenIcon, LumenText } from "@monabbous/lumenmorph/react";
@@ -22,6 +24,9 @@ const copy = {
     name: "Mohamed Nabous",
     portraitAlt: "Portrait of Mohamed Nabous",
     role: "Technical Project Manager & Full-Stack Engineering Lead",
+    rolePrimary: "Technical Project Manager",
+    roleSecondary: "Full-Stack Engineering Lead",
+    exploreWork: "Explore the work",
     bio: "10+ years building production web products, from e-commerce and ordering to ERP systems for food manufacturing and supply chains.",
     websitesEyebrow: "Independent venture · Nabous.dev Websites",
     websitesTitle: "A polished website for your business.",
@@ -88,6 +93,9 @@ const copy = {
     name: "محمد نبوس",
     portraitAlt: "صورة محمد نبوس",
     role: "مدير مشاريع تقني وقائد هندسة برمجيات شاملة",
+    rolePrimary: "مدير مشاريع تقني",
+    roleSecondary: "قائد هندسة برمجيات شاملة",
+    exploreWork: "استكشف الأعمال",
     bio: "أكثر من 10 سنوات في بناء منتجات ويب فعلية؛ من التجارة الإلكترونية والطلبات إلى أنظمة ERP للتصنيع الغذائي وسلاسل الإمداد.",
     websitesEyebrow: "مشروعي الخاص · Nabous.dev Websites",
     websitesTitle: "موقع مرتب لنشاطك التجاري.",
@@ -148,7 +156,7 @@ const copy = {
 } as const;
 
 type Locale = keyof typeof copy;
-const navigationLinkClass = "rounded-glass lumenmorph-border lumen-glow-opacity-[0.01] lumen-border-opacity-[0.03] lumen-border-width-[2px] px-3 py-2 text-xs font-semibold text-foreground/85 hover:bg-accent/10 min-h-11 flex items-center justify-center whitespace-nowrap";
+const navigationLinkClass = "nav-link rounded-glass lumenmorph-border lumen-glow-opacity-[0.01] lumen-border-opacity-[0.03] lumen-border-width-[1px] px-3 py-2 text-xs font-semibold text-foreground/85 hover:bg-accent/10 min-h-11 flex items-center justify-center whitespace-nowrap";
 
 export default function Home({ recentBlog }: { recentBlog: React.ReactNode }) {
   const CANVAS_ID = "server-scene-canvas";
@@ -368,7 +376,7 @@ export default function Home({ recentBlog }: { recentBlog: React.ReactNode }) {
           // transitionDuration: "500ms",
           // transitionTimingFunction: "ease-in-out",
         }}
-        className="fixed top-4 inset-x-0 z-20 px-4 pointer-events-none"
+        className="home-header fixed top-4 inset-x-0 z-20 px-4 pointer-events-none"
       >
         <nav aria-label={locale === "ar" ? "التنقل الرئيسي" : "Main navigation"} className="mx-auto flex w-full max-w-sm flex-wrap items-center justify-between gap-1 rounded-glass p-1 lumenmorph lumenmorph-border pointer-events-auto sm:w-fit sm:max-w-full sm:flex-nowrap">
           <button
@@ -410,6 +418,7 @@ export default function Home({ recentBlog }: { recentBlog: React.ReactNode }) {
           <Link className={`${navigationLinkClass} col-span-2 sm:col-auto`} href="/lab/" onClick={() => setNavigationOpen(false)}>
             <span className="lumenmorph-text">{locale === "ar" ? "المختبر" : "Lab"}</span>
           </Link>
+          <ThemeToggle locale={locale} />
           </div>
           <button
             type="button"
@@ -426,82 +435,45 @@ export default function Home({ recentBlog }: { recentBlog: React.ReactNode }) {
       <main className="container mx-auto px-2 md:px-4">
         <section
           id="about"
-          className="h-screen min-h-[540px] scroll-mt-4 grid items-center py-20 md:pb-20 pb-10 md:grid-cols-[auto_1fr]"
+          className="hero scroll-mt-4"
         >
           <div
             className={
-              "card gap-x-2 sm:gap-x-4 lumenmorph lumenmorph-border w-full max-w-[420px] grid grid-cols-[minmax(100px,1fr)_2fr] md:grid-cols-1 relative md:self-center self-end justify-self-center"
+              "profile-identity relative"
             }
             style={{
-              gridAutoColumns: "min-content",
-              gridAutoRows: "min-content",
-              // gridTemplateColumns: "minmax(250px, 1fsr) 1fr",
-              // backgroundColor: "rgba(0, 0, 0, 0.2)",
-              // WebkitBackdropFilter: "blur(10px)",
-              // backdropFilter: "blur(10px)",
               insetInlineStart: play ? "-100%" : "0",
-              filter: play ? "opacity(0)" : "opacity(1)",
-              transitionProperty: "inset-inline-start, filter",
-              willChange: "filter, inset-inline-start",
+              opacity: play ? 0 : 1,
+              transitionProperty: "inset-inline-start, opacity",
               transitionDuration: "500ms",
               transitionTimingFunction: "ease-in-out",
             }}
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="nabous.webp"
-              alt={t.portraitAlt}
-              className="
-                  h-auto
-                  object-cover
-                  aspect-w-1
-		            shadow-lg
-                  row-span-2
-                  md:row-auto
-                  col-span-1
-              "
-            />
             <h1 className="sr-only">{t.name}</h1>
-            <div className="mt-5 col-span-1">
+            <div className="profile-name">
               <LumenText
-                className="name-ember w-full h-auto"
-                width={336}
-                height={40}
-                fontSize={40}
-                strokeWidth={4}
+                className="w-full h-auto"
+                width={704}
+                height={locale === "ar" ? 144 : 112}
+                fontSize={96}
+                strokeWidth={2.4}
                 aria-hidden="true"
-                textProps={{ direction: "ltr" }}
+                textProps={{ x: locale === "ar" ? "98%" : "2%", textAnchor: "start", direction: locale === "ar" ? "rtl" : "ltr", fontFamily: locale === "ar" ? "Handjet, Noto Kufi Arabic, monospace" : "VT323, monospace", fontWeight: 400 }}
               >
-                Mohamed Nabous
+                {t.name}
               </LumenText>
             </div>
-            <h3
-              className="
-              sm:text-xl
-              font-bold
-              sm:font-medium
-              text-center
-              mt-2
-              md:text-left
-              lumenmorph-text
-              col-span-1
-              "
-            >
-              {t.role}
-            </h3>
-
-            <p
-              className="
-              text-center
-              mt-2
-              md:text-left
-              lumenmorph-text
-              col-span-full
-              "
-            >
+            <div className="profile-byline">
+              <Image src="/nabous.webp" alt={t.portraitAlt} width={80} height={80} sizes="(min-width: 768px) 72px, 64px" priority className="profile-portrait" />
+              <p className="profile-role">
+                <span className="profile-role-primary">{t.rolePrimary}</span>
+                <span className="profile-role-secondary">{t.roleSecondary}</span>
+              </p>
+            </div>
+            <p className="profile-bio">
               {t.bio}
             </p>
-            <div className="flex justify-center md:justify-start gap-6 text-2xl my-4 flex-wrap w-full col-span-2 md:col-span-1">
+            <div className="profile-socials">
               <a
                 href="https://www.linkedin.com/in/mohamed-nabous/"
                 target="_blank"
@@ -651,6 +623,9 @@ export default function Home({ recentBlog }: { recentBlog: React.ReactNode }) {
                 </LumenText>
               </a>
             </div>
+            <a href="#projects" className="profile-explore lumenmorph-text">
+              {t.exploreWork}<i className="fa-solid fa-arrow-down" aria-hidden="true" />
+            </a>
           </div>
           <button
             className={

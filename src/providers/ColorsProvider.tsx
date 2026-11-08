@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 
-const COLOR_KEYS = ["background", "primary", "accent", "secondary", "highlight", "deep", "text", "ember"] as const;
+const COLOR_KEYS = ["background", "ground", "primary", "accent", "secondary", "highlight", "deep", "text", "ember", "bulb", "board", "light", "indicator"] as const;
 
 type ColorsObject = Partial<Record<(typeof COLOR_KEYS)[number], string>>;
 
@@ -13,14 +13,19 @@ export function CssVarsProvider({ children }: { children: React.ReactNode }) {
   const [colors, setColors] = React.useState<ColorsObject>({});
 
   React.useLayoutEffect(() => {
-    // The palette is static CSS. Read it once after mounting instead of
-    // refreshing every scene consumer on every frame.
+    // Only refresh scene materials when the theme changes, not on every frame.
+    const readPalette = () => {
     const styles = getComputedStyle(document.documentElement);
     const palette: ColorsObject = {};
     for (const key of COLOR_KEYS) {
       palette[key] = styles.getPropertyValue(`--colors__${key}`).trim();
     }
     setColors(palette);
+    };
+    readPalette();
+    const observer = new MutationObserver(readPalette);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+    return () => observer.disconnect();
   }, []);
 
   const value = React.useMemo(() => ({ colors }), [colors]);

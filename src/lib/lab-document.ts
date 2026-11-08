@@ -1,6 +1,7 @@
 import type { Post, Project } from "./project-content";
 import { articleSocialImage } from "./content-metadata";
 import { faviconLinks } from "../constants/site-icons";
+import { colorModeScript } from "./color-mode";
 
 const escape = (value: string) => value.replaceAll("&", "&amp;").replaceAll('"', "&quot;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 
@@ -31,6 +32,8 @@ export function renderLabDocument(source: string, project: Project, post?: Post 
   const height = ownImage ? dimension("lab:image:height") : social?.height;
   const meta = (key: string, value: string, property = false) => `<meta ${property ? "property" : "name"}="${key}" content="${escape(value)}">`;
   const head = [
+    `<script>${colorModeScript}</script>`,
+    '<script type="module" src="/shell-theme.js"></script>',
     `<title>${escape(title)}</title>`, meta("description", description),
     `<link rel="canonical" href="${url}">`, ...faviconLinks,
     ...(source.includes("assets/fontawesome/css/all.min.css") ? [] : ['<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">']),
@@ -44,7 +47,7 @@ export function renderLabDocument(source: string, project: Project, post?: Post 
     `<script type="application/ld+json">${JSON.stringify({ "@context": "https://schema.org", "@type": "WebApplication", name: pageName, description, url, image, author: { "@type": "Person", name: "Mohamed Nabous", url: "https://nabous.dev" } }).replace(/</g, "\\u003c")}</script>`,
   ].join("\n");
   const repositoryLink = project.repository ? `<a class="site-link" href="https://github.com/${escape(project.repository)}" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-github" aria-hidden="true"></i> Source</a>` : "";
-  const header = `<header class="topbar lab-site-header" data-nabous-shell><a class="wordmark" href="/" aria-label="Back to nabous.dev"><img src="/nabous-dev-logo.svg" alt="" width="24" height="24">nabous.dev</a><nav class="studio-nav" aria-label="Website navigation"><a class="site-link" href="/lab/"><i class="fa-solid fa-flask" aria-hidden="true"></i> Lab</a><a class="site-link" href="/blog/${project.slug}/">Article</a>${repositoryLink}</nav></header>`;
+  const header = `<header class="topbar lab-site-header" data-nabous-shell><a class="wordmark" href="/" aria-label="Back to nabous.dev"><img src="/nabous-dev-logo.svg" alt="" width="24" height="24">nabous.dev</a><nav class="studio-nav" aria-label="Website navigation"><a class="site-link" href="/lab/"><i class="fa-solid fa-flask" aria-hidden="true"></i> Lab</a><a class="site-link" href="/blog/${project.slug}/">Article</a><details class="appearance-menu"><summary>Menu</summary><div>${repositoryLink}<button type="button" class="shell-theme-toggle" data-shell-theme aria-label="Dark mode" aria-pressed="false">Dark mode</button></div></details></nav></header>`;
   const footer = '<footer class="lab-site-footer" data-nabous-shell><a href="/">nabous.dev</a><a href="/lab/">All experiments</a><a href="/blog/">Blog</a></footer>';
 
   // Remove only old site chrome while repositories migrate to content-only HTML.

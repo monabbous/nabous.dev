@@ -1,10 +1,11 @@
 import { CssVarsProvider } from "./ColorsProvider";
+import { ColorModeProvider } from "./ColorModeProvider";
 
 export const Providers = ({ children }: { children: React.ReactNode }) => {
   return (
     <>
       {/* <ThemeProvider> */}
-      <CssVarsProvider>{children}</CssVarsProvider>
+      <ColorModeProvider><CssVarsProvider>{children}</CssVarsProvider></ColorModeProvider>
       {/* </ThemeProvider> */}
     </>
   );

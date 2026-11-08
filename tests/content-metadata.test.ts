@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { articleMetadata, articleStructuredData } from "../src/lib/content-metadata";
 import { parseBlog, type Post } from "../src/lib/project-content";
 import { renderLabDocument } from "../src/lib/lab-document";
@@ -59,6 +60,14 @@ test("local lab icons avoid a duplicate CDN and malformed image metadata falls b
 
 test("all Next and lab pages share one favicon definition", () => {
   assert.deepEqual(rootMetadata.icons, siteIcons);
-  assert.equal(siteIcons.icon[0].url, "/nabous-dev-logo.svg");
+  assert.equal(siteIcons.icon[0].url, "/nabous-dev-logo.svg?v=2");
   assert.ok(faviconLinks.some(link => link.includes('rel="apple-touch-icon"')));
+});
+
+test("the brand icon retains its rack silhouette in cream, charcoal and ember", () => {
+  const svg = readFileSync(new URL("../public/nabous-dev-logo.svg", import.meta.url), "utf8");
+  assert.match(svg, /#F2EFE7/);
+  assert.match(svg, /#514E46/);
+  assert.match(svg, /#FF6A24/);
+  assert.doesNotMatch(svg, /#(?:295564|123440|1e4657|69b4b0|80b5b4)/i);
 });

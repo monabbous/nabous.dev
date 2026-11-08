@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ThemeToggle } from "./ThemeToggle";
 import type { Post } from "@nabous.dev/lib/project-content";
 import { assetUrl } from "@nabous.dev/lib/public-url";
 export { assetUrl } from "@nabous.dev/lib/public-url";
@@ -15,5 +16,5 @@ export function PostDate({ value }: { value: string | null }) {
 }
 
 export function BlogNav() {
-  return <nav className="blog-nav"><Link href="/" className="blog-home"><i className="fa-solid fa-arrow-left" aria-hidden="true" /><span className="lumenmorph-text">nabous.dev</span></Link><div className="flex gap-6"><Link href="/lab/"><span className="lumenmorph-text">Lab</span></Link><Link href="/blog/"><span className="lumenmorph-text">Blog</span></Link></div></nav>;
+  return <nav className="blog-nav"><Link href="/" className="blog-home"><i className="fa-solid fa-arrow-left" aria-hidden="true" /><span className="lumenmorph-text">nabous.dev</span></Link><div className="flex items-center gap-4"><Link href="/lab/"><span className="lumenmorph-text">Lab</span></Link><Link href="/blog/"><span className="lumenmorph-text">Blog</span></Link><details className="appearance-menu"><summary>Menu</summary><div><ThemeToggle /></div></details></div></nav>;
 }

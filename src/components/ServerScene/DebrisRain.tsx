@@ -2,15 +2,15 @@ import { useFrame } from "@react-three/fiber";
 import { RapierRigidBody, RigidBody } from "@react-three/rapier";
 import React, { useMemo, useRef, useState } from "react";
 import * as THREE from "three";
-import { ScreenMaterial } from "./ServerRacks";
 import { useCssVarsColors } from "@nabous.dev/providers/ColorsProvider";
+import { useColorMode } from "@nabous.dev/providers/ColorModeProvider";
 
 // If you want to reuse your own material:
 // import { screenMaterial } from "./ServerRacks";
 
 export type Debris = {
   id: string;
-  tone: "teal" | "ember";
+  weight: "normal" | "heavy";
   kind: "box" | "sphere" | "capsule";
   size: [number, number, number]; // used for box
   radius: number; // used for sphere/capsule
@@ -71,7 +71,9 @@ export function DebrisRain({
     nowRef.current = now;
 
     // Despawn old debris
-    setItems((prev) => prev.filter((d) => now - d.bornAt < d.lifeMs));
+    if (items.some(d => now - d.bornAt >= d.lifeMs)) {
+      setItems(prev => prev.filter(d => now - d.bornAt < d.lifeMs));
+    }
 
     // Spawn control (frame-rate independent)
     acc.current += dt * ratePerSecond;
@@ -83,7 +85,8 @@ export function DebrisRain({
       return;
     }
 
-    while (acc.current >= 1 && items.length < maxAlive) {
+    let available = maxAlive - items.length;
+    while (acc.current >= 1 && available-- > 0) {
       acc.current -= 1;
 
       const kindRoll = rng();
@@ -107,7 +110,7 @@ export function DebrisRain({
       const d: Debris = {
         id: `${now}-${rng().toString(16).slice(2)}`,
         kind,
-        tone: rng() < 0.18 ? "ember" : "teal",
+        weight: rng() < 0.18 ? "heavy" : "normal",
         size,
         radius: radiusVal,
         height: heightVal,
@@ -132,7 +135,7 @@ export function DebrisRain({
           nowRef={nowRef}
           warpInMs={warpInMs}
           warpOutMs={warpOutMs}
-          mass={d.tone === "ember" ? mass * 4 : mass}
+          mass={d.weight === "heavy" ? mass * 4 : mass}
         />
       ))}
     </>
@@ -153,13 +156,16 @@ function DebrisItem({
   mass: number;
 }) {
   const colors = useCssVarsColors();
+  const { mode } = useColorMode();
+  const emission = mode === "dark" ? 0.75 : 0.45;
+  const lightGain = mode === "dark" ? 0.07 : 0.04;
   const rb = useRef<RapierRigidBody | null>(null);
   const meshRef = useRef<THREE.Mesh | null>(null);
   const lightRef = useRef<THREE.PointLight | null>(null);
   const applied = useRef(false);
 
   // Keep the heavy ember pieces from washing out the scene.
-  const baseIntensity = d.tone === "ember" ? 180 : 150;
+  const baseIntensity = d.weight === "heavy" ? 180 : 150;
 
   useFrame(() => {
     const b = rb.current;
@@ -205,10 +211,8 @@ function DebrisItem({
 
     m.scale.setScalar(s);
     if (lightRef.current) {
-      (
-        meshRef.current!.material as THREE.MeshStandardMaterial
-      ).emissiveIntensity =
-        (lightRef.current.intensity = baseIntensity * s) / 100;
+      lightRef.current.intensity = baseIntensity * s * lightGain;
+      (meshRef.current!.material as THREE.MeshStandardMaterial).emissiveIntensity = emission * s;
     }
   });
 
@@ -225,32 +229,30 @@ function DebrisItem({
       restitution={0.15}
       friction={0.8}
       mass={mass}
-      ccd
+      canSleep
     >
       <group castShadow receiveShadow>
         <mesh ref={meshRef}>
           {d.kind === "box" ? (
             <boxGeometry args={d.size} />
           ) : d.kind === "sphere" ? (
-            <sphereGeometry args={[d.radius, 16, 16]} />
+            <sphereGeometry args={[d.radius, 10, 8]} />
           ) : (
-            <capsuleGeometry args={[d.radius, d.height, 6, 12]} />
+            <capsuleGeometry args={[d.radius, d.height, 4, 8]} />
           )}
 
           {/* Swap this for your material if you want */}
-          <ScreenMaterial tone={d.tone} />
+          <meshStandardMaterial color={colors.bulb} roughness={0.65} emissive={colors.bulb} emissiveIntensity={emission} />
         </mesh>
 
         <pointLight
           ref={lightRef}
-          color={d.tone === "ember" ? colors.ember : colors.accent}
-          intensity={baseIntensity}
+           color={colors.bulb}
+           intensity={baseIntensity * lightGain}
           distance={100}
           decay={1.5}
           position={[0, 0, 0]}
-          castShadow
-          shadow-mapSize-width={256}
-          shadow-mapSize-height={256}
+          castShadow={false}
         />
       </group>
     </RigidBody>

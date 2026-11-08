@@ -1,174 +1,60 @@
 import { useCssVarsColors } from "@nabous.dev/providers/ColorsProvider";
-import { RoundedBox } from "@react-three/drei";
-import React from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef } from "react";
+import * as THREE from "three";
+import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
 
-export function ScreenMaterial({
-  powerOn = true,
-  tone = "teal",
-}: {
-  powerOn?: boolean;
-  tone?: "teal" | "ember";
-}) {
-  const colors = useCssVarsColors();
-  const lightColor = tone === "ember" ? colors.ember : colors.accent;
+const displays = [
+  // x, y, z, width, height, depth, in the rack's original ten-unit scale.
+  [-.38, 0, .499, .0625, .0625, .05],
+  [-.30, 0, .499, .0625, .0625, .05],
+  [-.22, 0, .499, .0625, .0625, .05],
+  [-.15, .35, .499, .5, .0125, .01],
+  [-.15, .7, .499, .5, .125, .1],
+  [.25, .745, .499, .0625, .0625, .05],
+  [.33, .665, .499, .0625, .0625, .05],
+  [.33, .745, .499, .0625, .0625, .05],
+  [.25, .665, .499, .0625, .0625, .05],
+];
 
-  return (
-    <meshLambertMaterial
-      color={lightColor}
-      emissive={lightColor}
-      emissiveIntensity={powerOn ? 1.8 : 0.1}
-    />
-  );
-}
-
-const buttonsSpacing = 0.08;
-
-export function ServerRack({
-  stackNumber,
-  children,
-}: {
-  stackNumber: number;
-  children?: React.ReactNode;
-}) {
-  const colors = useCssVarsColors();
-
-  return (
-    <group scale={10} position={[0, stackNumber * 3.5, 0]} receiveShadow>
-      {/* Rack */}
-      <RoundedBox castShadow receiveShadow args={[1, 0.25, 1]} radius={0.02}>
-        <meshPhongMaterial dithering color={colors.primary} side={0} />
-      </RoundedBox>
-      {children}
-    </group>
-  );
-}
-
+/** Two shared geometries/materials, two draw calls (+ the casing shadow pass).
+ * The parent remains a real Rapier rigid body: instancing changes paint only.
+ */
 export function ServerRacks({ powerOn = true }: { powerOn?: boolean }) {
-  return (
-    <>
-      <group name={"server-racks"} position={[10, 0, -10]} receiveShadow>
-        <ServerRack stackNumber={0}>
-          <ButtensOnly powerOn={powerOn} />
-        </ServerRack>
-        <ServerRack stackNumber={1}>
-          <LineScreen powerOn={powerOn} />
-        </ServerRack>
-        <ServerRack stackNumber={2}>
-          <ScreenWithButtons powerOn={powerOn} />
-        </ServerRack>
-      </group>
-    </>
-  );
-}
-
-function ScreenWithButtons({ powerOn }: { powerOn: boolean }) {
-  return (
-    <>
-      {/* Screen */}
-      <RoundedBox
-        castShadow
-        receiveShadow
-        args={[0.5, 0.125, 0.1]}
-        position={[-0.15, 0, 0.5 - 0.001]}
-      >
-        <ScreenMaterial powerOn={powerOn} tone="ember" />
-      </RoundedBox>
-
-      {/* Buttons */}
-      <RoundedBox
-        castShadow
-        receiveShadow
-        args={[0.125, 0.125, 0.1]}
-        scale={0.5}
-        position={[0.25, 0.125 - buttonsSpacing, 0.5 - 0.001]}
-      >
-        <ScreenMaterial powerOn={powerOn} />
-      </RoundedBox>
-
-      <RoundedBox
-        castShadow
-        receiveShadow
-        args={[0.125, 0.125, 0.1]}
-        scale={0.5}
-        position={[
-          0.25 + buttonsSpacing,
-          0.125 - buttonsSpacing * 2,
-          0.5 - 0.001,
-        ]}
-      >
-        <ScreenMaterial powerOn={powerOn} />
-      </RoundedBox>
-      <RoundedBox
-        castShadow
-        receiveShadow
-        args={[0.125, 0.125, 0.1]}
-        scale={0.5}
-        position={[0.25 + buttonsSpacing, 0.125 - buttonsSpacing, 0.5 - 0.001]}
-      >
-        <ScreenMaterial powerOn={powerOn} />
-      </RoundedBox>
-
-      <RoundedBox
-        castShadow
-        receiveShadow
-        args={[0.125, 0.125, 0.1]}
-        scale={0.5}
-        position={[0.25, 0.125 - buttonsSpacing * 2, 0.5 - 0.001]}
-      >
-        <ScreenMaterial powerOn={powerOn} />
-      </RoundedBox>
-    </>
-  );
-}
-
-function LineScreen({ powerOn }: { powerOn: boolean }) {
-  return (
-    <>
-      {/* Screen */}
-      <RoundedBox
-        castShadow
-        receiveShadow
-        args={[0.5, 0.125, 0.1]}
-        position={[-0.15, 0, 0.5 - 0.001]}
-        scale={[1, 0.1, 0.1]}
-      >
-        <ScreenMaterial powerOn={powerOn} />
-      </RoundedBox>
-    </>
-  );
-}
-
-function ButtensOnly({ powerOn }: { powerOn: boolean }) {
-  return (
-    <>
-      {/* Buttons */}
-      <RoundedBox
-        castShadow
-        receiveShadow
-        args={[0.125, 0.125, 0.1]}
-        scale={0.5}
-        position={[-0.38, 0, 0.5 - 0.001]}
-      >
-        <ScreenMaterial powerOn={powerOn} />
-      </RoundedBox>
-      <RoundedBox
-        castShadow
-        receiveShadow
-        args={[0.125, 0.125, 0.1]}
-        scale={0.5}
-        position={[-0.38 + buttonsSpacing, 0, 0.5 - 0.001]}
-      >
-        <ScreenMaterial powerOn={powerOn} />
-      </RoundedBox>
-      <RoundedBox
-        castShadow
-        receiveShadow
-        args={[0.125, 0.125, 0.1]}
-        scale={0.5}
-        position={[-0.38 + buttonsSpacing * 2, 0, 0.5 - 0.001]}
-      >
-        <ScreenMaterial powerOn={powerOn} />
-      </RoundedBox>
-    </>
-  );
+  const colors = useCssVarsColors();
+  const cases = useRef<THREE.InstancedMesh>(null);
+  const lights = useRef<THREE.InstancedMesh>(null);
+  const geometry = useMemo(() => ({
+    casing: new RoundedBoxGeometry(1, .25, 1, 2, .02),
+    display: new RoundedBoxGeometry(1, 1, 1, 1, .2),
+  }), []);
+  const material = useMemo(() => ({
+    casing: new THREE.MeshStandardMaterial({ color: colors.board, roughness: .85, metalness: .03, dithering: true }),
+    display: new THREE.MeshLambertMaterial({ color: colors.indicator, emissive: colors.indicator,
+      emissiveIntensity: powerOn ? 1.6 : .05, toneMapped: false }),
+  }), [colors.board, colors.indicator, powerOn]);
+  useEffect(() => () => { geometry.casing.dispose(); geometry.display.dispose(); }, [geometry]);
+  useEffect(() => () => { material.casing.dispose(); material.display.dispose(); }, [material]);
+  useLayoutEffect(() => {
+    if (!cases.current || !lights.current) return;
+    const transform = new THREE.Object3D();
+    for (let index = 0; index < 3; index++) {
+      transform.position.set(0, index * .35, 0);
+      transform.scale.set(1, 1, 1);
+      transform.updateMatrix();
+      cases.current.setMatrixAt(index, transform.matrix);
+    }
+    displays.forEach(([x, y, z, width, height, depth], index) => {
+      transform.position.set(x, y, z);
+      transform.scale.set(width, height, depth);
+      transform.updateMatrix();
+      lights.current!.setMatrixAt(index, transform.matrix);
+    });
+    cases.current.instanceMatrix.needsUpdate = lights.current.instanceMatrix.needsUpdate = true;
+    cases.current.computeBoundingSphere();
+    lights.current.computeBoundingSphere();
+  }, [geometry, material]);
+  return <group name="server-racks" position={[10, 0, -10]} scale={10}>
+    <instancedMesh ref={cases} args={[geometry.casing, material.casing, 3]} castShadow receiveShadow />
+    <instancedMesh ref={lights} args={[geometry.display, material.display, displays.length]} />
+  </group>;
 }

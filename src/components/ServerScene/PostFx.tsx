@@ -4,8 +4,8 @@ export function PostFX() {
   return (
     <EffectComposer>
       <Bloom
-        intensity={1.15}
-        luminanceThreshold={0.55}
+        intensity={0.4}
+        luminanceThreshold={1.1}
         luminanceSmoothing={0.35}
         mipmapBlur
       />

@@ -3,7 +3,7 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 
-/** A soft, shadow-free ember light shared by the rack and the surrounding floor. */
+/** A soft, shadow-free incandescent light shared by the rack and floor. */
 export function PointerGlow({ enabled }: { enabled: boolean }) {
   const colors = useCssVarsColors();
   const light = useRef<THREE.PointLight>(null);
@@ -88,7 +88,8 @@ export function PointerGlow({ enabled }: { enabled: boolean }) {
 
     // Project into a plane just in front of the rack. Unlike a fixed world XY
     // mapping, this stays under the cursor through camera orbits and resizing.
-    rack.current.localToWorld(scratch.center.set(0, 3.5, 0));
+    rack.current.getWorldPosition(scratch.center);
+    scratch.center.y += 3.5;
     camera.getWorldDirection(scratch.normal).negate();
     scratch.center.addScaledVector(scratch.normal, 10);
     scratch.plane.setFromNormalAndCoplanarPoint(scratch.normal, scratch.center);
@@ -100,5 +101,5 @@ export function PointerGlow({ enabled }: { enabled: boolean }) {
     }
   });
 
-  return <pointLight ref={light} color={colors.ember} intensity={0} distance={48} decay={2} castShadow={false} />;
+  return <pointLight ref={light} color={colors.bulb} intensity={0} distance={48} decay={2} castShadow={false} />;
 }
