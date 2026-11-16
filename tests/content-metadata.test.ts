@@ -57,6 +57,13 @@ test("local lab icons avoid a duplicate CDN and malformed image metadata falls b
   assert.ok(html.includes('property="og:image" content="https://nabous.dev/project-assets/slidebox/assets/social.jpg"'));
 });
 
+test("labs in a shared repository link to their own source directory", () => {
+  const project = { slug: "remorse-chess", repository: "monabbous/nabous.dev", ref: "master", directory: "experiments/remorse-chess" };
+  const html = renderLabDocument('<html><head></head><body>Game</body></html>', project);
+  assert.match(html, /href="https:\/\/github.com\/monabbous\/nabous.dev\/tree\/master\/experiments\/remorse-chess"/);
+  assert.match(html, /href="https:\/\/nabous.dev\/lab\/remorse-chess\/"/);
+});
+
 
 test("all Next and lab pages share one favicon definition", () => {
   assert.deepEqual(rootMetadata.icons, siteIcons);

@@ -2,13 +2,31 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readProjects, contentPath, parseBlog, rawUrl, getPost, blogUpdatedAt } from "../src/lib/project-content";
 
-test("runtime registry defaults to no projects and validates configuration", () => {
-  assert.deepEqual(readProjects({}), []);
+const firstPartyProject = { slug: "remorse-chess", repository: "monabbous/nabous.dev", ref: "master", directory: "experiments/remorse-chess" };
+
+test("checked-in projects coexist with the validated runtime registry", () => {
+  assert.deepEqual(readProjects({}), [firstPartyProject]);
   const project = { slug: "slidebox", repository: "monabbous/slidebox", ref: "main" };
-  assert.deepEqual(readProjects({ NABOUS_PROJECTS: JSON.stringify([project]) }), [project]);
+  assert.deepEqual(readProjects({ NABOUS_PROJECTS: JSON.stringify([project]) }), [project, firstPartyProject]);
   for (const input of [{}, [project, project], [{ ...project, slug: "../evil" }], [{ ...project, repository: "https://example.com" }], [{ ...project, ref: "" }]]) {
     assert.throws(() => readProjects({ NABOUS_PROJECTS: JSON.stringify(input) }));
   }
+});
+
+test("runtime overrides replace a first-party source without duplicating or hiding other projects", () => {
+  const override = { slug: "remorse-chess", repository: "monabbous/remorse-chess", ref: "main" };
+  const existing = { slug: "lumenmorph", repository: "monabbous/lumenmorph", ref: "main" };
+  assert.deepEqual(readProjects({ NABOUS_PROJECTS: JSON.stringify([existing, override]) }), [existing, override]);
+  const fifty = Array.from({ length: 50 }, (_, index) => ({ slug: `project-${index}`, repository: "a/b", ref: "main" }));
+  assert.throws(() => readProjects({ NABOUS_PROJECTS: JSON.stringify(fifty) }), /combined project registry/);
+});
+
+test("repository subdirectories resolve content and reject ambiguous or escaping paths", () => {
+  assert.equal(rawUrl(firstPartyProject, ["lab", "engine.js"]), "https://raw.githubusercontent.com/monabbous/nabous.dev/master/experiments/remorse-chess/public/lab/engine.js");
+  for (const directory of ["", ".", "..", "/absolute", "experiments//game", "experiments/../game", "a\\b", "a/%2e%2e", "a?query", 12]) {
+    assert.throws(() => readProjects({ NABOUS_PROJECTS: JSON.stringify([{ ...firstPartyProject, directory }]) }), /relative repository path/);
+  }
+  assert.throws(() => rawUrl(firstPartyProject, []), /Invalid content path/);
 });
 
 test("content paths cannot escape the configured public folder", () => {
@@ -61,5 +79,21 @@ test("GitHub date failures return unavailable rather than an invented date", asy
   globalThis.fetch = async () => new Response("Rate limited", { status: 403 });
   try {
     assert.equal(await blogUpdatedAt({ slug: "limited", repository: "test/rate-limited", ref: "main" }), null);
+  } finally { globalThis.fetch = original; }
+});
+
+test("article commit dates are independent for projects sharing a repository and ref", async () => {
+  const original = globalThis.fetch;
+  const paths: string[] = [];
+  globalThis.fetch = async input => {
+    const path = new URL(String(input)).searchParams.get("path")!;
+    paths.push(path);
+    return Response.json([{ commit: { committer: { date: path.includes("first") ? "2026-11-01T00:00:00Z" : "2026-11-02T00:00:00Z" } } }]);
+  };
+  try {
+    const project = { slug: "date-test", repository: "test/shared-monorepo", ref: "main" };
+    assert.equal(await blogUpdatedAt({ ...project, directory: "experiments/first" }), "2026-11-01T00:00:00Z");
+    assert.equal(await blogUpdatedAt({ ...project, directory: "experiments/second" }), "2026-11-02T00:00:00Z");
+    assert.deepEqual(paths, ["experiments/first/public/blog.md", "experiments/second/public/blog.md"]);
   } finally { globalThis.fetch = original; }
 });

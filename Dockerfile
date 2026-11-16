@@ -4,7 +4,7 @@ WORKDIR /app
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 COPY . .
-# No project registry or GitHub credentials are provided to this stage.
+# No runtime registry or GitHub credentials are provided to this stage.
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN pnpm build
 

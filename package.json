@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "test": "tsx --conditions=react-server --test tests/*.test.ts tests/*.test.mjs",
+    "test": "tsx --conditions=react-server --test tests/*.test.ts tests/*.test.mjs experiments/remorse-chess/tests/*.test.js",
     "build:lab-assets": "node scripts/build-lab-assets.mjs",
     "predev": "pnpm build:lab-assets",
     "prebuild": "pnpm build:lab-assets"

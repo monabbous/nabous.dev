@@ -1,0 +1,11 @@
+{
+  "name": "remorse-chess",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A browser chess variant where captures have consequences and bishops grant absolution.",
+  "scripts": {
+    "test": "node --test tests/*.test.js",
+    "start": "node server.js"
+  }
+}

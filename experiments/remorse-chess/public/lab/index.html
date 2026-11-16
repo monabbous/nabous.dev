@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="lab:title" content="Remorse Chess">
+  <meta name="description" content="Every capture has a consequence. Play Remorse Chess against the computer or a friend: pieces feel guilt, bishops grant absolution.">
+  <meta name="theme-color" content="#292c27">
+  <title>Remorse Chess · nabous.dev</title>
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./style.css">
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+<main class="rc" id="remorse-chess">
+  <header class="rc-heading">
+    <div>
+      <p class="rc-eyebrow"><span class="rc-small-star" aria-hidden="true">✳</span> A CHESS VARIANT WITH A CONSCIENCE</p>
+      <h1>Remorse<span>Chess</span><i aria-hidden="true">.</i></h1>
+      <p class="rc-subtitle">Every capture has a consequence.</p>
+    </div>
+    <button class="rc-btn rc-primary" id="rc-new" type="button"><span aria-hidden="true">+</span> New game</button>
+  </header>
+
+  <div class="rc-layout">
+    <section class="rc-play" aria-label="Game board">
+      <div class="rc-player" id="rc-player-top"></div>
+      <div class="rc-board-frame">
+        <div class="rc-board" id="rc-board" role="grid" aria-label="Chessboard. Use arrow keys to navigate, Enter to select a piece and its destination." aria-rowcount="8" aria-colcount="8"></div>
+      </div>
+      <div class="rc-player" id="rc-player-bottom"></div>
+      <div class="rc-tools" aria-label="Game controls">
+        <button class="rc-tool" id="rc-undo" type="button" title="Undo your last turn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5 3 10l5 5M3 10h11a6 6 0 0 1 0 12" transform="translate(0 -3)"/></svg><span>Undo</span></button>
+        <button class="rc-tool" id="rc-flip" type="button" title="Flip the board"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m16 3 4 4-4 4M4 7h16M8 21l-4-4 4-4m12 4H4"/></svg><span>Flip</span></button>
+        <button class="rc-tool" id="rc-sound" type="button" aria-pressed="false" title="Turn sound on"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 4 6 8H3v8h3l5 4V4Zm5 5 5 6m0-6-5 6"/></svg><span>Sound off</span></button>
+        <button class="rc-tool" id="rc-rules" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 8.5a2.5 2.5 0 0 1 5 0c0 2-2.5 2-2.5 4M12 16v.1"/></svg><span>Rules</span></button>
+      </div>
+      <p class="rc-board-hint" id="rc-board-hint">Select a piece to see its legal moves.</p>
+    </section>
+
+    <aside class="rc-sidebar" aria-label="Game information">
+      <section class="rc-status-card">
+        <div class="rc-status-top"><span class="rc-eyebrow" id="rc-mode-label">YOU VS COMPUTER</span><span class="rc-live-dot" aria-hidden="true"></span></div>
+        <h2 id="rc-turn-title">Your move.</h2>
+        <p id="rc-turn-detail">You play white. Make the first move.</p>
+        <div class="rc-status-foot"><span id="rc-move-count">MOVE 01</span><span id="rc-saved">SAVED ON THIS DEVICE</span></div>
+      </section>
+
+      <section class="rc-rule-card" aria-labelledby="rc-rule-heading">
+        <h2 id="rc-rule-heading">A different kind of chess.</h2>
+        <div class="rc-rule-line"><span class="rc-rule-icon rc-capture-icon" aria-hidden="true">×</span><div><h3>Capture. Feel remorse.</h3><p>A piece that captures can still move, but cannot capture again.</p></div></div>
+        <div class="rc-rule-line"><span class="rc-rule-icon rc-heal-icon" aria-hidden="true">✧</span><div><h3>A bishop can forgive.</h3><p>Move your bishop beside a guilty ally to let it capture again.</p></div></div>
+        <button class="rc-text-btn" id="rc-demo" type="button">Try a guided example <span aria-hidden="true">↗</span></button>
+      </section>
+
+      <section class="rc-journal" aria-labelledby="rc-journal-heading">
+        <div class="rc-journal-head"><h2 id="rc-journal-heading">The story so far</h2><span id="rc-ply-count">0 MOVES</span></div>
+        <div class="rc-journal-scroll" id="rc-journal-scroll">
+          <div class="rc-empty-log" id="rc-empty-log"><span aria-hidden="true">♙</span><p>A clean slate.<br>No regrets. Yet.</p></div>
+          <ol class="rc-move-list" id="rc-moves" aria-label="Move history"></ol>
+        </div>
+        <div class="rc-legend"><span><i class="rc-guilt-dot" aria-hidden="true"></i> Remorse</span><span><i class="rc-absolve-dot" aria-hidden="true">✧</i> Absolution</span></div>
+      </section>
+    </aside>
+  </div>
+
+  <section class="rc-demo-banner" id="rc-demo-banner" hidden aria-labelledby="rc-demo-title">
+    <div><span class="rc-eyebrow" id="rc-demo-step">GUIDED EXAMPLE · 1 OF 3</span><h2 id="rc-demo-title">Every capture leaves a mark.</h2><p id="rc-demo-copy"></p></div>
+    <div class="rc-demo-actions"><button class="rc-btn rc-primary" id="rc-demo-next" type="button">Show me</button><button class="rc-btn" id="rc-demo-exit" type="button">Back to game</button></div>
+  </section>
+
+  <div class="rc-colophon"><span>Built by <a href="https://nabous.dev/">Mohamed Nabous</a></span><span>Variant by <a href="https://www.youtube.com/shorts/H-JyKN_1jM4" target="_blank" rel="noopener noreferrer">Bardelo Bardalini ↗</a></span><a href="https://github.com/monabbous/nabous.dev/tree/master/experiments/remorse-chess" target="_blank" rel="noopener noreferrer">View source ↗</a></div>
+  <p class="rc-announcement" id="rc-announcement" role="status" aria-live="polite" aria-atomic="true"></p>
+  <noscript><p class="rc-noscript">Remorse Chess needs JavaScript to run the game. Enable JavaScript, then reload this page.</p></noscript>
+
+  <dialog class="rc-dialog" id="rc-new-dialog" aria-labelledby="rc-new-heading">
+    <form id="rc-new-form">
+      <div class="rc-dialog-head"><span class="rc-eyebrow">A FRESH START</span><button class="rc-close" type="button" data-close="rc-new-dialog" aria-label="Close new game dialog">×</button></div>
+      <h2 id="rc-new-heading">Leave your regrets behind.</h2>
+      <p>Choose how you want to play.</p>
+      <fieldset class="rc-fieldset"><legend>Opponent</legend><div class="rc-options"><label><input type="radio" name="mode" value="computer" checked><span>Computer<small>A quiet thinking partner</small></span></label><label><input type="radio" name="mode" value="local"><span>A friend<small>Two players, one board</small></span></label></div></fieldset>
+      <fieldset class="rc-fieldset" id="rc-side-field"><legend>Your pieces</legend><div class="rc-options"><label><input type="radio" name="color" value="w" checked><span>White<small>You move first</small></span></label><label><input type="radio" name="color" value="b"><span>Black<small>Computer moves first</small></span></label></div></fieldset>
+      <label class="rc-select-label" id="rc-level-field">Computer level<select id="rc-level" name="level"><option value="1">Gentle · learning the rules</option><option value="2" selected>Thoughtful · a little resistance</option><option value="3">Challenging · thinks further ahead</option></select></label>
+      <p class="rc-form-note" id="rc-replace-note">Your current game will be replaced when you start.</p>
+      <button class="rc-btn rc-primary rc-full" type="submit">Start a new game <span aria-hidden="true">→</span></button>
+    </form>
+  </dialog>
+
+  <dialog class="rc-dialog rc-rules-dialog" id="rc-rules-dialog" aria-labelledby="rc-rules-heading">
+    <div class="rc-dialog-head"><span class="rc-eyebrow">THE RULES</span><button class="rc-close" type="button" data-close="rc-rules-dialog" aria-label="Close rules">×</button></div>
+    <h2 id="rc-rules-heading">Chess, with consequences.</h2>
+    <p>Start with ordinary chess. Add remorse and a little forgiveness.</p>
+    <ol class="rc-rules-list"><li><strong>Taking a piece changes you.</strong> Every capture marks the capturing piece with an orange remorse ring. It may move to empty squares and block attacks, but it cannot capture or give check.</li><li><strong>Move a bishop to grant absolution.</strong> After your bishop moves, all remorseful allies on the eight neighbouring squares are forgiven. Their rings disappear and they may capture again.</li><li><strong>Protect your king.</strong> Check, checkmate, castling, en passant and promotion still apply, with threats calculated using remorse. Kings are never captured and must remain apart.</li></ol>
+    <details class="rc-rulings"><summary>Details used in this version</summary><ul><li>The bishop must move. Moving a guilty piece beside a stationary bishop does not cure it.</li><li>Bishops feel remorse too. They can still absolve others, but cannot absolve themselves.</li><li>Kings feel remorse too, but must always stay on non-adjacent squares.</li><li>Remorse stays with a promoted pawn. Promoting to a bishop does not absolve neighbours on that move.</li><li>Stalemate, threefold repetition, 50 moves without a pawn move or capture, and bare kings end in a draw. Other material draws are not assumed.</li><li>Undo takes back your whole turn against the computer, or one move in a two-player game.</li></ul><p>These edge rulings make the short variant description playable; they are this implementation’s interpretation.</p></details>
+    <div class="rc-keyboard-note"><strong>Tap or keyboard.</strong> Tap a piece, then a highlighted square. On a keyboard, use arrow keys on the board and Enter or Space to choose. Escape clears your selection.</div>
+    <button class="rc-btn rc-primary rc-full" type="button" data-close="rc-rules-dialog">Got it. Let’s play.</button>
+  </dialog>
+
+  <dialog class="rc-dialog rc-promotion-dialog" id="rc-promotion-dialog" aria-labelledby="rc-promotion-heading">
+    <div class="rc-dialog-head"><span class="rc-eyebrow">PROMOTION</span><button class="rc-close" type="button" data-close="rc-promotion-dialog" aria-label="Cancel promotion">×</button></div>
+    <h2 id="rc-promotion-heading">Choose what comes next.</h2><p>Your pawn’s remorse, if any, comes with it.</p><div class="rc-promotions" id="rc-promotions"></div>
+  </dialog>
+</main>
+</body>
+</html>
