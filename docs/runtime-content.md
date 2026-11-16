@@ -11,9 +11,15 @@ NABOUS_PROJECTS='[{"slug":"slidebox","repository":"monabbous/slidebox","ref":"ma
 NABOUS_CONTENT_CACHE_SECONDS=0
 ```
 
-`NABOUS_PROJECTS` accepts up to 50 unique slugs. Each entry requires a slug, a GitHub `owner/repository`, and a branch, tag, or commit ref. No application registry file is required. Public repositories need no credentials.
+`NABOUS_PROJECTS` accepts entries with a unique slug, a GitHub `owner/repository`, and a branch, tag, or commit ref. Public repositories need no credentials.
 
-Changing these variables requires a process/container restart, not a rebuild. Changing project content requires neither a rebuild nor a restart.
+First-party experiments are listed in `config/projects.json`. The runtime list is merged with that checked-in list: runtime entries keep their order, replace a checked-in entry with the same slug, and leave other checked-in projects available. The combined registry supports up to 50 unique slugs. Existing standalone projects can continue to be configured entirely through `NABOUS_PROJECTS`.
+
+For projects hosted in a repository subdirectory, set `directory` to that relative path. For example, the checked-in Remorse Chess entry points to `monabbous/nabous.dev` at `master` with `directory: "experiments/remorse-chess"`. Its content root is `experiments/remorse-chess/public/`; its article commit date and Source link also point to that experiment. Absolute paths, traversal, empty path segments, and URL-encoded path segments are rejected. Keep `directory` out of local development entries: their `path` already points to the project root.
+
+To add another first-party experiment, commit its `public/` tree under `experiments/<slug>/` and add its GitHub source to `config/projects.json`. A normal site deployment publishes the registry entry; no repository-variable change is required. These files still use the request-time GitHub loader rather than a second production filesystem loader.
+
+Changing runtime variables requires a process/container restart, not a rebuild. Changing the checked-in registry requires a site deployment. Changing project content requires neither a rebuild nor a restart.
 
 ## Use a local checkout in development
 
@@ -68,7 +74,7 @@ Only configure repositories you trust. Playground HTML and JavaScript execute on
 
 Project requests use Next.js `no-store` by default. A positive `NABOUS_CONTENT_CACHE_SECONDS` enables Next.js caching for that interval, up to one day. The browser-facing asset proxies send `Cache-Control: no-store`.
 
-GitHub's raw-content infrastructure can still return cached content. A push is not a guarantee that every request immediately sees new bytes. No project files are fetched, cloned, or bundled during the website build or deployment. The website health check does not fetch project content.
+GitHub's raw-content infrastructure can still return cached content. A push is not a guarantee that every request immediately sees new bytes. The content loader does not fetch project files during the website build or deployment; it resolves project content only on requests. The website health check does not fetch project content.
 
 Article dates come from GitHub's latest commit affecting `public/blog.md` at the configured ref, not the latest repository commit. Commit metadata has a separate one-minute in-memory cache and concurrent-request deduplication. Failed API requests back off for five minutes and preserve a previously known date. An unknown date displays as unavailable, never as the current time. This metadata cache does not cache the article body.
 

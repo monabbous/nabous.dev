@@ -3,12 +3,30 @@ import { readFile, realpath, stat } from "node:fs/promises";
 import { isAbsolute, join, sep } from "node:path";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
+import configuredProjects from "../../config/projects.json";
 
-export type Project = { slug: string; repository?: string; ref?: string; path?: string };
+export type Project = { slug: string; repository?: string; ref?: string; directory?: string; path?: string };
 export type Post = { project: Project; title: string; description: string; cover?: string; socialImage?: string; socialImageWidth?: number; socialImageHeight?: number; updatedAt: string | null; markdown: string };
 
 export function readProjects(env: { NABOUS_PROJECTS?: string; NODE_ENV?: string } = { NABOUS_PROJECTS: process.env.NABOUS_PROJECTS, NODE_ENV: process.env.NODE_ENV }): Project[] {
-  const value: unknown = JSON.parse(env.NABOUS_PROJECTS || "[]");
+  const defaults = parseProjects(configuredProjects, env.NODE_ENV);
+  const runtime = parseProjects(JSON.parse(env.NABOUS_PROJECTS || "[]"), env.NODE_ENV);
+  // Runtime entries retain their order and can override a checked-in source.
+  const configuredSlugs = new Set(runtime.map(project => project.slug));
+  const projects = [...runtime, ...defaults.filter(project => !configuredSlugs.has(project.slug))];
+  if (projects.length > 50) throw new Error("The combined project registry must contain at most 50 projects");
+  return projects;
+}
+
+function directoryParts(directory?: string): string[] {
+  if (directory === undefined) return [];
+  if (typeof directory !== "string" || directory.length > 500 || !directory.split("/").every(part => /^[\w.-]+$/.test(part) && part !== "." && part !== "..")) {
+    throw new Error("Project directory must be a relative repository path without traversal");
+  }
+  return directory.split("/");
+}
+
+function parseProjects(value: unknown, nodeEnv?: string): Project[] {
   if (!Array.isArray(value) || value.length > 50) throw new Error("NABOUS_PROJECTS must be an array of at most 50 projects");
   const slugs = new Set<string>();
   return value.map(entry => {
@@ -17,16 +35,17 @@ export function readProjects(env: { NABOUS_PROJECTS?: string; NODE_ENV?: string 
     }
     slugs.add(entry.slug);
     if (entry.path !== undefined) {
-      if (env.NODE_ENV !== "development") throw new Error("Local project paths are allowed only in development");
+      if (nodeEnv !== "development") throw new Error("Local project paths are allowed only in development");
       if (typeof entry.path !== "string" || !isAbsolute(entry.path) || /[\x00-\x1f]/.test(entry.path)) throw new Error("Local project path must be absolute");
-      if (entry.repository !== undefined || entry.ref !== undefined) throw new Error("Choose a local path or a GitHub repository/ref, not both");
+      if (entry.repository !== undefined || entry.ref !== undefined || entry.directory !== undefined) throw new Error("Choose a local path or a GitHub repository/ref/directory, not both");
       return { slug: entry.slug, path: entry.path };
     }
     if (typeof entry.repository !== "string" || !/^[\w.-]+\/[\w.-]+$/.test(entry.repository) ||
       typeof entry.ref !== "string" || !entry.ref || /[\x00-\x1f]/.test(entry.ref) || entry.ref.length > 200) {
       throw new Error("GitHub projects require repository and ref");
     }
-    return { slug: entry.slug, repository: entry.repository, ref: entry.ref };
+    directoryParts(entry.directory);
+    return { slug: entry.slug, repository: entry.repository, ref: entry.ref, ...(entry.directory !== undefined ? { directory: entry.directory } : {}) };
   });
 }
 
@@ -37,7 +56,8 @@ export function contentPath(parts: string[]): string {
 
 export function rawUrl(project: Project, parts: string[]): string {
   if (!project.repository || !project.ref || project.path) throw new Error("Expected a GitHub-backed project");
-  return `https://raw.githubusercontent.com/${project.repository}/${encodeURIComponent(project.ref)}/public/${contentPath(parts)}`;
+  const root = contentPath([...directoryParts(project.directory), "public"]);
+  return `https://raw.githubusercontent.com/${project.repository}/${encodeURIComponent(project.ref)}/${root}/${contentPath(parts)}`;
 }
 
 function cacheSeconds(): number {
@@ -82,7 +102,8 @@ export async function blogUpdatedAt(project: Project): Promise<string | null> {
   }
   if (!project.repository || !project.ref) return null;
   const { repository, ref } = project;
-  const key = `${repository}@${ref}`;
+  const blogPath = [...directoryParts(project.directory), "public", "blog.md"].join("/");
+  const key = `${repository}@${ref}:${blogPath}`;
   const cached = dates.get(key);
   if (cached && cached.expires > Date.now()) return cached.value;
   const pending = pendingDates.get(key);
@@ -91,7 +112,7 @@ export async function blogUpdatedAt(project: Project): Promise<string | null> {
     let value = cached?.value ?? null;
     let success = false;
     try {
-      const query = new URLSearchParams({ path: "public/blog.md", sha: ref, per_page: "1" });
+      const query = new URLSearchParams({ path: blogPath, sha: ref, per_page: "1" });
       const response = await fetch(`https://api.github.com/repos/${repository}/commits?${query}`, {
         cache: "no-store", signal: AbortSignal.timeout(8000), redirect: "error",
         headers: { Accept: "application/vnd.github+json", ...(process.env.NABOUS_GITHUB_TOKEN ? { Authorization: `Bearer ${process.env.NABOUS_GITHUB_TOKEN}` } : {}) },

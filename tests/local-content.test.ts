@@ -7,10 +7,11 @@ import { fetchContent, getPost, readProjects } from "../src/lib/project-content"
 
 test("local registry paths are development-only, absolute, and mutually exclusive with GitHub sources", () => {
   const project = { slug: "example", path: "/absolute/project" };
-  assert.deepEqual(readProjects({ NODE_ENV: "development", NABOUS_PROJECTS: JSON.stringify([project]) }), [project]);
+  assert.deepEqual(readProjects({ NODE_ENV: "development", NABOUS_PROJECTS: JSON.stringify([project]) }), [project, ...readProjects({})]);
   assert.throws(() => readProjects({ NODE_ENV: "production", NABOUS_PROJECTS: JSON.stringify([project]) }), /only in development/);
   assert.throws(() => readProjects({ NODE_ENV: "development", NABOUS_PROJECTS: JSON.stringify([{ ...project, path: "relative" }]) }), /absolute/);
   assert.throws(() => readProjects({ NODE_ENV: "development", NABOUS_PROJECTS: JSON.stringify([{ ...project, repository: "a/b", ref: "main" }]) }), /not both/);
+  assert.throws(() => readProjects({ NODE_ENV: "development", NABOUS_PROJECTS: JSON.stringify([{ ...project, directory: "nested" }]) }), /not both/);
 });
 
 test("local content updates without network requests and cannot escape public through symlinks", async () => {

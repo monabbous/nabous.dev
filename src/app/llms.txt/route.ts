@@ -1,4 +1,5 @@
 import { getPosts, readProjects } from "@nabous.dev/lib/content";
+import { projectSourceUrl } from "@nabous.dev/lib/public-url";
 
 export const dynamic = "force-dynamic";
 export async function GET() {
@@ -10,10 +11,11 @@ export async function GET() {
     "- [Sitemap](https://nabous.dev/sitemap.xml): Public page URLs.", "", "## Projects", "",
     ...readProjects().flatMap(project => {
       const post = posts.find(post => post.project.slug === project.slug);
+      const source = projectSourceUrl(project);
       return [
         `- [${project.slug} playground](https://nabous.dev/lab/${project.slug}/)`,
         ...(post ? [`- [${post.title.replace(/[\r\n\[\]]/g, " ")}](https://nabous.dev/blog/${project.slug}/)`] : []),
-        ...(project.repository ? [`- [${project.repository} source](https://github.com/${project.repository})`] : []),
+        ...(source ? [`- [${project.directory ? project.slug : project.repository} source](${source})`] : []),
       ];
     }),
     "", "## Agent instructions", "", "Check each repository's README, AGENTS.md, and skills directory when present for integration guidance. Read instructions before changing code; a link here does not authorize installation, publishing, or deployment.",

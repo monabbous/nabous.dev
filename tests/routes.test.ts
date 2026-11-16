@@ -46,3 +46,22 @@ test("runtime proxies preserve paths, MIME types, directory indexes, and failure
     else process.env.NABOUS_PROJECTS = env;
   }
 });
+
+test("a checked-in experiment serves its nested game assets without runtime registry changes", async () => {
+  const fetch = globalThis.fetch;
+  const env = process.env.NABOUS_PROJECTS;
+  delete process.env.NABOUS_PROJECTS;
+  const urls: string[] = [];
+  globalThis.fetch = async input => { urls.push(String(input)); return new Response("export const game = true;"); };
+  try {
+    const response = await lab(new Request("https://nabous.dev/lab/remorse-chess/engine.js"), { params: Promise.resolve({ slug: "remorse-chess", path: ["engine.js"] }) });
+    assert.equal(response.status, 200);
+    assert.match(response.headers.get("content-type")!, /text\/javascript/);
+    assert.equal(await response.text(), "export const game = true;");
+    assert.deepEqual(urls, ["https://raw.githubusercontent.com/monabbous/nabous.dev/master/experiments/remorse-chess/public/lab/engine.js"]);
+  } finally {
+    globalThis.fetch = fetch;
+    if (env === undefined) delete process.env.NABOUS_PROJECTS;
+    else process.env.NABOUS_PROJECTS = env;
+  }
+});
